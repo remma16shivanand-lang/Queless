@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>QueueLess</title>
+</head>
+
+<body>
+
+<h1>QueueLess System</h1>
+
+<h2>Join Queue</h2>
+
+<form action="/join">
+<input type="text" name="name" placeholder="Enter your name" required>
+<button type="submit">Join Queue</button>
+</form>
+
+<br>
+
+<h2>Live Queue</h2>
+
+<ul id="queueList"></ul>
+
+<br>
+
+<button onclick="window.location.href='/next'">
+Call Next Person
+</button>
+
+<script>
+function loadQueue() {
+    fetch('/queue')
+    .then(response => response.json())
+    .then(data => {
+        let list = document.getElementById('queueList');
+        list.innerHTML = '';
+
+        data.forEach(name => {
+            let li = document.createElement('li');
+            li.textContent = name;
+            list.appendChild(li);
+        });
+    });
+}
+
+// Load immediately
+loadQueue();
+
+// Refresh every 3 seconds
+setInterval(loadQueue, 3000);
+</script>
+
+</body>
+
+</html>
