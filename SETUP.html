@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QueueLess — Setup Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&family=DM+Mono&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0a0a0a; color: #f5f2eb; font-family: 'DM Sans', sans-serif; padding: 2rem 1.5rem; max-width: 720px; margin: 0 auto; }
+    h1 { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; margin-bottom: 0.4rem; }
+    h1 span { color: #ff5c2b; }
+    .intro { color: #777; font-size: 0.95rem; margin-bottom: 3rem; line-height: 1.6; }
+    .step { margin-bottom: 2.5rem; }
+    .step-num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 30px; height: 30px; border-radius: 50%;
+      background: #ff5c2b; color: #fff;
+      font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 800;
+      margin-bottom: 0.8rem;
+    }
+    .step h2 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .step p { color: #888; font-size: 0.9rem; line-height: 1.7; margin-bottom: 0.5rem; }
+    .step a { color: #ff5c2b; }
+    code {
+      display: block;
+      background: #1c1c1c; border: 1px solid #2a2a2a; border-radius: 10px;
+      padding: 1rem 1.2rem; font-family: 'DM Mono', monospace; font-size: 0.82rem;
+      color: #ffd166; line-height: 1.7; overflow-x: auto; margin-top: 0.8rem;
+      white-space: pre;
+    }
+    .tip {
+      background: rgba(255,92,43,0.08); border: 1px solid rgba(255,92,43,0.2);
+      border-radius: 10px; padding: 0.9rem 1.1rem;
+      font-size: 0.85rem; color: #cc4a22; margin-top: 0.8rem; line-height: 1.6;
+    }
+    hr { border: none; border-top: 1px solid #1c1c1c; margin: 3rem 0; }
+    .done {
+      background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2);
+      border-radius: 14px; padding: 1.5rem; text-align: center;
+    }
+    .done h2 { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; color: #22c55e; margin-bottom: 0.5rem; }
+    .done p { color: #666; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+
+<h1>🔥 <span>Firebase</span> Setup Guide</h1>
+<p class="intro">Follow these steps once and your QueueLess app will be fully live with a real-time database. Takes about 10 minutes.</p>
+
+<div class="step">
+  <div class="step-num">1</div>
+  <h2>Create a Firebase Project</h2>
+  <p>Go to <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> and sign in with your Google account.</p>
+  <p>Click <strong>"Add Project"</strong> → Name it <strong>queless</strong> → Disable Google Analytics (not needed) → Click <strong>Create Project</strong>.</p>
+</div>
+
+<div class="step">
+  <div class="step-num">2</div>
+  <h2>Enable Realtime Database</h2>
+  <p>In the left sidebar, click <strong>Build → Realtime Database → Create Database</strong>.</p>
+  <p>Choose your region (pick the closest one). When asked about rules, select <strong>"Start in test mode"</strong> (we'll secure it later). Click <strong>Enable</strong>.</p>
+</div>
+
+<div class="step">
+  <div class="step-num">3</div>
+  <h2>Get Your Firebase Config</h2>
+  <p>Go to <strong>Project Settings</strong> (gear icon, top left) → Scroll down → Under <strong>"Your apps"</strong>, click the <strong>&lt;/&gt; Web</strong> icon.</p>
+  <p>Register the app (any nickname) → You'll see a config object like this:</p>
+  <code>const firebaseConfig = {
+  apiKey: "AIzaSy...",
+  authDomain: "queless.firebaseapp.com",
+  databaseURL: "https://queless-default-rtdb.firebaseio.com",
+  projectId: "queless",
+  storageBucket: "queless.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "1:123456789:web:abc123"
+};</code>
+  <div class="tip">⚠️ Copy this entire block — you need it in the next step.</div>
+</div>
+
+<div class="step">
+  <div class="step-num">4</div>
+  <h2>Paste Config into Your Files</h2>
+  <p>Open <strong>queue.html</strong> and <strong>admin.html</strong> in VS Code (or any text editor).</p>
+  <p>Find the line that says <code style="display:inline;padding:0.1rem 0.4rem;font-size:0.8rem;">// ⚠️ REPLACE THIS with your Firebase config</code> and replace the <strong>entire firebaseConfig object</strong> with the one you copied above.</p>
+  <p>Do this in <strong>both files</strong>.</p>
+</div>
+
+<div class="step">
+  <div class="step-num">5</div>
+  <h2>Change the Admin Password</h2>
+  <p>In <strong>admin.html</strong>, find this line:</p>
+  <code>const ADMIN_PASSWORD = "queless123"; // Change this!</code>
+  <p>Replace <strong>queless123</strong> with your own password.</p>
+</div>
+
+<div class="step">
+  <div class="step-num">6</div>
+  <h2>Push to GitHub &amp; Go Live</h2>
+  <p>Replace the files in your GitHub repo with the new ones. Your site should update automatically if you're using GitHub Pages.</p>
+  <p>If using Vercel or Netlify, just drag and drop the files — they deploy automatically.</p>
+</div>
+
+<hr/>
+
+<div class="done">
+  <h2>🎉 You're Live!</h2>
+  <p>Once done, open your site → Admin login → Add yourself to a test queue → Watch the live position update in real time.</p>
+</div>
+
+</body>
+</html>

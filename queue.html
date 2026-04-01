@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QueueLess — Join Queue</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, push, onValue, update, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    // ⚠️ REPLACE THIS with your Firebase config
+    const firebaseConfig = {
+  apiKey: "AIzaSy...",
+  authDomain: "queless.firebaseapp.com",
+  databaseURL: "https://queless-default-rtdb.firebaseio.com",
+  projectId: "queless",
+  storageBucket: "queless.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "1:123456789:web:abc123"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    let myTokenKey = null;
+    let myQueueType = null;
+    let unsubscribe = null;
+
+    window.joinQueue = async function() {
+      const name = document.getElementById('nameInput').value.trim();
+      const qtype = document.getElementById('queueType').value;
+      if (!name) { showError('Please enter your name'); return; }
+
+      const btn = document.getElementById('joinBtn');
+      btn.disabled = true;
+      btn.textContent = 'Joining...';
+
+      try {
+        const qRef = ref(db, `queues/${qtype}`);
+        const snapshot = await get(qRef);
+        let tokenNum = 1;
+        if (snapshot.exists()) {
+          const entries = Object.values(snapshot.val()).filter(e => e.status !== 'done');
+          tokenNum = entries.length + 1;
+        }
+
+        const newRef = await push(qRef, {
+          name,
+          token: `${qtype.charAt(0).toUpperCase()}${String(tokenNum).padStart(2,'0')}`,
+          status: 'waiting',
+          joinedAt: Date.now(),
+          queueType: qtype
+        });
+
+        myTokenKey = newRef.key;
+        myQueueType = qtype;
+
+        localStorage.setItem('ql_token', myTokenKey);
+        localStorage.setItem('ql_queue', myQueueType);
+
+        showTicket(name, qtype);
+        listenToPosition();
+      } catch(e) {
+        showError('Failed to join. Check Firebase config.');
+        btn.disabled = false;
+        btn.textContent = 'Join Queue';
+      }
+    };
+
+    function listenToPosition() {
+      if (unsubscribe) unsubscribe();
+      const qRef = ref(db, `queues/${myQueueType}`);
+      unsubscribe = onValue(qRef, (snapshot) => {
+        if (!snapshot.exists()) return;
+        const all = snapshot.val();
+        const waiting = Object.entries(all)
+          .filter(([,v]) => v.status === 'waiting')
+          .sort(([,a],[,b]) => a.joinedAt - b.joinedAt);
+
+        const myIndex = waiting.findIndex(([k]) => k === myTokenKey);
+        const myData = all[myTokenKey];
+
+        if (!myData) return;
+
+        if (myData.status === 'called') {
+          document.getElementById('positionNum').textContent = '🎉';
+          document.getElementById('positionLabel').textContent = "It's your turn!";
+          document.getElementById('etaText').textContent = 'Please proceed now';
+          document.getElementById('statusBadge').textContent = 'CALLED';
+          document.getElementById('statusBadge').style.background = '#22c55e';
+          playAlert();
+        } else if (myData.status === 'done') {
+          document.getElementById('positionNum').textContent = '✓';
+          document.getElementById('positionLabel').textContent = 'Completed';
+          document.getElementById('etaText').textContent = 'Thank you for using QueueLess';
+        } else {
+          const pos = myIndex + 1;
+          document.getElementById('positionNum').textContent = pos;
+          document.getElementById('positionLabel').textContent = pos === 1 ? 'You are Next!' : `Position in queue`;
+          const etaMins = Math.max(1, (pos - 1) * 5);
+          document.getElementById('etaText').textContent = pos === 1 ? 'Get ready — you\'re next!' : `~${etaMins} min wait`;
+          document.getElementById('totalWaiting').textContent = waiting.length;
+        }
+      });
+    }
+
+    function showTicket(name, qtype) {
+      document.getElementById('joinForm').style.display = 'none';
+      document.getElementById('ticketView').style.display = 'block';
+      document.getElementById('ticketName').textContent = name;
+      const labels = { general: 'General', emergency: 'Emergency', followup: 'Follow-up' };
+      document.getElementById('ticketQueue').textContent = labels[qtype] || qtype;
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('errorMsg');
+      el.textContent = msg;
+      el.style.display = 'block';
+      setTimeout(() => el.style.display = 'none', 3000);
+    }
+
+    function playAlert() {
+      try {
+        const ctx = new AudioContext();
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+        o.frequency.value = 880;
+        g.gain.setValueAtTime(0.3, ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
+        o.start(); o.stop(ctx.currentTime + 0.8);
+      } catch(e) {}
+    }
+
+    // Restore session
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedKey = localStorage.getItem('ql_token');
+      const savedQueue = localStorage.getItem('ql_queue');
+      if (savedKey && savedQueue) {
+        myTokenKey = savedKey;
+        myQueueType = savedQueue;
+        const qRef = ref(db, `queues/${savedQueue}/${savedKey}`);
+        get(qRef).then(snap => {
+          if (snap.exists()) {
+            showTicket(snap.val().name, savedQueue);
+            listenToPosition();
+          } else {
+            localStorage.removeItem('ql_token');
+            localStorage.removeItem('ql_queue');
+          }
+        });
+      }
+    });
+
+    window.leaveQueue = function() {
+      if (confirm('Leave the queue?')) {
+        localStorage.removeItem('ql_token');
+        localStorage.removeItem('ql_queue');
+        location.reload();
+      }
+    };
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black: #0a0a0a; --white: #f5f2eb;
+      --accent: #ff5c2b; --accent2: #ffd166;
+      --gray: #1c1c1c;
+    }
+    body {
+      background: var(--black); color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+    }
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 1.5rem;
+      border-bottom: 1px solid #1c1c1c;
+    }
+    .logo { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; text-decoration: none; color: var(--white); }
+    .logo span { color: var(--accent); }
+    main {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      padding: 2rem 1.5rem;
+    }
+    .card {
+      background: var(--gray);
+      border: 1px solid #2a2a2a;
+      border-radius: 20px;
+      padding: 2.5rem;
+      width: 100%; max-width: 420px;
+    }
+    .card-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem; font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 0.4rem;
+    }
+    .card-sub { color: #777; font-size: 0.9rem; margin-bottom: 2rem; }
+    label { display: block; font-size: 0.82rem; font-weight: 500; color: #aaa; margin-bottom: 0.4rem; letter-spacing: 0.04em; text-transform: uppercase; }
+    input, select {
+      width: 100%;
+      background: #111; border: 1px solid #333; border-radius: 10px;
+      color: var(--white); font-family: 'DM Sans', sans-serif;
+      font-size: 1rem; padding: 0.8rem 1rem;
+      outline: none; margin-bottom: 1.2rem;
+      transition: border-color 0.2s;
+    }
+    input:focus, select:focus { border-color: var(--accent); }
+    select option { background: #1c1c1c; }
+    .btn {
+      width: 100%; padding: 0.9rem;
+      background: var(--accent); color: #fff;
+      border: none; border-radius: 10px;
+      font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700;
+      cursor: pointer; transition: opacity 0.2s, transform 0.15s;
+    }
+    .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    #errorMsg {
+      display: none;
+      background: rgba(255,92,43,0.12); border: 1px solid rgba(255,92,43,0.3);
+      color: var(--accent); border-radius: 8px;
+      padding: 0.7rem 1rem; font-size: 0.88rem;
+      margin-bottom: 1rem;
+    }
+
+    /* TICKET */
+    #ticketView { display: none; text-align: center; }
+    .ticket-header { margin-bottom: 2rem; }
+    .ticket-header h2 { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; }
+    .ticket-header p { color: #777; font-size: 0.9rem; margin-top: 0.3rem; }
+    .position-ring {
+      width: 140px; height: 140px;
+      border-radius: 50%;
+      border: 4px solid var(--accent);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      margin: 0 auto 1.5rem;
+      background: rgba(255,92,43,0.08);
+      box-shadow: 0 0 40px rgba(255,92,43,0.2);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 40px rgba(255,92,43,0.2); }
+      50% { box-shadow: 0 0 60px rgba(255,92,43,0.4); }
+    }
+    #positionNum { font-family: 'Syne', sans-serif; font-size: 3rem; font-weight: 800; color: var(--accent); line-height: 1; }
+    #positionLabel { font-size: 0.75rem; color: #888; font-weight: 500; margin-top: 0.3rem; }
+    .eta-box {
+      background: #111; border: 1px solid #2a2a2a; border-radius: 12px;
+      padding: 1rem; margin-bottom: 1.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .eta-label { font-size: 0.8rem; color: #666; text-transform: uppercase; letter-spacing: 0.06em; }
+    #etaText { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: var(--accent2); }
+    .info-row {
+      display: flex; gap: 0.8rem; margin-bottom: 1.5rem;
+    }
+    .info-chip {
+      flex: 1; background: #111; border: 1px solid #222; border-radius: 10px;
+      padding: 0.8rem; text-align: center;
+    }
+    .info-chip .val { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; }
+    .info-chip .lbl { font-size: 0.72rem; color: #666; margin-top: 0.2rem; text-transform: uppercase; }
+    #statusBadge {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff; font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.25rem 0.8rem; border-radius: 999px;
+      margin-bottom: 1.5rem;
+    }
+    .leave-btn {
+      background: transparent; border: 1px solid #333;
+      color: #666; border-radius: 10px;
+      width: 100%; padding: 0.75rem;
+      font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+      cursor: pointer; transition: border-color 0.2s, color 0.2s;
+      margin-top: 0.5rem;
+    }
+    .leave-btn:hover { border-color: var(--accent); color: var(--accent); }
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="logo" href="index.html">Queue<span>Less</span></a>
+    <span style="color:#555;font-size:0.85rem;">Customer</span>
+  </nav>
+  <main>
+    <div class="card">
+
+      <!-- JOIN FORM -->
+      <div id="joinForm">
+        <div class="card-title">Join Queue</div>
+        <div class="card-sub">Enter your details to get your token</div>
+        <div id="errorMsg"></div>
+        <label for="nameInput">Your Name</label>
+        <input type="text" id="nameInput" placeholder="e.g. Ravi Kumar" autocomplete="off"/>
+        <label for="queueType">Queue Type</label>
+        <select id="queueType">
+          <option value="general">🟢 General</option>
+          <option value="emergency">🔴 Emergency</option>
+          <option value="followup">🔵 Follow-up / Appointment</option>
+        </select>
+        <button class="btn" id="joinBtn" onclick="joinQueue()">Get My Token →</button>
+      </div>
+
+      <!-- TICKET VIEW -->
+      <div id="ticketView">
+        <div class="ticket-header">
+          <h2>Your Token</h2>
+          <p id="ticketName" style="color:var(--accent);font-weight:600;font-size:1rem;"></p>
+        </div>
+        <span id="statusBadge">WAITING</span>
+        <div class="position-ring">
+          <div id="positionNum">—</div>
+          <div id="positionLabel">Loading...</div>
+        </div>
+        <div class="info-row">
+          <div class="info-chip">
+            <div class="val" id="totalWaiting">—</div>
+            <div class="lbl">In Queue</div>
+          </div>
+          <div class="info-chip">
+            <div class="val" id="ticketQueue" style="font-size:0.85rem;">—</div>
+            <div class="lbl">Queue Type</div>
+          </div>
+        </div>
+        <div class="eta-box">
+          <span class="eta-label">⏱ Est. Wait</span>
+          <span id="etaText">Calculating...</span>
+        </div>
+        <p style="color:#555;font-size:0.8rem;margin-bottom:1rem;">Keep this page open. You'll see live updates as the queue moves.</p>
+        <button class="leave-btn" onclick="leaveQueue()">Leave Queue</button>
+      </div>
+
+    </div>
+  </main>
+</body>
+</html>
