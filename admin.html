@@ -13,92 +13,131 @@
     .login-card { background: var(--gray); border: 1px solid #2a2a2a; border-radius: 20px; padding: 2.5rem; width: 100%; max-width: 360px; text-align: center; }
     .login-card h1 { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; margin-bottom: 0.3rem; }
     .login-card p { color: #666; font-size: 0.9rem; margin-bottom: 2rem; }
-    .login-card input { width: 100%; background: #111; border: 1px solid #333; border-radius: 10px; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 1rem; padding: 0.85rem 1rem; outline: none; margin-bottom: 1rem; text-align: center; letter-spacing: 0.1em; transition: border-color 0.2s; }
+    .login-card input { width: 100%; background: #111; border: 1px solid #333; border-radius: 10px; color: var(--white); font-size: 1rem; padding: 0.85rem 1rem; outline: none; margin-bottom: 1rem; text-align: center; letter-spacing: 0.1em; transition: border-color 0.2s; }
     .login-card input:focus { border-color: var(--accent); }
-    .login-card button { width: 100%; padding: 0.9rem; background: var(--accent); color: #fff; border: none; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
-    .login-card button:hover { opacity: 0.9; }
+    .login-card button { width: 100%; padding: 0.9rem; background: var(--accent); color: #fff; border: none; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer; }
     #loginError { display: none; background: rgba(255,92,43,0.12); border: 1px solid rgba(255,92,43,0.3); color: var(--accent); border-radius: 8px; padding: 0.6rem; font-size: 0.85rem; margin-bottom: 1rem; }
     .lock-icon { font-size: 2.5rem; margin-bottom: 1rem; }
     #dashboard { display: none; }
-    header { display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 1.5rem; border-bottom: 1px solid #1c1c1c; position: sticky; top: 0; background: var(--black); z-index: 10; }
+    header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; border-bottom: 1px solid #1c1c1c; position: sticky; top: 0; background: var(--black); z-index: 10; flex-wrap: wrap; gap: 0.5rem; }
     .logo { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; text-decoration: none; color: var(--white); }
     .logo span { color: var(--accent); }
-    .btn-call { background: var(--accent); color: #fff; border: none; padding: 0.6rem 1.2rem; border-radius: 999px; font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s, transform 0.15s; }
-    .btn-call:hover { opacity: 0.9; transform: scale(1.03); }
-    .stats { display: flex; gap: 1rem; padding: 1.5rem; overflow-x: auto; }
-    .stat { background: var(--gray); border: 1px solid #2a2a2a; border-radius: 14px; padding: 1.2rem 1.5rem; min-width: 130px; flex-shrink: 0; }
-    .stat-val { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--accent); }
-    .stat-lbl { font-size: 0.78rem; color: #666; margin-top: 0.2rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .header-btns { display: flex; gap: 0.5rem; }
+    .btn-call { background: var(--accent); color: #fff; border: none; padding: 0.6rem 1.2rem; border-radius: 999px; font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+    .btn-call:hover { opacity: 0.85; }
+    .btn-qr { background: #1c1c1c; color: var(--white); border: 1px solid #333; padding: 0.6rem 1.2rem; border-radius: 999px; font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: border-color 0.2s; }
+    .btn-qr:hover { border-color: var(--accent); }
+    .stats { display: flex; gap: 1rem; padding: 1.2rem 1.5rem; overflow-x: auto; }
+    .stat { background: var(--gray); border: 1px solid #2a2a2a; border-radius: 14px; padding: 1rem 1.3rem; min-width: 110px; flex-shrink: 0; }
+    .stat-val { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--accent); }
+    .stat-lbl { font-size: 0.75rem; color: #666; margin-top: 0.2rem; text-transform: uppercase; letter-spacing: 0.06em; }
     .tabs { display: flex; gap: 0.5rem; padding: 0 1.5rem; margin-bottom: 1rem; overflow-x: auto; }
     .tab { display: flex; align-items: center; gap: 0.4rem; padding: 0.5rem 1rem; border-radius: 999px; background: var(--gray); border: 1px solid #2a2a2a; color: #777; font-size: 0.85rem; font-weight: 500; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
     .tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-    .tab-count { background: rgba(255,255,255,0.2); color: #fff; font-size: 0.7rem; font-weight: 700; padding: 0.1rem 0.45rem; border-radius: 999px; min-width: 18px; text-align: center; }
+    .tab-count { font-size: 0.7rem; font-weight: 700; padding: 0.1rem 0.45rem; border-radius: 999px; min-width: 18px; text-align: center; background: rgba(255,255,255,0.25); }
     .tab:not(.active) .tab-count { background: #333; color: #aaa; }
-    .list-header { display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; margin-bottom: 1rem; }
+    .list-header { display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; margin-bottom: 0.8rem; }
     .list-header h2 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; }
-    .clear-btn { background: none; border: 1px solid #2a2a2a; border-radius: 8px; color: #555; font-size: 0.78rem; padding: 0.35rem 0.8rem; cursor: pointer; transition: border-color 0.2s, color 0.2s; }
+    .clear-btn { background: none; border: 1px solid #2a2a2a; border-radius: 8px; color: #555; font-size: 0.78rem; padding: 0.35rem 0.8rem; cursor: pointer; transition: all 0.2s; }
     .clear-btn:hover { border-color: #555; color: #aaa; }
-    #queueList { padding: 0 1.5rem; display: flex; flex-direction: column; gap: 0.7rem; padding-bottom: 5rem; }
-    .queue-item { background: var(--gray); border: 1px solid #2a2a2a; border-radius: 14px; padding: 1rem 1.2rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; transition: border-color 0.2s; flex-wrap: wrap; }
-    .queue-item.called { border-color: #22c55e; background: rgba(34,197,94,0.05); }
-    .item-left { display: flex; align-items: center; gap: 0.9rem; }
-    .pos-badge { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,92,43,0.15); color: var(--accent); font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .item-name { font-weight: 600; font-size: 0.95rem; }
-    .item-meta { font-size: 0.78rem; color: #555; margin-top: 0.15rem; }
-    .item-actions { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-    .act-btn { padding: 0.4rem 0.9rem; border-radius: 8px; border: none; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+    #queueList { padding: 0 1.5rem; display: flex; flex-direction: column; gap: 0.6rem; padding-bottom: 5rem; }
+    .queue-item { background: var(--gray); border: 1px solid #2a2a2a; border-radius: 14px; padding: 0.9rem 1.1rem; display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; transition: border-color 0.2s; flex-wrap: wrap; }
+    .queue-item.called { border-color: #22c55e; background: rgba(34,197,94,0.06); }
+    .item-left { display: flex; align-items: center; gap: 0.8rem; }
+    .pos-badge { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,92,43,0.15); color: var(--accent); font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .item-name { font-weight: 600; font-size: 0.93rem; }
+    .item-meta { font-size: 0.76rem; color: #555; margin-top: 0.1rem; }
+    .item-token { display: inline-block; background: #111; border: 1px solid #2a2a2a; border-radius: 6px; font-size: 0.72rem; font-weight: 700; padding: 0.15rem 0.5rem; color: var(--accent2); margin-top: 0.2rem; }
+    .item-actions { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+    .act-btn { padding: 0.38rem 0.8rem; border-radius: 8px; border: none; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
     .act-btn:hover { opacity: 0.8; }
     .act-btn.call { background: var(--accent); color: #fff; }
     .act-btn.done { background: #22c55e; color: #fff; }
     .act-btn.skip { background: #333; color: #aaa; }
     .act-btn.priority { background: var(--accent2); color: #000; }
     .act-btn.remove { background: #1c1c1c; color: #555; border: 1px solid #2a2a2a; }
-    #emptyState { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem; color: #444; text-align: center; gap: 0.5rem; }
+    #emptyState { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 4rem; color: #444; text-align: center; gap: 0.5rem; }
     #emptyState span { font-size: 2.5rem; }
-    #emptyState p { font-size: 0.9rem; }
-    #toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(20px); background: #1c1c1c; border: 1px solid #333; color: var(--white); padding: 0.7rem 1.4rem; border-radius: 999px; font-size: 0.88rem; opacity: 0; transition: opacity 0.3s, transform 0.3s; pointer-events: none; }
+
+    /* QR MODAL */
+    #qrModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; align-items: center; justify-content: center; padding: 2rem; }
+    #qrModal.open { display: flex; }
+    .qr-card { background: var(--gray); border: 1px solid #2a2a2a; border-radius: 20px; padding: 2rem; width: 100%; max-width: 380px; text-align: center; }
+    .qr-card h2 { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; margin-bottom: 0.4rem; }
+    .qr-card p { color: #777; font-size: 0.85rem; margin-bottom: 1.5rem; line-height: 1.5; }
+    #qrCanvas { border-radius: 12px; background: white; padding: 12px; margin: 0 auto 1.2rem; display: block; }
+    .qr-url { background: #111; border: 1px solid #222; border-radius: 8px; padding: 0.6rem 0.8rem; font-size: 0.75rem; color: #888; word-break: break-all; margin-bottom: 1.2rem; }
+    .qr-close { width: 100%; padding: 0.8rem; background: #111; border: 1px solid #333; color: var(--white); border-radius: 10px; font-size: 0.9rem; cursor: pointer; }
+    .qr-close:hover { border-color: var(--accent); }
+
+    #toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(20px); background: #1c1c1c; border: 1px solid #333; color: var(--white); padding: 0.7rem 1.4rem; border-radius: 999px; font-size: 0.88rem; opacity: 0; transition: opacity 0.3s, transform 0.3s; pointer-events: none; z-index: 200; }
     #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   </style>
 </head>
 <body>
 
+  <!-- LOGIN -->
   <div id="loginScreen">
     <div class="login-card">
       <div class="lock-icon">🔐</div>
       <h1>Admin Login</h1>
-      <p>Enter your password to manage queues</p>
+      <p>Manage your queues in real time</p>
       <div id="loginError">Wrong password. Try again.</div>
       <input type="password" id="pwInput" placeholder="••••••••" onkeydown="if(event.key==='Enter') doLogin()"/>
       <button onclick="doLogin()">Login →</button>
     </div>
   </div>
 
+  <!-- DASHBOARD -->
   <div id="dashboard">
     <header>
       <a class="logo" href="index.html">Queue<span>Less</span></a>
-      <button class="btn-call" onclick="callNext()">📣 Call Next</button>
+      <div class="header-btns">
+        <button class="btn-qr" onclick="showQR()">📲 QR Code</button>
+        <button class="btn-call" onclick="callNext()">📣 Call Next</button>
+      </div>
     </header>
+
     <div class="stats">
       <div class="stat"><div class="stat-val" id="statTotal">0</div><div class="stat-lbl">Waiting</div></div>
       <div class="stat"><div class="stat-val" id="statCalled">0</div><div class="stat-lbl">Called</div></div>
+      <div class="stat"><div class="stat-val" id="statDone">0</div><div class="stat-lbl">Done Today</div></div>
     </div>
+
     <div class="tabs">
-      <div class="tab active" onclick="switchTab('general')">🟢 General <span class="tab-count" id="tabCount-general"></span></div>
-      <div class="tab" onclick="switchTab('emergency')">🔴 Emergency <span class="tab-count" id="tabCount-emergency"></span></div>
-      <div class="tab" onclick="switchTab('followup')">🔵 Follow-up <span class="tab-count" id="tabCount-followup"></span></div>
+      <div class="tab active" onclick="switchTab('general')">🟢 General <span class="tab-count" id="tabCount-general">0</span></div>
+      <div class="tab" onclick="switchTab('emergency')">🔴 Emergency <span class="tab-count" id="tabCount-emergency">0</span></div>
+      <div class="tab" onclick="switchTab('followup')">🔵 Follow-up <span class="tab-count" id="tabCount-followup">0</span></div>
     </div>
+
     <div class="list-header">
-      <h2>Queue</h2>
+      <h2 id="listTitle">General Queue</h2>
       <button class="clear-btn" onclick="clearDone()">Clear Done</button>
     </div>
+
     <div id="queueList"></div>
-    <div id="emptyState"><span>✅</span><p>Queue is empty right now</p></div>
+    <div id="emptyState"><span>✅</span><p>No one in this queue right now</p></div>
+  </div>
+
+  <!-- QR MODAL -->
+  <div id="qrModal">
+    <div class="qr-card">
+      <h2>📲 Scan to Join Queue</h2>
+      <p>Place this QR at your entrance. Customers scan it with their phone to join the queue instantly — no app needed!</p>
+      <canvas id="qrCanvas" width="200" height="200"></canvas>
+      <div class="qr-url" id="qrUrl"></div>
+      <button class="qr-close" onclick="closeQR()">Close</button>
+    </div>
   </div>
 
   <div id="toast"></div>
 
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <!-- QR Code library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
   <script>
     var firebaseConfig = {
       apiKey: "AIzaSyAtdD2Ppri0JAGIDR8aOOn_PLfjGc5q5j4",
@@ -116,6 +155,7 @@
     var currentQueue = 'general';
     var queueData = { general: {}, emergency: {}, followup: {} };
     var noShowTimers = {};
+    var doneCount = 0;
 
     function doLogin() {
       var pw = document.getElementById('pwInput').value;
@@ -141,10 +181,11 @@
 
     function switchTab(qt) {
       currentQueue = qt;
-      document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
-      var tabs = document.querySelectorAll('.tab');
-      var idx = ['general','emergency','followup'].indexOf(qt);
-      if (tabs[idx]) tabs[idx].classList.add('active');
+      document.querySelectorAll('.tab').forEach(function(t, i) {
+        t.classList.toggle('active', ['general','emergency','followup'][i] === qt);
+      });
+      var titles = { general: 'General Queue', emergency: 'Emergency Queue', followup: 'Follow-up Queue' };
+      document.getElementById('listTitle').textContent = titles[qt];
       renderQueue();
     }
 
@@ -152,47 +193,65 @@
       var data = queueData[currentQueue] || {};
       var container = document.getElementById('queueList');
       var empty = document.getElementById('emptyState');
-      var waiting = Object.entries(data)
+
+      // Get ALL active entries (waiting + called), sorted by join time
+      var active = Object.entries(data)
         .filter(function(e) { return e[1].status === 'waiting' || e[1].status === 'called'; })
         .sort(function(a, b) { return a[1].joinedAt - b[1].joinedAt; });
-      if (waiting.length === 0) { container.innerHTML = ''; empty.style.display = 'flex'; return; }
+
+      if (active.length === 0) {
+        container.innerHTML = '';
+        empty.style.display = 'flex';
+        return;
+      }
       empty.style.display = 'none';
-      container.innerHTML = waiting.map(function(entry, i) {
-        var key = entry[0]; var e = entry[1];
+
+      container.innerHTML = active.map(function(entry, i) {
+        var key = entry[0];
+        var e = entry[1];
         var waited = Math.round((Date.now() - e.joinedAt) / 60000);
         var isCalled = e.status === 'called';
-        return '<div class="queue-item ' + (isCalled ? 'called' : '') + '" id="item-' + key + '">' +
+        return '<div class="queue-item ' + (isCalled ? 'called' : '') + '">' +
           '<div class="item-left">' +
             '<div class="pos-badge">' + (isCalled ? '📣' : i + 1) + '</div>' +
-            '<div><div class="item-name">' + e.name + '</div>' +
-            '<div class="item-meta">' + e.token + ' &nbsp;•&nbsp; waited ' + waited + 'm</div></div>' +
+            '<div>' +
+              '<div class="item-name">' + escapeHtml(e.name) + '</div>' +
+              '<div class="item-meta">Waited ' + waited + ' min</div>' +
+              '<div class="item-token">' + (e.token || '—') + '</div>' +
+            '</div>' +
           '</div>' +
           '<div class="item-actions">' +
             (isCalled
               ? '<button class="act-btn done" onclick="markDone(\'' + key + '\')">✓ Done</button>' +
                 '<button class="act-btn skip" onclick="skipPerson(\'' + key + '\')">Skip</button>'
               : '<button class="act-btn call" onclick="callPerson(\'' + key + '\')">Call</button>' +
-                '<button class="act-btn priority" onclick="prioritize(\'' + key + '\')">↑ Priority</button>'
+                '<button class="act-btn priority" onclick="prioritize(\'' + key + '\')">↑ Top</button>'
             ) +
             '<button class="act-btn remove" onclick="removePerson(\'' + key + '\')">✕</button>' +
-          '</div></div>';
+          '</div>' +
+        '</div>';
       }).join('');
     }
 
     function updateStats() {
-      var total = 0, called = 0;
+      var total = 0, called = 0, done = 0;
       Object.values(queueData).forEach(function(qt) {
         Object.values(qt).forEach(function(e) {
           if (e.status === 'waiting') total++;
           if (e.status === 'called') called++;
+          if (e.status === 'done') done++;
         });
       });
       document.getElementById('statTotal').textContent = total;
       document.getElementById('statCalled').textContent = called;
+      document.getElementById('statDone').textContent = done;
+
       ['general','emergency','followup'].forEach(function(qt) {
-        var count = Object.values(queueData[qt] || {}).filter(function(e) { return e.status === 'waiting'; }).length;
+        var count = Object.values(queueData[qt] || {}).filter(function(e) {
+          return e.status === 'waiting' || e.status === 'called';
+        }).length;
         var el = document.getElementById('tabCount-' + qt);
-        if (el) el.textContent = count || '';
+        if (el) el.textContent = count;
       });
     }
 
@@ -201,7 +260,7 @@
       var waiting = Object.entries(data)
         .filter(function(e) { return e[1].status === 'waiting'; })
         .sort(function(a, b) { return a[1].joinedAt - b[1].joinedAt; });
-      if (waiting.length === 0) { alert('Queue is empty!'); return; }
+      if (waiting.length === 0) { showToast('No one waiting in this queue!'); return; }
       callPerson(waiting[0][0]);
     }
 
@@ -216,17 +275,19 @@
           }
         });
       }, 90000);
+      showToast('Called next person!');
     }
 
     function markDone(key) {
       if (noShowTimers[key]) clearTimeout(noShowTimers[key]);
       db.ref('queues/' + currentQueue + '/' + key).update({ status: 'done' });
-      setTimeout(function() { db.ref('queues/' + currentQueue + '/' + key).remove(); }, 3000);
+      showToast('Marked as done ✓');
     }
 
     function skipPerson(key) {
       if (noShowTimers[key]) clearTimeout(noShowTimers[key]);
       db.ref('queues/' + currentQueue + '/' + key).update({ status: 'waiting', joinedAt: Date.now() + 999999 });
+      showToast('Person moved to end of queue');
     }
 
     function prioritize(key) {
@@ -236,27 +297,74 @@
         .sort(function(a, b) { return a[1].joinedAt - b[1].joinedAt; });
       var earliest = waiting.length > 0 ? waiting[0][1].joinedAt : Date.now();
       db.ref('queues/' + currentQueue + '/' + key).update({ joinedAt: earliest - 1000 });
+      showToast('Moved to top of queue ↑');
     }
 
     function removePerson(key) {
       if (confirm('Remove this person from the queue?')) {
         if (noShowTimers[key]) clearTimeout(noShowTimers[key]);
         db.ref('queues/' + currentQueue + '/' + key).remove();
+        showToast('Person removed');
       }
     }
 
     function clearDone() {
       var data = queueData[currentQueue] || {};
-      Object.entries(data).forEach(function(e) {
-        if (e[1].status === 'done') db.ref('queues/' + currentQueue + '/' + e[0]).remove();
-      });
-      showToast('Cleared completed entries');
+      var doneEntries = Object.entries(data).filter(function(e) { return e[1].status === 'done'; });
+      if (doneEntries.length === 0) { showToast('No completed entries to clear'); return; }
+      doneEntries.forEach(function(e) { db.ref('queues/' + currentQueue + '/' + e[0]).remove(); });
+      showToast('Cleared ' + doneEntries.length + ' completed entries');
+    }
+
+    // QR CODE
+    var qrGenerated = false;
+    function showQR() {
+      var queueUrl = window.location.origin + window.location.pathname.replace('admin.html', 'queue.html');
+      document.getElementById('qrUrl').textContent = queueUrl;
+      document.getElementById('qrModal').classList.add('open');
+
+      if (!qrGenerated) {
+        var canvas = document.getElementById('qrCanvas');
+        var ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, 200, 200);
+
+        // Generate QR using QRCode library into a temp div
+        var tempDiv = document.createElement('div');
+        new QRCode(tempDiv, {
+          text: queueUrl,
+          width: 180,
+          height: 180,
+          colorDark: '#000000',
+          colorLight: '#ffffff',
+          correctLevel: QRCode.CorrectLevel.H
+        });
+
+        // Wait for QR to generate then draw on canvas
+        setTimeout(function() {
+          var img = tempDiv.querySelector('img');
+          if (img) {
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, 200, 200);
+            ctx.drawImage(img, 10, 10, 180, 180);
+            qrGenerated = true;
+          }
+        }, 200);
+      }
+    }
+
+    function closeQR() {
+      document.getElementById('qrModal').classList.remove('open');
     }
 
     function showToast(msg) {
       var t = document.getElementById('toast');
-      t.textContent = msg; t.classList.add('show');
+      t.textContent = msg;
+      t.classList.add('show');
       setTimeout(function() { t.classList.remove('show'); }, 3000);
+    }
+
+    function escapeHtml(text) {
+      return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
   </script>
 </body>
