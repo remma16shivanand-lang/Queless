@@ -5,50 +5,133 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>QueueLess — Admin</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getDatabase, ref, onValue, update, remove, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --black:#0a0a0a; --white:#f5f2eb; --accent:#ff5c2b; --accent2:#ffd166; --gray:#1c1c1c; }
+    body { background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+    #loginScreen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; background: radial-gradient(ellipse 60% 50% at 50% 40%, #150800 0%, var(--black) 80%); }
+    .login-card { background: var(--gray); border: 1px solid #2a2a2a; border-radius: 20px; padding: 2.5rem; width: 100%; max-width: 360px; text-align: center; }
+    .login-card h1 { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .login-card p { color: #666; font-size: 0.9rem; margin-bottom: 2rem; }
+    .login-card input { width: 100%; background: #111; border: 1px solid #333; border-radius: 10px; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 1rem; padding: 0.85rem 1rem; outline: none; margin-bottom: 1rem; text-align: center; letter-spacing: 0.1em; transition: border-color 0.2s; }
+    .login-card input:focus { border-color: var(--accent); }
+    .login-card button { width: 100%; padding: 0.9rem; background: var(--accent); color: #fff; border: none; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+    .login-card button:hover { opacity: 0.9; }
+    #loginError { display: none; background: rgba(255,92,43,0.12); border: 1px solid rgba(255,92,43,0.3); color: var(--accent); border-radius: 8px; padding: 0.6rem; font-size: 0.85rem; margin-bottom: 1rem; }
+    .lock-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+    #dashboard { display: none; }
+    header { display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 1.5rem; border-bottom: 1px solid #1c1c1c; position: sticky; top: 0; background: var(--black); z-index: 10; }
+    .logo { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; text-decoration: none; color: var(--white); }
+    .logo span { color: var(--accent); }
+    .btn-call { background: var(--accent); color: #fff; border: none; padding: 0.6rem 1.2rem; border-radius: 999px; font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s, transform 0.15s; }
+    .btn-call:hover { opacity: 0.9; transform: scale(1.03); }
+    .stats { display: flex; gap: 1rem; padding: 1.5rem; overflow-x: auto; }
+    .stat { background: var(--gray); border: 1px solid #2a2a2a; border-radius: 14px; padding: 1.2rem 1.5rem; min-width: 130px; flex-shrink: 0; }
+    .stat-val { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--accent); }
+    .stat-lbl { font-size: 0.78rem; color: #666; margin-top: 0.2rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .tabs { display: flex; gap: 0.5rem; padding: 0 1.5rem; margin-bottom: 1rem; overflow-x: auto; }
+    .tab { display: flex; align-items: center; gap: 0.4rem; padding: 0.5rem 1rem; border-radius: 999px; background: var(--gray); border: 1px solid #2a2a2a; color: #777; font-size: 0.85rem; font-weight: 500; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+    .tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .tab-count { background: rgba(255,255,255,0.2); color: #fff; font-size: 0.7rem; font-weight: 700; padding: 0.1rem 0.45rem; border-radius: 999px; min-width: 18px; text-align: center; }
+    .tab:not(.active) .tab-count { background: #333; color: #aaa; }
+    .list-header { display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; margin-bottom: 1rem; }
+    .list-header h2 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; }
+    .clear-btn { background: none; border: 1px solid #2a2a2a; border-radius: 8px; color: #555; font-size: 0.78rem; padding: 0.35rem 0.8rem; cursor: pointer; transition: border-color 0.2s, color 0.2s; }
+    .clear-btn:hover { border-color: #555; color: #aaa; }
+    #queueList { padding: 0 1.5rem; display: flex; flex-direction: column; gap: 0.7rem; padding-bottom: 5rem; }
+    .queue-item { background: var(--gray); border: 1px solid #2a2a2a; border-radius: 14px; padding: 1rem 1.2rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; transition: border-color 0.2s; flex-wrap: wrap; }
+    .queue-item.called { border-color: #22c55e; background: rgba(34,197,94,0.05); }
+    .item-left { display: flex; align-items: center; gap: 0.9rem; }
+    .pos-badge { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,92,43,0.15); color: var(--accent); font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .item-name { font-weight: 600; font-size: 0.95rem; }
+    .item-meta { font-size: 0.78rem; color: #555; margin-top: 0.15rem; }
+    .item-actions { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .act-btn { padding: 0.4rem 0.9rem; border-radius: 8px; border: none; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+    .act-btn:hover { opacity: 0.8; }
+    .act-btn.call { background: var(--accent); color: #fff; }
+    .act-btn.done { background: #22c55e; color: #fff; }
+    .act-btn.skip { background: #333; color: #aaa; }
+    .act-btn.priority { background: var(--accent2); color: #000; }
+    .act-btn.remove { background: #1c1c1c; color: #555; border: 1px solid #2a2a2a; }
+    #emptyState { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem; color: #444; text-align: center; gap: 0.5rem; }
+    #emptyState span { font-size: 2.5rem; }
+    #emptyState p { font-size: 0.9rem; }
+    #toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(20px); background: #1c1c1c; border: 1px solid #333; color: var(--white); padding: 0.7rem 1.4rem; border-radius: 999px; font-size: 0.88rem; opacity: 0; transition: opacity 0.3s, transform 0.3s; pointer-events: none; }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
 
-    // ⚠️ REPLACE THIS with your Firebase config const firebaseConfig = {
-  apiKey: "AIzaSy...",
-  authDomain: "queless.firebaseapp.com",
-  databaseURL: "https://https://queless-79a19-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "queless",
-  storageBucket: "queless.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abc123"
-};
+  <div id="loginScreen">
+    <div class="login-card">
+      <div class="lock-icon">🔐</div>
+      <h1>Admin Login</h1>
+      <p>Enter your password to manage queues</p>
+      <div id="loginError">Wrong password. Try again.</div>
+      <input type="password" id="pwInput" placeholder="••••••••" onkeydown="if(event.key==='Enter') doLogin()"/>
+      <button onclick="doLogin()">Login →</button>
+    </div>
+  </div>
 
-    const ADMIN_PASSWORD = "matha999"; // Change this!
+  <div id="dashboard">
+    <header>
+      <a class="logo" href="index.html">Queue<span>Less</span></a>
+      <button class="btn-call" onclick="callNext()">📣 Call Next</button>
+    </header>
+    <div class="stats">
+      <div class="stat"><div class="stat-val" id="statTotal">0</div><div class="stat-lbl">Waiting</div></div>
+      <div class="stat"><div class="stat-val" id="statCalled">0</div><div class="stat-lbl">Called</div></div>
+    </div>
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('general')">🟢 General <span class="tab-count" id="tabCount-general"></span></div>
+      <div class="tab" onclick="switchTab('emergency')">🔴 Emergency <span class="tab-count" id="tabCount-emergency"></span></div>
+      <div class="tab" onclick="switchTab('followup')">🔵 Follow-up <span class="tab-count" id="tabCount-followup"></span></div>
+    </div>
+    <div class="list-header">
+      <h2>Queue</h2>
+      <button class="clear-btn" onclick="clearDone()">Clear Done</button>
+    </div>
+    <div id="queueList"></div>
+    <div id="emptyState"><span>✅</span><p>Queue is empty right now</p></div>
+  </div>
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+  <div id="toast"></div>
 
-    let currentQueue = 'general';
-    let queueData = {};
-    let noShowTimers = {};
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script>
+    var firebaseConfig = {
+      apiKey: "AIzaSyAtdD2Ppri0JAGIDR8aOOn_PLfjGc5q5j4",
+      authDomain: "queless-79a19.firebaseapp.com",
+      databaseURL: "https://queless-79a19-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "queless-79a19",
+      storageBucket: "queless-79a19.firebasestorage.app",
+      messagingSenderId: "661569229761",
+      appId: "1:661569229761:web:b7e05c6a22836c724e1540"
+    };
+    firebase.initializeApp(firebaseConfig);
+    var db = firebase.database();
 
-    // LOGIN
-    window.doLogin = function() {
-      const pw = document.getElementById('pwInput').value;
+    var ADMIN_PASSWORD = "queless123";
+    var currentQueue = 'general';
+    var queueData = { general: {}, emergency: {}, followup: {} };
+    var noShowTimers = {};
+
+    function doLogin() {
+      var pw = document.getElementById('pwInput').value;
       if (pw === ADMIN_PASSWORD) {
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('dashboard').style.display = 'block';
         startListening();
       } else {
         document.getElementById('loginError').style.display = 'block';
-        setTimeout(() => document.getElementById('loginError').style.display = 'none', 2500);
+        setTimeout(function() { document.getElementById('loginError').style.display = 'none'; }, 2500);
       }
-    };
-
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Enter' && document.getElementById('loginScreen').style.display !== 'none') doLogin();
-    });
+    }
 
     function startListening() {
-      ['general','emergency','followup'].forEach(qt => {
-        const qRef = ref(db, `queues/${qt}`);
-        onValue(qRef, snap => {
+      ['general', 'emergency', 'followup'].forEach(function(qt) {
+        db.ref('queues/' + qt).on('value', function(snap) {
           queueData[qt] = snap.exists() ? snap.val() : {};
           if (qt === currentQueue) renderQueue();
           updateStats();
@@ -56,340 +139,125 @@
       });
     }
 
-    window.switchTab = function(qt) {
+    function switchTab(qt) {
       currentQueue = qt;
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.querySelector(`.tab[data-q="${qt}"]`).classList.add('active');
+      document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+      var tabs = document.querySelectorAll('.tab');
+      var idx = ['general','emergency','followup'].indexOf(qt);
+      if (tabs[idx]) tabs[idx].classList.add('active');
       renderQueue();
-    };
+    }
 
     function renderQueue() {
-      const data = queueData[currentQueue] || {};
-      const container = document.getElementById('queueList');
-      const empty = document.getElementById('emptyState');
-
-      const waiting = Object.entries(data)
-        .filter(([,v]) => v.status === 'waiting' || v.status === 'called')
-        .sort(([,a],[,b]) => a.joinedAt - b.joinedAt);
-
-      if (waiting.length === 0) {
-        container.innerHTML = '';
-        empty.style.display = 'flex';
-        return;
-      }
+      var data = queueData[currentQueue] || {};
+      var container = document.getElementById('queueList');
+      var empty = document.getElementById('emptyState');
+      var waiting = Object.entries(data)
+        .filter(function(e) { return e[1].status === 'waiting' || e[1].status === 'called'; })
+        .sort(function(a, b) { return a[1].joinedAt - b[1].joinedAt; });
+      if (waiting.length === 0) { container.innerHTML = ''; empty.style.display = 'flex'; return; }
       empty.style.display = 'none';
-
-      container.innerHTML = waiting.map(([key, entry], i) => {
-        const waited = Math.round((Date.now() - entry.joinedAt) / 60000);
-        const isCalled = entry.status === 'called';
-        return `
-          <div class="queue-item ${isCalled ? 'called' : ''}" id="item-${key}">
-            <div class="item-left">
-              <div class="pos-badge">${isCalled ? '📣' : i + 1}</div>
-              <div>
-                <div class="item-name">${entry.name}</div>
-                <div class="item-meta">${entry.token} &nbsp;•&nbsp; waited ${waited}m</div>
-              </div>
-            </div>
-            <div class="item-actions">
-              ${isCalled
-                ? `<button class="act-btn done" onclick="markDone('${key}')">✓ Done</button>
-                   <button class="act-btn skip" onclick="skipPerson('${key}')">Skip</button>`
-                : `<button class="act-btn call" onclick="callPerson('${key}')">Call</button>
-                   <button class="act-btn priority" onclick="prioritize('${key}')">↑ Priority</button>`
-              }
-              <button class="act-btn remove" onclick="removePerson('${key}')">✕</button>
-            </div>
-          </div>
-        `;
+      container.innerHTML = waiting.map(function(entry, i) {
+        var key = entry[0]; var e = entry[1];
+        var waited = Math.round((Date.now() - e.joinedAt) / 60000);
+        var isCalled = e.status === 'called';
+        return '<div class="queue-item ' + (isCalled ? 'called' : '') + '" id="item-' + key + '">' +
+          '<div class="item-left">' +
+            '<div class="pos-badge">' + (isCalled ? '📣' : i + 1) + '</div>' +
+            '<div><div class="item-name">' + e.name + '</div>' +
+            '<div class="item-meta">' + e.token + ' &nbsp;•&nbsp; waited ' + waited + 'm</div></div>' +
+          '</div>' +
+          '<div class="item-actions">' +
+            (isCalled
+              ? '<button class="act-btn done" onclick="markDone(\'' + key + '\')">✓ Done</button>' +
+                '<button class="act-btn skip" onclick="skipPerson(\'' + key + '\')">Skip</button>'
+              : '<button class="act-btn call" onclick="callPerson(\'' + key + '\')">Call</button>' +
+                '<button class="act-btn priority" onclick="prioritize(\'' + key + '\')">↑ Priority</button>'
+            ) +
+            '<button class="act-btn remove" onclick="removePerson(\'' + key + '\')">✕</button>' +
+          '</div></div>';
       }).join('');
     }
 
     function updateStats() {
-      let total = 0, called = 0;
-      Object.values(queueData).forEach(qt => {
-        Object.values(qt).forEach(e => {
+      var total = 0, called = 0;
+      Object.values(queueData).forEach(function(qt) {
+        Object.values(qt).forEach(function(e) {
           if (e.status === 'waiting') total++;
           if (e.status === 'called') called++;
         });
       });
       document.getElementById('statTotal').textContent = total;
       document.getElementById('statCalled').textContent = called;
-      const gen = Object.values(queueData.general || {}).filter(e => e.status === 'waiting').length;
-      const emer = Object.values(queueData.emergency || {}).filter(e => e.status === 'waiting').length;
-      const fol = Object.values(queueData.followup || {}).filter(e => e.status === 'waiting').length;
-      document.getElementById('tabCount-general').textContent = gen || '';
-      document.getElementById('tabCount-emergency').textContent = emer || '';
-      document.getElementById('tabCount-followup').textContent = fol || '';
+      ['general','emergency','followup'].forEach(function(qt) {
+        var count = Object.values(queueData[qt] || {}).filter(function(e) { return e.status === 'waiting'; }).length;
+        var el = document.getElementById('tabCount-' + qt);
+        if (el) el.textContent = count || '';
+      });
     }
 
-    window.callNext = async function() {
-      const data = queueData[currentQueue] || {};
-      const waiting = Object.entries(data)
-        .filter(([,v]) => v.status === 'waiting')
-        .sort(([,a],[,b]) => a.joinedAt - b.joinedAt);
+    function callNext() {
+      var data = queueData[currentQueue] || {};
+      var waiting = Object.entries(data)
+        .filter(function(e) { return e[1].status === 'waiting'; })
+        .sort(function(a, b) { return a[1].joinedAt - b[1].joinedAt; });
       if (waiting.length === 0) { alert('Queue is empty!'); return; }
-      const [key] = waiting[0];
-      await callPerson(key);
-    };
+      callPerson(waiting[0][0]);
+    }
 
-    window.callPerson = async function(key) {
-      await update(ref(db, `queues/${currentQueue}/${key}`), { status: 'called', calledAt: Date.now() });
-      // Auto no-show after 90s
+    function callPerson(key) {
+      db.ref('queues/' + currentQueue + '/' + key).update({ status: 'called', calledAt: Date.now() });
       if (noShowTimers[key]) clearTimeout(noShowTimers[key]);
-      noShowTimers[key] = setTimeout(async () => {
-        const snap = await get(ref(db, `queues/${currentQueue}/${key}`));
-        if (snap.exists() && snap.val().status === 'called') {
-          await update(ref(db, `queues/${currentQueue}/${key}`), { status: 'waiting', joinedAt: Date.now() + 999999 });
-          showToast(`No-show: moved to end of queue`);
-        }
+      noShowTimers[key] = setTimeout(function() {
+        db.ref('queues/' + currentQueue + '/' + key).once('value').then(function(snap) {
+          if (snap.exists() && snap.val().status === 'called') {
+            db.ref('queues/' + currentQueue + '/' + key).update({ status: 'waiting', joinedAt: Date.now() + 999999 });
+            showToast('No-show: moved to end of queue');
+          }
+        });
       }, 90000);
-    };
+    }
 
-    window.markDone = async function(key) {
+    function markDone(key) {
       if (noShowTimers[key]) clearTimeout(noShowTimers[key]);
-      await update(ref(db, `queues/${currentQueue}/${key}`), { status: 'done' });
-      setTimeout(() => remove(ref(db, `queues/${currentQueue}/${key}`)), 3000);
-    };
+      db.ref('queues/' + currentQueue + '/' + key).update({ status: 'done' });
+      setTimeout(function() { db.ref('queues/' + currentQueue + '/' + key).remove(); }, 3000);
+    }
 
-    window.skipPerson = async function(key) {
+    function skipPerson(key) {
       if (noShowTimers[key]) clearTimeout(noShowTimers[key]);
-      await update(ref(db, `queues/${currentQueue}/${key}`), { status: 'waiting', joinedAt: Date.now() + 999999 });
-    };
+      db.ref('queues/' + currentQueue + '/' + key).update({ status: 'waiting', joinedAt: Date.now() + 999999 });
+    }
 
-    window.prioritize = async function(key) {
-      const data = queueData[currentQueue] || {};
-      const waiting = Object.entries(data)
-        .filter(([,v]) => v.status === 'waiting')
-        .sort(([,a],[,b]) => a.joinedAt - b.joinedAt);
-      const earliest = waiting[0]?.[1]?.joinedAt ?? Date.now();
-      await update(ref(db, `queues/${currentQueue}/${key}`), { joinedAt: earliest - 1000 });
-    };
+    function prioritize(key) {
+      var data = queueData[currentQueue] || {};
+      var waiting = Object.entries(data)
+        .filter(function(e) { return e[1].status === 'waiting'; })
+        .sort(function(a, b) { return a[1].joinedAt - b[1].joinedAt; });
+      var earliest = waiting.length > 0 ? waiting[0][1].joinedAt : Date.now();
+      db.ref('queues/' + currentQueue + '/' + key).update({ joinedAt: earliest - 1000 });
+    }
 
-    window.removePerson = async function(key) {
+    function removePerson(key) {
       if (confirm('Remove this person from the queue?')) {
         if (noShowTimers[key]) clearTimeout(noShowTimers[key]);
-        await remove(ref(db, `queues/${currentQueue}/${key}`));
+        db.ref('queues/' + currentQueue + '/' + key).remove();
       }
-    };
+    }
 
-    window.clearDone = async function() {
-      const data = queueData[currentQueue] || {};
-      const done = Object.entries(data).filter(([,v]) => v.status === 'done');
-      await Promise.all(done.map(([k]) => remove(ref(db, `queues/${currentQueue}/${k}`))));
+    function clearDone() {
+      var data = queueData[currentQueue] || {};
+      Object.entries(data).forEach(function(e) {
+        if (e[1].status === 'done') db.ref('queues/' + currentQueue + '/' + e[0]).remove();
+      });
       showToast('Cleared completed entries');
-    };
+    }
 
     function showToast(msg) {
-      const t = document.getElementById('toast');
+      var t = document.getElementById('toast');
       t.textContent = msg; t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 3000);
+      setTimeout(function() { t.classList.remove('show'); }, 3000);
     }
   </script>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root { --black:#0a0a0a; --white:#f5f2eb; --accent:#ff5c2b; --accent2:#ffd166; --gray:#1c1c1c; }
-    body { background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
-
-    /* LOGIN */
-    #loginScreen {
-      min-height: 100vh; display: flex; align-items: center; justify-content: center;
-      padding: 2rem;
-      background: radial-gradient(ellipse 60% 50% at 50% 40%, #150800 0%, var(--black) 80%);
-    }
-    .login-card {
-      background: var(--gray); border: 1px solid #2a2a2a; border-radius: 20px;
-      padding: 2.5rem; width: 100%; max-width: 360px; text-align: center;
-    }
-    .login-card h1 { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; margin-bottom: 0.3rem; }
-    .login-card p { color: #666; font-size: 0.9rem; margin-bottom: 2rem; }
-    .login-card input {
-      width: 100%; background: #111; border: 1px solid #333; border-radius: 10px;
-      color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 1rem;
-      padding: 0.85rem 1rem; outline: none; margin-bottom: 1rem; text-align: center; letter-spacing: 0.1em;
-      transition: border-color 0.2s;
-    }
-    .login-card input:focus { border-color: var(--accent); }
-    .login-card button {
-      width: 100%; padding: 0.9rem;
-      background: var(--accent); color: #fff; border: none; border-radius: 10px;
-      font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700;
-      cursor: pointer; transition: opacity 0.2s;
-    }
-    .login-card button:hover { opacity: 0.9; }
-    #loginError {
-      display: none; background: rgba(255,92,43,0.12); border: 1px solid rgba(255,92,43,0.3);
-      color: var(--accent); border-radius: 8px; padding: 0.6rem; font-size: 0.85rem; margin-bottom: 1rem;
-    }
-    .lock-icon { font-size: 2.5rem; margin-bottom: 1rem; }
-
-    /* DASHBOARD */
-    #dashboard { display: none; }
-    header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 1.2rem 1.5rem; border-bottom: 1px solid #1c1c1c;
-      position: sticky; top: 0; background: var(--black); z-index: 10;
-    }
-    .logo { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; text-decoration: none; color: var(--white); }
-    .logo span { color: var(--accent); }
-    .header-right { display: flex; gap: 0.6rem; align-items: center; }
-    .btn-call {
-      background: var(--accent); color: #fff; border: none;
-      padding: 0.6rem 1.2rem; border-radius: 999px;
-      font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 700;
-      cursor: pointer; transition: opacity 0.2s, transform 0.15s;
-    }
-    .btn-call:hover { opacity: 0.9; transform: scale(1.03); }
-
-    /* STATS */
-    .stats { display: flex; gap: 1rem; padding: 1.5rem; overflow-x: auto; }
-    .stat {
-      background: var(--gray); border: 1px solid #2a2a2a; border-radius: 14px;
-      padding: 1.2rem 1.5rem; min-width: 130px; flex-shrink: 0;
-    }
-    .stat-val { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--accent); }
-    .stat-lbl { font-size: 0.78rem; color: #666; margin-top: 0.2rem; text-transform: uppercase; letter-spacing: 0.06em; }
-
-    /* TABS */
-    .tabs { display: flex; gap: 0.5rem; padding: 0 1.5rem; margin-bottom: 1rem; overflow-x: auto; }
-    .tab {
-      display: flex; align-items: center; gap: 0.4rem;
-      padding: 0.5rem 1rem; border-radius: 999px;
-      background: var(--gray); border: 1px solid #2a2a2a;
-      color: #777; font-size: 0.85rem; font-weight: 500;
-      cursor: pointer; white-space: nowrap; transition: all 0.2s;
-    }
-    .tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-    .tab-count {
-      background: rgba(255,255,255,0.2);
-      color: #fff; font-size: 0.7rem; font-weight: 700;
-      padding: 0.1rem 0.45rem; border-radius: 999px;
-      min-width: 18px; text-align: center;
-    }
-    .tab:not(.active) .tab-count { background: #333; color: #aaa; }
-
-    /* QUEUE LIST */
-    .list-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 1.5rem; margin-bottom: 1rem;
-    }
-    .list-header h2 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; }
-    .clear-btn {
-      background: none; border: 1px solid #2a2a2a; border-radius: 8px;
-      color: #555; font-size: 0.78rem; padding: 0.35rem 0.8rem;
-      cursor: pointer; transition: border-color 0.2s, color 0.2s;
-    }
-    .clear-btn:hover { border-color: #555; color: #aaa; }
-    #queueList { padding: 0 1.5rem; display: flex; flex-direction: column; gap: 0.7rem; padding-bottom: 5rem; }
-    .queue-item {
-      background: var(--gray); border: 1px solid #2a2a2a; border-radius: 14px;
-      padding: 1rem 1.2rem;
-      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-      transition: border-color 0.2s;
-      flex-wrap: wrap;
-    }
-    .queue-item.called { border-color: #22c55e; background: rgba(34,197,94,0.05); }
-    .item-left { display: flex; align-items: center; gap: 0.9rem; }
-    .pos-badge {
-      width: 38px; height: 38px; border-radius: 50%;
-      background: rgba(255,92,43,0.15);
-      color: var(--accent);
-      font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 800;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
-    .item-name { font-weight: 600; font-size: 0.95rem; }
-    .item-meta { font-size: 0.78rem; color: #555; margin-top: 0.15rem; }
-    .item-actions { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-    .act-btn {
-      padding: 0.4rem 0.9rem; border-radius: 8px; border: none;
-      font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s;
-    }
-    .act-btn:hover { opacity: 0.8; }
-    .act-btn.call { background: var(--accent); color: #fff; }
-    .act-btn.done { background: #22c55e; color: #fff; }
-    .act-btn.skip { background: #333; color: #aaa; }
-    .act-btn.priority { background: var(--accent2); color: #000; }
-    .act-btn.remove { background: #1c1c1c; color: #555; border: 1px solid #2a2a2a; }
-
-    #emptyState {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      padding: 4rem; color: #444; text-align: center; gap: 0.5rem;
-    }
-    #emptyState span { font-size: 2.5rem; }
-    #emptyState p { font-size: 0.9rem; }
-
-    /* TOAST */
-    #toast {
-      position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(20px);
-      background: #1c1c1c; border: 1px solid #333; color: var(--white);
-      padding: 0.7rem 1.4rem; border-radius: 999px; font-size: 0.88rem;
-      opacity: 0; transition: opacity 0.3s, transform 0.3s; pointer-events: none;
-    }
-    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  </style>
-</head>
-<body>
-
-  <!-- LOGIN -->
-  <div id="loginScreen">
-    <div class="login-card">
-      <div class="lock-icon">🔐</div>
-      <h1>Admin Login</h1>
-      <p>Enter your password to manage queues</p>
-      <div id="loginError">Wrong password. Try again.</div>
-      <input type="password" id="pwInput" placeholder="••••••••"/>
-      <button onclick="doLogin()">Login →</button>
-    </div>
-  </div>
-
-  <!-- DASHBOARD -->
-  <div id="dashboard">
-    <header>
-      <a class="logo" href="index.html">Queue<span>Less</span></a>
-      <div class="header-right">
-        <button class="btn-call" onclick="callNext()">📣 Call Next</button>
-      </div>
-    </header>
-
-    <!-- STATS -->
-    <div class="stats">
-      <div class="stat">
-        <div class="stat-val" id="statTotal">0</div>
-        <div class="stat-lbl">Waiting</div>
-      </div>
-      <div class="stat">
-        <div class="stat-val" id="statCalled">0</div>
-        <div class="stat-lbl">Called</div>
-      </div>
-    </div>
-
-    <!-- TABS -->
-    <div class="tabs">
-      <div class="tab active" data-q="general" onclick="switchTab('general')">
-        🟢 General <span class="tab-count" id="tabCount-general"></span>
-      </div>
-      <div class="tab" data-q="emergency" onclick="switchTab('emergency')">
-        🔴 Emergency <span class="tab-count" id="tabCount-emergency"></span>
-      </div>
-      <div class="tab" data-q="followup" onclick="switchTab('followup')">
-        🔵 Follow-up <span class="tab-count" id="tabCount-followup"></span>
-      </div>
-    </div>
-
-    <!-- LIST HEADER -->
-    <div class="list-header">
-      <h2>Queue</h2>
-      <button class="clear-btn" onclick="clearDone()">Clear Done</button>
-    </div>
-
-    <!-- QUEUE -->
-    <div id="queueList"></div>
-    <div id="emptyState">
-      <span>✅</span>
-      <p>Queue is empty right now</p>
-    </div>
-  </div>
-
-  <div id="toast"></div>
 </body>
 </html>
