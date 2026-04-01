@@ -25,7 +25,7 @@
     .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
     #errorMsg { display: none; background: rgba(255,92,43,0.12); border: 1px solid rgba(255,92,43,0.3); color: var(--accent); border-radius: 8px; padding: 0.7rem 1rem; font-size: 0.88rem; margin-bottom: 1rem; }
     #ticketView { display: none; text-align: center; }
-    .ticket-header { margin-bottom: 2rem; }
+    .ticket-header { margin-bottom: 1.5rem; }
     .ticket-header h2 { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; }
     .position-ring { width: 140px; height: 140px; border-radius: 50%; border: 4px solid var(--accent); display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 1.5rem; background: rgba(255,92,43,0.08); box-shadow: 0 0 40px rgba(255,92,43,0.2); animation: pulse 2s ease-in-out infinite; }
     @keyframes pulse { 0%, 100% { box-shadow: 0 0 40px rgba(255,92,43,0.2); } 50% { box-shadow: 0 0 60px rgba(255,92,43,0.4); } }
@@ -41,6 +41,9 @@
     #statusBadge { display: inline-block; background: var(--accent); color: #fff; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.25rem 0.8rem; border-radius: 999px; margin-bottom: 1.5rem; }
     .leave-btn { background: transparent; border: 1px solid #333; color: #666; border-radius: 10px; width: 100%; padding: 0.75rem; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; cursor: pointer; transition: border-color 0.2s, color 0.2s; margin-top: 0.5rem; }
     .leave-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .token-box { background: #111; border: 1px solid #2a2a2a; border-radius: 12px; padding: 0.8rem; margin-bottom: 1rem; }
+    .token-box .token-label { font-size: 0.72rem; color: #555; text-transform: uppercase; letter-spacing: 0.06em; }
+    .token-box .token-val { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--white); }
   </style>
 </head>
 <body>
@@ -66,13 +69,17 @@
       </div>
       <div id="ticketView">
         <div class="ticket-header">
-          <h2>Your Token</h2>
-          <p id="ticketName" style="color:var(--accent);font-weight:600;font-size:1rem;"></p>
+          <h2>Your Token 🎫</h2>
+          <p id="ticketName" style="color:var(--accent);font-weight:600;font-size:1rem;margin-top:0.3rem;"></p>
         </div>
         <span id="statusBadge">WAITING</span>
         <div class="position-ring">
           <div id="positionNum">—</div>
           <div id="positionLabel">Loading...</div>
+        </div>
+        <div class="token-box">
+          <div class="token-label">Your Token Number</div>
+          <div class="token-val" id="myToken">—</div>
         </div>
         <div class="info-row">
           <div class="info-chip"><div class="val" id="totalWaiting">—</div><div class="lbl">In Queue</div></div>
@@ -82,7 +89,7 @@
           <span class="eta-label">⏱ Est. Wait</span>
           <span id="etaText">Calculating...</span>
         </div>
-        <p style="color:#555;font-size:0.8rem;margin-bottom:1rem;">Keep this page open. You'll see live updates as the queue moves.</p>
+        <p style="color:#555;font-size:0.8rem;margin-bottom:1rem;">Keep this page open. Position updates live as queue moves.</p>
         <button class="leave-btn" onclick="leaveQueue()">Leave Queue</button>
       </div>
     </div>
@@ -113,16 +120,29 @@
       var btn = document.getElementById('joinBtn');
       btn.disabled = true;
       btn.textContent = 'Joining...';
-      var qRef = db.ref('queues/' + qtype);
-      qRef.once('value').then(function(snapshot) {
+
+      // Use a server timestamp + random to guarantee unique position
+      var joinedAt = Date.now() + Math.random();
+      var newRef = db.ref('queues/' + qtype).push();
+
+      // Count existing waiting to assign token number
+      db.ref('queues/' + qtype).once('value').then(function(snapshot) {
         var tokenNum = 1;
         if (snapshot.exists()) {
-          var entries = Object.values(snapshot.val()).filter(function(e) { return e.status !== 'done'; });
-          tokenNum = entries.length + 1;
+          var active = Object.values(snapshot.val()).filter(function(e) {
+            return e.status === 'waiting' || e.status === 'called';
+          });
+          tokenNum = active.length + 1;
         }
-        var token = qtype.charAt(0).toUpperCase() + String(tokenNum).padStart(2, '0');
-        return qRef.push({ name: name, token: token, status: 'waiting', joinedAt: Date.now(), queueType: qtype });
-      }).then(function(newRef) {
+        var tokenLabel = qtype.charAt(0).toUpperCase() + String(tokenNum).padStart(3, '0');
+        return newRef.set({
+          name: name,
+          token: tokenLabel,
+          status: 'waiting',
+          joinedAt: joinedAt,
+          queueType: qtype
+        });
+      }).then(function() {
         myTokenKey = newRef.key;
         myQueueType = qtype;
         localStorage.setItem('ql_token', myTokenKey);
@@ -144,12 +164,22 @@
       db.ref('queues/' + myQueueType).on('value', function(snapshot) {
         if (!snapshot.exists()) return;
         var all = snapshot.val();
-        var waiting = Object.entries(all)
-          .filter(function(e) { return e[1].status === 'waiting' || e[1].status === 'called'; })
-          .sort(function(a, b) { return a[1].joinedAt - b[1].joinedAt; });
-        var myIndex = waiting.findIndex(function(e) { return e[0] === myTokenKey; });
         var myData = all[myTokenKey];
         if (!myData) return;
+
+        // Show token number
+        document.getElementById('myToken').textContent = myData.token || '—';
+
+        // All waiting sorted by join time
+        var waiting = Object.entries(all)
+          .filter(function(e) { return e[1].status === 'waiting'; })
+          .sort(function(a, b) { return a[1].joinedAt - b[1].joinedAt; });
+
+        var allActive = Object.entries(all)
+          .filter(function(e) { return e[1].status === 'waiting' || e[1].status === 'called'; });
+
+        document.getElementById('totalWaiting').textContent = allActive.length;
+
         if (myData.status === 'called') {
           document.getElementById('positionNum').textContent = '🎉';
           document.getElementById('positionLabel').textContent = "It's your turn!";
@@ -159,14 +189,16 @@
         } else if (myData.status === 'done') {
           document.getElementById('positionNum').textContent = '✓';
           document.getElementById('positionLabel').textContent = 'Completed';
-          document.getElementById('etaText').textContent = 'Thank you for using QueueLess';
+          document.getElementById('etaText').textContent = 'Thank you for using QueueLess!';
+          document.getElementById('statusBadge').textContent = 'DONE';
+          document.getElementById('statusBadge').style.background = '#555';
         } else {
+          var myIndex = waiting.findIndex(function(e) { return e[0] === myTokenKey; });
           var pos = myIndex + 1;
           document.getElementById('positionNum').textContent = pos;
           document.getElementById('positionLabel').textContent = pos === 1 ? 'You are Next!' : 'Position in queue';
           var etaMins = Math.max(1, (pos - 1) * 5);
           document.getElementById('etaText').textContent = pos === 1 ? "Get ready — you're next!" : '~' + etaMins + ' min wait';
-          document.getElementById('totalWaiting').textContent = waiting.length;
         }
       });
     }
@@ -178,20 +210,24 @@
     }
 
     function leaveQueue() {
-      if (confirm('Leave the queue?')) {
+      if (confirm('Leave the queue? You will lose your position.')) {
+        if (myTokenKey && myQueueType) {
+          db.ref('queues/' + myQueueType + '/' + myTokenKey).remove();
+        }
         localStorage.removeItem('ql_token');
         localStorage.removeItem('ql_queue');
         location.reload();
       }
     }
 
+    // Restore session on page reload
     var savedKey = localStorage.getItem('ql_token');
     var savedQueue = localStorage.getItem('ql_queue');
     if (savedKey && savedQueue) {
       myTokenKey = savedKey;
       myQueueType = savedQueue;
       db.ref('queues/' + savedQueue + '/' + savedKey).once('value').then(function(snap) {
-        if (snap.exists()) {
+        if (snap.exists() && snap.val().status !== 'done') {
           document.getElementById('ticketName').textContent = snap.val().name;
           var labels = { general: 'General', emergency: 'Emergency', followup: 'Follow-up' };
           document.getElementById('ticketQueue').textContent = labels[savedQueue] || savedQueue;
