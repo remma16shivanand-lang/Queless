@@ -7,397 +7,490 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg: #080810; --surface: #0f0f1a; --card: #13131f; --border: #1e1e30;
-      --accent: #7c3aed; --accent2: #a855f7; --neon: #c084fc; --cyan: #06b6d4;
-      --green: #22c55e; --yellow: #fbbf24; --white: #f0eeff; --muted: #6b6b8a; --text: #e2e2ff;
-    }
+    :root { --bg:#080810;--surface:#0f0f1a;--card:#13131f;--border:#1e1e30;--accent:#7c3aed;--accent2:#a855f7;--neon:#c084fc;--cyan:#06b6d4;--green:#22c55e;--yellow:#fbbf24;--red:#ef4444;--white:#f0eeff;--muted:#6b6b8a;--text:#e2e2ff; }
     html { scroll-behavior: smooth; }
-    body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
+    body { background:var(--bg); color:var(--text); font-family:'Space Grotesk',sans-serif; overflow-x:hidden; }
+
+    /* FLASH OVERLAY */
+    #flashOverlay { position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:0;background:radial-gradient(circle,rgba(192,132,252,0.6),rgba(6,182,212,0.3)); transition:opacity 0.1s; }
+    #flashOverlay.flash { animation:flashAnim 0.8s ease; }
+    @keyframes flashAnim { 0%{opacity:0} 15%{opacity:1} 100%{opacity:0} }
+
+    /* CONFETTI */
+    #confettiCanvas { position:fixed;inset:0;z-index:9998;pointer-events:none; }
 
     /* NAV */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 1rem 2rem;
-      background: rgba(8,8,16,0.8); backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
-    }
-    .logo { font-family: 'Bricolage Grotesque', sans-serif; font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, #a855f7, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none; letter-spacing: -1px; }
-    .nav-right { display: flex; gap: 0.5rem; align-items: center; }
-    .btn-ghost { background: transparent; color: var(--muted); padding: 0.45rem 0.9rem; border-radius: 999px; text-decoration: none; font-size: 0.85rem; font-weight: 500; border: 1px solid var(--border); transition: all 0.2s; }
-    .btn-ghost:hover { color: var(--white); border-color: var(--accent2); }
+    nav { position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:rgba(8,8,16,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border); }
+    .logo { font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:800;background:linear-gradient(135deg,#a855f7,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;letter-spacing:-1px; }
+    .nav-right { display:flex;gap:0.5rem; }
+    .nbtn { background:transparent;color:var(--muted);padding:0.4rem 0.9rem;border-radius:999px;text-decoration:none;font-size:0.85rem;font-weight:500;border:1px solid var(--border);transition:all 0.2s; }
+    .nbtn:hover { color:var(--white);border-color:var(--accent2); }
 
     /* HERO */
-    .hero {
-      min-height: 100vh; display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      text-align: center; padding: 8rem 1.5rem 3rem;
-      position: relative; overflow: hidden;
-    }
-    .orb { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; }
-    .orb1 { width: 450px; height: 450px; background: rgba(124,58,237,0.18); top: -80px; left: -80px; }
-    .orb2 { width: 350px; height: 350px; background: rgba(6,182,212,0.12); bottom: 0; right: -50px; }
-    .orb3 { width: 250px; height: 250px; background: rgba(168,85,247,0.1); top: 40%; left: 50%; transform: translate(-50%,-50%); }
-
-    .badge { display: inline-flex; align-items: center; gap: 0.4rem; background: rgba(124,58,237,0.12); border: 1px solid rgba(124,58,237,0.3); color: var(--neon); font-size: 0.75rem; font-weight: 600; padding: 0.3rem 0.9rem; border-radius: 999px; margin-bottom: 1.2rem; position: relative; z-index: 1; letter-spacing: 0.05em; animation: fadeUp 0.5s ease both; }
-    .live-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: blink 1.5s infinite; }
+    .hero { min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:8rem 1.5rem 3rem;position:relative;overflow:hidden; }
+    .orb { position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0; }
+    .o1 { width:450px;height:450px;background:rgba(124,58,237,0.18);top:-80px;left:-80px; }
+    .o2 { width:350px;height:350px;background:rgba(6,182,212,0.12);bottom:0;right:-50px; }
+    .o3 { width:250px;height:250px;background:rgba(168,85,247,0.1);top:40%;left:50%;transform:translate(-50%,-50%); }
+    .badge { display:inline-flex;align-items:center;gap:0.4rem;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);color:var(--neon);font-size:0.75rem;font-weight:600;padding:0.3rem 0.9rem;border-radius:999px;margin-bottom:1.2rem;position:relative;z-index:1;letter-spacing:0.05em;animation:fadeUp 0.5s ease both; }
+    .ldot { width:6px;height:6px;background:var(--green);border-radius:50%;animation:blink 1.5s infinite; }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    .hero h1 { font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(2.4rem,8vw,5.5rem);font-weight:800;line-height:0.95;letter-spacing:-2.5px;position:relative;z-index:1;animation:fadeUp 0.6s 0.1s ease both; }
+    .g1 { display:block;color:var(--white); }
+    .g2 { display:block;background:linear-gradient(135deg,#a855f7,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent; }
+    .hero-sub { font-size:0.98rem;color:var(--muted);max-width:400px;line-height:1.7;margin-top:1.2rem;position:relative;z-index:1;animation:fadeUp 0.6s 0.2s ease both; }
+    .hero-sub em { font-style:normal;color:var(--neon);font-weight:600; }
+    .scroll-btn { display:inline-block;margin-top:2rem;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;padding:0.85rem 2rem;border-radius:999px;font-weight:700;font-size:1rem;box-shadow:0 0 40px rgba(124,58,237,0.4);transition:all 0.2s;border:none;cursor:pointer;text-decoration:none;position:relative;z-index:1;animation:fadeUp 0.6s 0.3s ease both; }
+    .scroll-btn:hover { transform:translateY(-2px);box-shadow:0 0 60px rgba(124,58,237,0.6); }
 
-    .hero h1 { font-family: 'Bricolage Grotesque', sans-serif; font-size: clamp(2.5rem, 8vw, 5.5rem); font-weight: 800; line-height: 0.95; letter-spacing: -2.5px; position: relative; z-index: 1; animation: fadeUp 0.6s 0.1s ease both; }
-    .hero h1 .g1 { display: block; color: var(--white); }
-    .hero h1 .g2 { display: block; background: linear-gradient(135deg, #a855f7, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .hero-sub { font-size: 1rem; color: var(--muted); max-width: 420px; line-height: 1.7; margin-top: 1.2rem; position: relative; z-index: 1; animation: fadeUp 0.6s 0.2s ease both; }
+    /* ANIME QUEUE SCENE */
+    .scene-wrap { margin-top:2.5rem;position:relative;z-index:1;animation:fadeUp 0.6s 0.35s ease both; }
+    .queue-scene { background:var(--card);border:1px solid var(--border);border-radius:20px;padding:1.5rem 2rem;display:inline-flex;align-items:flex-end;gap:0;position:relative;overflow:hidden;min-width:340px; }
+    .scene-tag { position:absolute;top:0.6rem;left:1rem;font-size:0.6rem;font-weight:700;letter-spacing:0.12em;color:var(--green); }
+    .scene-dot { position:absolute;top:0.75rem;right:1rem;width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.5s infinite; }
+    .counter-box { width:60px;height:86px;background:var(--surface);border:1px solid var(--border);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;flex-shrink:0; }
+    .c-num { font-family:'Bricolage Grotesque',sans-serif;font-size:1.1rem;font-weight:800;color:var(--neon); }
+    .c-lbl { font-size:0.5rem;color:var(--muted);font-weight:600;letter-spacing:0.05em;text-transform:uppercase; }
 
-    /* SCROLL CTA */
-    .scroll-cta { margin-top: 2rem; position: relative; z-index: 1; animation: fadeUp 0.6s 0.3s ease both; }
-    .scroll-btn { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; padding: 0.85rem 2rem; border-radius: 999px; font-weight: 700; font-size: 1rem; box-shadow: 0 0 40px rgba(124,58,237,0.4); transition: all 0.2s; border: none; cursor: pointer; text-decoration: none; display: inline-block; }
-    .scroll-btn:hover { transform: translateY(-2px); box-shadow: 0 0 60px rgba(124,58,237,0.6); }
-
-    /* QUEUE ANIMATION - same as landing */
-    .anim-wrap { margin-top: 2.5rem; position: relative; z-index: 1; animation: fadeUp 0.6s 0.35s ease both; }
-    .queue-scene { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 1.5rem 2rem; display: inline-flex; align-items: flex-end; gap: 0; position: relative; overflow: hidden; min-width: 300px; }
-    .queue-scene::before { content: 'LIVE DEMO'; position: absolute; top: 0.6rem; left: 1rem; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.12em; color: var(--green); }
-    .queue-scene::after { content: ''; position: absolute; top: 0.75rem; right: 1rem; width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: blink 1.5s infinite; }
-    .counter { width: 55px; height: 80px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; }
-    .counter-num { font-family: 'Bricolage Grotesque', sans-serif; font-size: 1.1rem; font-weight: 800; color: var(--neon); }
-    .counter-lbl { font-size: 0.5rem; color: var(--muted); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
-    .person { display: flex; flex-direction: column; align-items: center; transition: all 0.5s ease; }
-    .person-body { width: 28px; display: flex; flex-direction: column; align-items: center; }
-    .p-head { width: 16px; height: 16px; border-radius: 50%; margin-bottom: 2px; }
-    .p-torso { width: 20px; height: 22px; border-radius: 5px 5px 3px 3px; }
-    .p-legs { display: flex; gap: 2px; }
-    .p-leg { width: 7px; height: 14px; border-radius: 0 0 3px 3px; }
-    .p-label { font-size: 0.58rem; font-weight: 600; margin-top: 3px; padding: 0.12rem 0.35rem; border-radius: 4px; white-space: nowrap; }
-    .pa .p-head{background:#f59e0b} .pa .p-torso{background:#7c3aed} .pa .p-leg{background:#4c1d95} .pa .p-label{background:rgba(34,197,94,0.15);color:var(--green)}
-    .pb .p-head{background:#f87171} .pb .p-torso{background:#06b6d4} .pb .p-leg{background:#164e63} .pb .p-label{background:rgba(124,58,237,0.15);color:var(--neon)}
-    .pc .p-head{background:#86efac} .pc .p-torso{background:#ec4899} .pc .p-leg{background:#831843} .pc .p-label{background:rgba(6,182,212,0.15);color:var(--cyan)}
-    .pd .p-head{background:#fcd34d} .pd .p-torso{background:#10b981} .pd .p-leg{background:#064e3b} .pd .p-label{background:rgba(251,191,36,0.15);color:var(--yellow)}
-    .pe .p-head{background:#c4b5fd} .pe .p-torso{background:#f97316} .pe .p-leg{background:#7c2d12} .pe .p-label{background:rgba(249,115,22,0.15);color:#fb923c}
-    .person.called { transform: translateX(-60px) scale(0.8); opacity: 0; }
-    .person.calling { animation: callbounce 0.6s ease; }
-    @keyframes callbounce { 0%{transform:translateY(0)} 30%{transform:translateY(-10px)} 70%{transform:translateY(-4px)} 100%{transform:translateY(0)} }
+    /* ANIME CHARACTERS - SVG based */
+    .anime-person { display:flex;flex-direction:column;align-items:center;transition:all 0.5s ease; }
+    .anime-person.called { transform:translateX(-80px) scale(0.8);opacity:0; }
+    .anime-person.calling { animation:abounce 0.7s ease; }
+    @keyframes abounce { 0%{transform:translateY(0)} 20%{transform:translateY(-16px) rotate(-5deg)} 50%{transform:translateY(-8px) rotate(3deg)} 80%{transform:translateY(-3px)} 100%{transform:translateY(0)} }
+    .a-label { font-size:0.58rem;font-weight:700;margin-top:3px;padding:0.12rem 0.4rem;border-radius:4px;white-space:nowrap; }
 
     /* HOW IT WORKS */
-    .section { padding: 4rem 1.5rem; max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
-    .section-tag { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--neon); margin-bottom: 0.6rem; display: block; }
-    .section-title { font-family: 'Bricolage Grotesque', sans-serif; font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 800; letter-spacing: -1px; color: var(--white); margin-bottom: 2rem; line-height: 1.1; }
-    .steps { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; }
-    .step { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 1.4rem; text-align: center; transition: all 0.25s; }
-    .step:hover { border-color: rgba(168,85,247,0.3); transform: translateY(-3px); }
-    .step-num { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; font-family: 'Bricolage Grotesque', sans-serif; font-size: 1.2rem; font-weight: 800; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.9rem; box-shadow: 0 0 20px rgba(124,58,237,0.4); }
-    .step h4 { font-size: 0.92rem; font-weight: 700; color: var(--white); margin-bottom: 0.4rem; }
-    .step p { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+    .section { padding:4rem 1.5rem;max-width:900px;margin:0 auto;position:relative;z-index:1; }
+    .sec-tag { font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--neon);margin-bottom:0.6rem;display:block; }
+    .sec-title { font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;letter-spacing:-1px;color:var(--white);margin-bottom:2rem;line-height:1.1; }
+    .steps { display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem; }
+    .step { background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.4rem;text-align:center;transition:all 0.25s; }
+    .step:hover { border-color:rgba(168,85,247,0.3);transform:translateY(-3px); }
+    .step-n { width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-family:'Bricolage Grotesque',sans-serif;font-size:1.2rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 0.9rem;box-shadow:0 0 20px rgba(124,58,237,0.4); }
+    .step h4 { font-size:0.92rem;font-weight:700;color:var(--white);margin-bottom:0.4rem; }
+    .step p { font-size:0.82rem;color:var(--muted);line-height:1.5; }
+    .feats { display:flex;flex-wrap:wrap;gap:0.6rem;justify-content:center;padding:0 1.5rem 3rem;position:relative;z-index:1; }
+    .fpill { display:flex;align-items:center;gap:0.5rem;background:var(--card);border:1px solid var(--border);border-radius:999px;padding:0.55rem 1rem;font-size:0.82rem;color:var(--text); }
 
     /* JOIN FORM */
-    .join-section { padding: 2rem 1.5rem 5rem; max-width: 500px; margin: 0 auto; position: relative; z-index: 1; }
-    .join-card { background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 2.5rem; position: relative; overflow: hidden; }
-    .join-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2), var(--cyan)); }
-    .join-title { font-family: 'Bricolage Grotesque', sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--white); letter-spacing: -0.5px; margin-bottom: 0.3rem; }
-    .join-sub { color: var(--muted); font-size: 0.88rem; margin-bottom: 2rem; }
-    label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--muted); margin-bottom: 0.35rem; letter-spacing: 0.05em; text-transform: uppercase; }
-    input, select { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; color: var(--white); font-family: 'Space Grotesk', sans-serif; font-size: 0.95rem; padding: 0.85rem 1rem; outline: none; margin-bottom: 1.1rem; transition: border-color 0.2s; }
-    input:focus, select:focus { border-color: var(--accent2); box-shadow: 0 0 0 3px rgba(168,85,247,0.1); }
-    select option { background: var(--card); }
-    .join-btn { width: 100%; padding: 1rem; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; border: none; border-radius: 12px; font-family: 'Bricolage Grotesque', sans-serif; font-size: 1.05rem; font-weight: 800; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 30px rgba(124,58,237,0.3); letter-spacing: -0.3px; }
-    .join-btn:hover { transform: translateY(-2px); box-shadow: 0 0 50px rgba(124,58,237,0.5); }
-    .join-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-    #errorMsg { display: none; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #f87171; border-radius: 10px; padding: 0.7rem 1rem; font-size: 0.85rem; margin-bottom: 1rem; }
+    .join-section { padding:2rem 1.5rem 5rem;max-width:500px;margin:0 auto;position:relative;z-index:1; }
+    .join-card { background:var(--card);border:1px solid var(--border);border-radius:24px;padding:2.5rem;position:relative;overflow:hidden; }
+    .join-card::before { content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--cyan)); }
+    .j-title { font-family:'Bricolage Grotesque',sans-serif;font-size:1.8rem;font-weight:800;color:var(--white);letter-spacing:-0.5px;margin-bottom:0.3rem; }
+    .j-sub { color:var(--muted);font-size:0.85rem;margin-bottom:0.6rem; }
+    .genz-copy { font-size:0.8rem;color:var(--neon);margin-bottom:1.5rem;font-style:italic; }
+    label { display:block;font-size:0.78rem;font-weight:600;color:var(--muted);margin-bottom:0.35rem;letter-spacing:0.05em;text-transform:uppercase; }
+    input,select { width:100%;background:var(--surface);border:1px solid var(--border);border-radius:12px;color:var(--white);font-family:'Space Grotesk',sans-serif;font-size:0.95rem;padding:0.85rem 1rem;outline:none;margin-bottom:1.1rem;transition:border-color 0.2s; }
+    input:focus,select:focus { border-color:var(--accent2);box-shadow:0 0 0 3px rgba(168,85,247,0.1); }
+    select option { background:var(--card); }
+    .join-btn { width:100%;padding:1rem;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:12px;font-family:'Bricolage Grotesque',sans-serif;font-size:1.05rem;font-weight:800;cursor:pointer;transition:all 0.2s;box-shadow:0 0 30px rgba(124,58,237,0.3);letter-spacing:-0.3px; }
+    .join-btn:hover { transform:translateY(-2px);box-shadow:0 0 50px rgba(124,58,237,0.5); }
+    .join-btn:disabled { opacity:0.5;cursor:not-allowed;transform:none; }
+    #errorMsg { display:none;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#f87171;border-radius:10px;padding:0.7rem 1rem;font-size:0.85rem;margin-bottom:1rem; }
 
-    /* TICKET VIEW */
-    #ticketView { display: none; }
-    .ticket-top { text-align: center; margin-bottom: 1.5rem; }
-    .ticket-top h2 { font-family: 'Bricolage Grotesque', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--white); }
-    .ticket-top p { color: var(--neon); font-weight: 600; margin-top: 0.3rem; }
-    .pos-ring { width: 150px; height: 150px; border-radius: 50%; border: 3px solid var(--accent2); display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 1.5rem; background: rgba(124,58,237,0.08); position: relative; }
-    .pos-ring::before { content: ''; position: absolute; inset: -6px; border-radius: 50%; border: 1px solid rgba(168,85,247,0.2); }
-    .pos-ring::after { content: ''; position: absolute; inset: -12px; border-radius: 50%; border: 1px solid rgba(168,85,247,0.08); }
-    #positionNum { font-family: 'Bricolage Grotesque', sans-serif; font-size: 3.5rem; font-weight: 800; color: var(--neon); line-height: 1; }
-    #positionLabel { font-size: 0.72rem; color: var(--muted); margin-top: 0.2rem; font-weight: 500; }
-    .status-badge { display: inline-block; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.25rem 0.8rem; border-radius: 999px; margin-bottom: 1.2rem; background: rgba(124,58,237,0.15); color: var(--neon); border: 1px solid rgba(124,58,237,0.3); }
-    .info-row { display: flex; gap: 0.7rem; margin-bottom: 1.2rem; }
-    .info-chip { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 0.8rem; text-align: center; }
-    .info-chip .val { font-family: 'Bricolage Grotesque', sans-serif; font-size: 1.2rem; font-weight: 800; color: var(--white); }
-    .info-chip .lbl { font-size: 0.68rem; color: var(--muted); margin-top: 0.2rem; text-transform: uppercase; letter-spacing: 0.05em; }
-    .eta-bar { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 0.9rem 1rem; display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; }
-    .eta-lbl { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
-    #etaText { font-family: 'Bricolage Grotesque', sans-serif; font-size: 1rem; font-weight: 700; color: var(--yellow); }
-    .token-show { background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(6,182,212,0.1)); border: 1px solid rgba(168,85,247,0.2); border-radius: 12px; padding: 0.8rem; text-align: center; margin-bottom: 1.2rem; }
-    .token-show .t-lbl { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
-    .token-show .t-val { font-family: 'Bricolage Grotesque', sans-serif; font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, var(--neon), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .leave-btn { width: 100%; padding: 0.75rem; background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-size: 0.88rem; cursor: pointer; transition: all 0.2s; margin-top: 0.3rem; }
-    .leave-btn:hover { border-color: #ef4444; color: #f87171; }
+    /* TICKET */
+    #ticketView { display:none; }
+    .t-top { text-align:center;margin-bottom:1.5rem; }
+    .t-top h2 { font-family:'Bricolage Grotesque',sans-serif;font-size:1.4rem;font-weight:800;color:var(--white); }
+    .t-top .genz-msg { font-size:0.82rem;color:var(--neon);margin-top:0.3rem;font-style:italic; }
+    .pos-ring { width:150px;height:150px;border-radius:50%;border:3px solid var(--accent2);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 1.5rem;background:rgba(124,58,237,0.08);position:relative;animation:ringPulse 2s ease-in-out infinite; }
+    @keyframes ringPulse { 0%,100%{box-shadow:0 0 20px rgba(168,85,247,0.2)} 50%{box-shadow:0 0 50px rgba(168,85,247,0.5)} }
+    .pos-ring::before { content:'';position:absolute;inset:-6px;border-radius:50%;border:1px solid rgba(168,85,247,0.15); }
+    #positionNum { font-family:'Bricolage Grotesque',sans-serif;font-size:3.5rem;font-weight:800;color:var(--neon);line-height:1; }
+    #positionLabel { font-size:0.72rem;color:var(--muted);margin-top:0.2rem;font-weight:500; }
+    .sbadge { display:inline-block;font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.25rem 0.8rem;border-radius:999px;margin-bottom:1.2rem;background:rgba(124,58,237,0.15);color:var(--neon);border:1px solid rgba(124,58,237,0.3); }
+    .info-row { display:flex;gap:0.7rem;margin-bottom:1.2rem; }
+    .ichip { flex:1;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:0.8rem;text-align:center; }
+    .ichip .val { font-family:'Bricolage Grotesque',sans-serif;font-size:1.2rem;font-weight:800;color:var(--white); }
+    .ichip .lbl { font-size:0.68rem;color:var(--muted);margin-top:0.2rem;text-transform:uppercase;letter-spacing:0.05em; }
+    .eta-bar { background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:0.9rem 1rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem; }
+    .eta-lbl { font-size:0.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em; }
+    #etaText { font-family:'Bricolage Grotesque',sans-serif;font-size:1rem;font-weight:700;color:var(--yellow); }
+    .tok-show { background:linear-gradient(135deg,rgba(124,58,237,0.15),rgba(6,182,212,0.1));border:1px solid rgba(168,85,247,0.2);border-radius:12px;padding:0.8rem;text-align:center;margin-bottom:1.2rem; }
+    .tok-show .tl { font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em; }
+    .tok-show .tv { font-family:'Bricolage Grotesque',sans-serif;font-size:2rem;font-weight:800;background:linear-gradient(135deg,var(--neon),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent; }
+    .notif-status { background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:10px;padding:0.6rem 0.8rem;font-size:0.78rem;color:var(--green);text-align:center;margin-bottom:1rem;cursor:pointer; }
+    .leave-btn { width:100%;padding:0.75rem;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:12px;font-family:'Space Grotesk',sans-serif;font-size:0.88rem;cursor:pointer;transition:all 0.2s;margin-top:0.3rem; }
+    .leave-btn:hover { border-color:var(--red);color:#f87171; }
 
-    /* FEATURES STRIP */
-    .feats { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; padding: 0 1.5rem 3rem; position: relative; z-index: 1; }
-    .feat-pill { display: flex; align-items: center; gap: 0.5rem; background: var(--card); border: 1px solid var(--border); border-radius: 999px; padding: 0.55rem 1rem; font-size: 0.82rem; color: var(--text); }
-    .feat-pill span { font-size: 1rem; }
+    /* CALLED STATE - PARTY */
+    body.its-your-turn { animation:screenFlash 0.5s ease; }
+    @keyframes screenFlash { 0%{filter:brightness(1)} 50%{filter:brightness(2)} 100%{filter:brightness(1)} }
 
     @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
-    @media(max-width:600px) { nav { padding: 1rem; } .queue-scene { min-width: 260px; } }
+    @media(max-width:600px) { nav{padding:1rem;} }
   </style>
 </head>
 <body>
 
-  <nav>
-    <a class="logo" href="index.html">Qless™</a>
-    <div class="nav-right">
-      <a class="btn-ghost" href="index.html">Home</a>
-      <a class="btn-ghost" href="admin.html">Admin</a>
-    </div>
-  </nav>
+<div id="flashOverlay"></div>
+<canvas id="confettiCanvas"></canvas>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="orb orb1"></div>
-    <div class="orb orb2"></div>
-    <div class="orb orb3"></div>
-    <div class="badge"><div class="live-dot"></div> Real-time Queue System</div>
-    <h1>
-      <span class="g1">Your spot.</span>
-      <span class="g2">Saved instantly.</span>
-    </h1>
-    <p class="hero-sub">No standing. No stressing. Enter your name, get your token, walk away freely — we'll let you know when it's your turn.</p>
-    <div class="scroll-cta">
-      <a class="scroll-btn" href="#joinForm">Get My Token →</a>
-    </div>
+<nav>
+  <a class="logo" href="index.html">Qless™</a>
+  <div class="nav-right">
+    <a class="nbtn" href="index.html">Home</a>
+    <a class="nbtn" href="admin.html">Admin</a>
+  </div>
+</nav>
 
-    <!-- QUEUE ANIMATION -->
-    <div class="anim-wrap">
-      <div class="queue-scene">
-        <div class="counter">
-          <div class="counter-num" id="counterNum">G01</div>
-          <div class="counter-lbl">Serving</div>
-        </div>
-        <div id="personContainer" style="display:flex;align-items:flex-end;gap:5px;margin-left:10px;"></div>
+<!-- HERO -->
+<section class="hero">
+  <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+  <div class="badge"><div class="ldot"></div> Real-time Queue System</div>
+  <h1><span class="g1">Your spot.</span><span class="g2">Saved instantly.</span></h1>
+  <p class="hero-sub">No standing. No stressing. Get your token, <em>walk away freely</em> — we'll blow your phone up when it's time. fr fr 🔥</p>
+  <a class="scroll-btn" href="#joinForm">Get My Token →</a>
+
+  <!-- ANIME QUEUE SCENE -->
+  <div class="scene-wrap">
+    <div class="queue-scene">
+      <div class="scene-tag">LIVE DEMO</div>
+      <div class="scene-dot"></div>
+      <div class="counter-box">
+        <div class="c-num" id="counterNum">G01</div>
+        <div class="c-lbl">Serving</div>
       </div>
-    </div>
-  </section>
-
-  <!-- HOW IT WORKS -->
-  <div class="section">
-    <span class="section-tag">How it works</span>
-    <h2 class="section-title">Three steps.<br>Total freedom.</h2>
-    <div class="steps">
-      <div class="step"><div class="step-num">1</div><h4>Enter Your Name</h4><p>Fill the form below. No app. No account. Works on any phone.</p></div>
-      <div class="step"><div class="step-num">2</div><h4>Get Your Token</h4><p>Instantly assigned a position. See everyone ahead of you live.</p></div>
-      <div class="step"><div class="step-num">3</div><h4>Walk Away</h4><p>Live position updates. ETA shown. Browser alert when it's your turn.</p></div>
-      <div class="step"><div class="step-num">4</div><h4>You're Called</h4><p>Screen flashes, alert fires. Walk in. Done. No chaos.</p></div>
+      <div id="animeContainer" style="display:flex;align-items:flex-end;gap:8px;margin-left:12px;"></div>
     </div>
   </div>
+</section>
 
-  <!-- FEATURE PILLS -->
-  <div class="feats">
-    <div class="feat-pill"><span>⚡</span> Real-time updates</div>
-    <div class="feat-pill"><span>🔔</span> Browser alerts</div>
-    <div class="feat-pill"><span>⏱</span> Live ETA</div>
-    <div class="feat-pill"><span>🪙</span> Token privacy</div>
-    <div class="feat-pill"><span>📱</span> No app needed</div>
-    <div class="feat-pill"><span>🌍</span> Works worldwide</div>
+<!-- HOW IT WORKS -->
+<div class="section">
+  <span class="sec-tag">How it works</span>
+  <h2 class="sec-title">Four steps.<br>Zero stress.</h2>
+  <div class="steps">
+    <div class="step"><div class="step-n">1</div><h4>Enter your name</h4><p>No app. No signup. Just type your name and go.</p></div>
+    <div class="step"><div class="step-n">2</div><h4>Get your token</h4><p>Instant position. See the whole queue live.</p></div>
+    <div class="step"><div class="step-n">3</div><h4>Walk away</h4><p>Live ETA shown. We'll alert you when you're next.</p></div>
+    <div class="step"><div class="step-n">4</div><h4>Get called 🎉</h4><p>Screen flashes, sound plays, phone vibrates. Unmissable.</p></div>
   </div>
+</div>
 
-  <!-- JOIN FORM -->
-  <div class="join-section" id="joinForm">
-    <div class="join-card">
+<!-- FEATURE PILLS -->
+<div class="feats">
+  <div class="fpill">⚡ Real-time updates</div>
+  <div class="fpill">🔔 Push notifications</div>
+  <div class="fpill">📳 Vibration alert</div>
+  <div class="fpill">🔊 Sound alert</div>
+  <div class="fpill">🎉 Confetti when called</div>
+  <div class="fpill">⏱ Live ETA</div>
+  <div class="fpill">🌍 Works worldwide</div>
+</div>
 
-      <!-- FORM -->
-      <div id="formView">
-        <div class="join-title">Join the Queue</div>
-        <div class="join-sub">Takes 10 seconds. Your spot is saved instantly.</div>
-        <div id="errorMsg"></div>
-        <label for="nameInput">Your Name</label>
-        <input type="text" id="nameInput" placeholder="e.g. Ravi Kumar" autocomplete="off"/>
-        <label for="queueType">Queue Type</label>
-        <select id="queueType">
-          <option value="general">🟢 General</option>
-          <option value="emergency">🔴 Emergency</option>
-          <option value="followup">🔵 Follow-up / Appointment</option>
-        </select>
-        <button class="join-btn" id="joinBtn" onclick="joinQueue()">Get My Token ✦</button>
+<!-- JOIN FORM -->
+<div class="join-section" id="joinForm">
+  <div class="join-card">
+    <div id="formView">
+      <div class="j-title">Join the Queue ✦</div>
+      <div class="j-sub">Takes 10 seconds. No cap.</div>
+      <div class="genz-copy">"bestie your spot is about to be secured 🔒"</div>
+      <div id="errorMsg"></div>
+      <label>Your Name</label>
+      <input type="text" id="nameInput" placeholder="e.g. Ravi Kumar" autocomplete="off"/>
+      <label>Queue Type</label>
+      <select id="queueType">
+        <option value="general">🟢 General</option>
+        <option value="emergency">🔴 Emergency</option>
+        <option value="followup">🔵 Follow-up / Appointment</option>
+      </select>
+      <button class="join-btn" id="joinBtn" onclick="joinQueue()">Secure My Spot ✦</button>
+    </div>
+
+    <div id="ticketView">
+      <div class="t-top">
+        <h2>You're locked in! 🔒</h2>
+        <div id="ticketName" style="color:var(--neon);font-weight:700;margin-top:0.3rem;"></div>
+        <div class="genz-msg" id="genzMsg">"don't move bestie, your time is coming ⏳"</div>
       </div>
-
-      <!-- TICKET -->
-      <div id="ticketView">
-        <div class="ticket-top">
-          <h2>You're In! 🎫</h2>
-          <p id="ticketName"></p>
-        </div>
-        <div style="text-align:center;">
-          <div class="status-badge" id="statusBadge">WAITING</div>
-        </div>
-        <div class="pos-ring">
-          <div id="positionNum">—</div>
-          <div id="positionLabel">Loading...</div>
-        </div>
-        <div class="token-show">
-          <div class="t-lbl">Your Token</div>
-          <div class="t-val" id="myToken">—</div>
-        </div>
-        <div class="info-row">
-          <div class="info-chip"><div class="val" id="totalWaiting">—</div><div class="lbl">In Queue</div></div>
-          <div class="info-chip"><div class="val" id="ticketQueue" style="font-size:0.85rem;">—</div><div class="lbl">Queue Type</div></div>
-        </div>
-        <div class="eta-bar">
-          <span class="eta-lbl">⏱ Est. Wait</span>
-          <span id="etaText">Calculating...</span>
-        </div>
-        <p style="color:var(--muted);font-size:0.78rem;text-align:center;margin-bottom:1rem;">Keep this page open. Your position updates live.</p>
-        <button class="leave-btn" onclick="leaveQueue()">Leave Queue</button>
+      <div style="text-align:center;"><div class="sbadge" id="statusBadge">WAITING</div></div>
+      <div class="pos-ring">
+        <div id="positionNum">—</div>
+        <div id="positionLabel">Loading...</div>
       </div>
-
+      <div class="tok-show"><div class="tl">Your Token</div><div class="tv" id="myToken">—</div></div>
+      <div class="info-row">
+        <div class="ichip"><div class="val" id="totalWaiting">—</div><div class="lbl">In Queue</div></div>
+        <div class="ichip"><div class="val" id="ticketQueue" style="font-size:0.85rem;">—</div><div class="lbl">Queue Type</div></div>
+      </div>
+      <div class="eta-bar">
+        <span class="eta-lbl">⏱ Est. Wait</span>
+        <span id="etaText">Calculating...</span>
+      </div>
+      <div class="notif-status" id="notifStatus" onclick="requestNotifs()">🔔 Tap to enable alerts — don't miss your turn!</div>
+      <p style="color:var(--muted);font-size:0.78rem;text-align:center;margin-bottom:1rem;">Keep this page open. Position updates live.</p>
+      <button class="leave-btn" onclick="leaveQueue()">Leave Queue (you'll lose your spot ngl)</button>
     </div>
   </div>
+</div>
 
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-  <script>
-    // FIREBASE
-    firebase.initializeApp({
-      apiKey: "AIzaSyAtdD2Ppri0JAGIDR8aOOn_PLfjGc5q5j4",
-      authDomain: "queless-79a19.firebaseapp.com",
-      databaseURL: "https://queless-79a19-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "queless-79a19",
-      storageBucket: "queless-79a19.firebasestorage.app",
-      messagingSenderId: "661569229761",
-      appId: "1:661569229761:web:b7e05c6a22836c724e1540"
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script>
+  firebase.initializeApp({
+    apiKey:"AIzaSyAtdD2Ppri0JAGIDR8aOOn_PLfjGc5q5j4",
+    authDomain:"queless-79a19.firebaseapp.com",
+    databaseURL:"https://queless-79a19-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId:"queless-79a19",
+    storageBucket:"queless-79a19.firebasestorage.app",
+    messagingSenderId:"661569229761",
+    appId:"1:661569229761:web:b7e05c6a22836c724e1540"
+  });
+  var db = firebase.database();
+  var myTokenKey=null, myQueueType=null, alreadyCalledAlert=false;
+
+  // ANIME CHARACTERS (SVG-based)
+  var animeChars = [
+    { id:'c1', name:'Anika', token:'G01', hair:'#f59e0b', skin:'#fcd34d', outfit:'#7c3aed', badge:'rgba(34,197,94,0.15)', badgeColor:'#22c55e' },
+    { id:'c2', name:'Rohan', token:'G02', hair:'#1e1e30', skin:'#f87171', outfit:'#06b6d4', badge:'rgba(124,58,237,0.15)', badgeColor:'#c084fc' },
+    { id:'c3', name:'Priya', token:'G03', hair:'#a855f7', skin:'#86efac', outfit:'#ec4899', badge:'rgba(6,182,212,0.15)', badgeColor:'#06b6d4' },
+    { id:'c4', name:'Dev',   token:'G04', hair:'#fcd34d', skin:'#fbbf24', outfit:'#10b981', badge:'rgba(251,191,36,0.15)', badgeColor:'#fbbf24' },
+    { id:'c5', name:'Sana',  token:'G05', hair:'#c4b5fd', skin:'#ddd6fe', outfit:'#f97316', badge:'rgba(249,115,22,0.15)', badgeColor:'#fb923c' },
+  ];
+  var animQ = animeChars.slice(), animCounter = 6;
+  var allNames = ['Vikram','Meera','Arjun','Kavya','Rahul','Sneha','Karan','Divya','Arun','Pooja'];
+
+  function makeSVGPerson(p, pos) {
+    return '<div class="anime-person" id="ap-'+p.id+'" style="display:flex;flex-direction:column;align-items:center;transition:all 0.5s;">' +
+      '<svg width="36" height="64" viewBox="0 0 36 64" xmlns="http://www.w3.org/2000/svg">' +
+        // Hair
+        '<ellipse cx="18" cy="10" rx="10" ry="7" fill="'+p.hair+'"/>' +
+        // Head
+        '<ellipse cx="18" cy="14" rx="9" ry="10" fill="'+p.skin+'"/>' +
+        // Eyes
+        '<circle cx="14" cy="13" r="1.5" fill="#1e1e30"/>' +
+        '<circle cx="22" cy="13" r="1.5" fill="#1e1e30"/>' +
+        // Smile
+        '<path d="M14 18 Q18 21 22 18" stroke="#1e1e30" stroke-width="1.2" fill="none" stroke-linecap="round"/>' +
+        // Body
+        '<rect x="9" y="24" width="18" height="20" rx="5" fill="'+p.outfit+'"/>' +
+        // Arms
+        '<rect x="2" y="24" width="6" height="14" rx="3" fill="'+p.outfit+'"/>' +
+        '<rect x="28" y="24" width="6" height="14" rx="3" fill="'+p.outfit+'"/>' +
+        // Legs
+        '<rect x="10" y="43" width="7" height="18" rx="3" fill="'+p.hair+'"/>' +
+        '<rect x="19" y="43" width="7" height="18" rx="3" fill="'+p.hair+'"/>' +
+        // Shoes
+        '<ellipse cx="13" cy="61" rx="5" ry="3" fill="#1e1e30"/>' +
+        '<ellipse cx="23" cy="61" rx="5" ry="3" fill="#1e1e30"/>' +
+      '</svg>' +
+      '<div class="a-label" style="background:'+p.badge+';color:'+p.badgeColor+';">'+(pos===1?'📣 Next':'#'+pos)+'</div>' +
+    '</div>';
+  }
+
+  function renderAnimeQ() {
+    var c = document.getElementById('animeContainer');
+    if (!c) return;
+    c.innerHTML = animQ.map(function(p,i){ return makeSVGPerson(p,i+1); }).join('');
+  }
+
+  function animCallNext() {
+    if (animQ.length===0) return;
+    var first = animQ[0];
+    var el = document.getElementById('ap-'+first.id);
+    if (el) {
+      el.classList.add('calling');
+      el.style.animation = 'abounce 0.7s ease';
+      setTimeout(function(){
+        el.style.transform = 'translateX(-80px) scale(0.8)';
+        el.style.opacity = '0';
+        setTimeout(function(){
+          animQ.shift();
+          var np = {
+            id:'c'+animCounter, name:allNames[animCounter%allNames.length], token:'G'+String(animCounter).padStart(2,'0'),
+            hair:animeChars[animCounter%5].hair, skin:animeChars[animCounter%5].skin,
+            outfit:animeChars[animCounter%5].outfit, badge:animeChars[animCounter%5].badge, badgeColor:animeChars[animCounter%5].badgeColor
+          };
+          animCounter++; animQ.push(np);
+          var cn = document.getElementById('counterNum');
+          if (cn) cn.textContent = first.token;
+          renderAnimeQ();
+        }, 500);
+      }, 700);
+    }
+  }
+  renderAnimeQ();
+  setInterval(animCallNext, 3200);
+
+  // FIREBASE QUEUE
+  function joinQueue() {
+    var name = document.getElementById('nameInput').value.trim();
+    var qtype = document.getElementById('queueType').value;
+    if (!name) { showError('yo enter your name bestie 😭'); return; }
+    var btn = document.getElementById('joinBtn');
+    btn.disabled = true; btn.textContent = 'Securing your spot...';
+    var joinedAt = Date.now() + Math.random();
+    var newRef = db.ref('queues/'+qtype).push();
+    db.ref('queues/'+qtype).once('value').then(function(snap){
+      var num=1;
+      if(snap.exists()){ var a=Object.values(snap.val()).filter(function(e){return e.status==='waiting'||e.status==='called';}); num=a.length+1; }
+      var tok = qtype.charAt(0).toUpperCase()+String(num).padStart(3,'0');
+      return newRef.set({name:name,token:tok,status:'waiting',joinedAt:joinedAt,queueType:qtype});
+    }).then(function(){
+      myTokenKey=newRef.key; myQueueType=qtype;
+      localStorage.setItem('ql_token',myTokenKey); localStorage.setItem('ql_queue',myQueueType);
+      document.getElementById('ticketName').textContent = name;
+      var labs={general:'General',emergency:'Emergency',followup:'Follow-up'};
+      document.getElementById('ticketQueue').textContent = labs[qtype];
+      document.getElementById('formView').style.display='none';
+      document.getElementById('ticketView').style.display='block';
+      listenToPosition();
+      requestNotifs();
+    }).catch(function(e){ showError('Error: '+e.message); btn.disabled=false; btn.textContent='Secure My Spot ✦'; });
+  }
+
+  function listenToPosition() {
+    db.ref('queues/'+myQueueType).on('value', function(snap){
+      if(!snap.exists()) return;
+      var all=snap.val(), myData=all[myTokenKey];
+      if(!myData) return;
+      document.getElementById('myToken').textContent = myData.token||'—';
+      var waiting=Object.entries(all).filter(function(e){return e[1].status==='waiting';}).sort(function(a,b){return a[1].joinedAt-b[1].joinedAt;});
+      var active=Object.entries(all).filter(function(e){return e[1].status==='waiting'||e[1].status==='called';});
+      document.getElementById('totalWaiting').textContent = active.length;
+
+      if (myData.status==='called') {
+        document.getElementById('positionNum').textContent = '🎉';
+        document.getElementById('positionLabel').textContent = "IT'S YOUR TURN!";
+        document.getElementById('etaText').textContent = 'GO GO GO!';
+        document.getElementById('statusBadge').textContent = 'YOU\'RE UP!';
+        document.getElementById('statusBadge').style.cssText = 'background:rgba(34,197,94,0.15);color:#22c55e;border-color:rgba(34,197,94,0.3);';
+        document.getElementById('genzMsg').textContent = '"bestie it\'s YOUR TIME, let\'s go!! 🚀"';
+        if (!alreadyCalledAlert) {
+          alreadyCalledAlert = true;
+          triggerCalledEffects();
+        }
+      } else if (myData.status==='done') {
+        document.getElementById('positionNum').textContent = '✓';
+        document.getElementById('positionLabel').textContent = 'All done!';
+        document.getElementById('etaText').textContent = 'Thanks for using Qless!';
+        document.getElementById('genzMsg').textContent = '"slay, you\'re done! come back soon 💜"';
+      } else {
+        var idx=waiting.findIndex(function(e){return e[0]===myTokenKey;});
+        var pos=idx+1;
+        document.getElementById('positionNum').textContent = pos;
+        document.getElementById('positionLabel').textContent = pos===1?'You are Next!':'Position in queue';
+        document.getElementById('etaText').textContent = pos===1?"Get ready!":'~'+Math.max(1,(pos-1)*5)+' min';
+        if (pos===2 && !alreadyCalledAlert) { sendNotif('Almost your turn!','One person ahead. Get ready! 🎯'); }
+        var msgs = [
+          '"hang tight bestie, almost there ✨"',
+          '"you\'re not cooked, queue is moving 🍳"',
+          '"the wait is giving character development 💅"',
+          '"position '+pos+'? you\'re gonna make it fr 🔥"'
+        ];
+        document.getElementById('genzMsg').textContent = msgs[Math.min(pos-1,msgs.length-1)];
+      }
     });
-    var db = firebase.database();
-    var myTokenKey = null, myQueueType = null;
+  }
 
-    function joinQueue() {
-      var name = document.getElementById('nameInput').value.trim();
-      var qtype = document.getElementById('queueType').value;
-      if (!name) { showError('Please enter your name'); return; }
-      var btn = document.getElementById('joinBtn');
-      btn.disabled = true; btn.textContent = 'Joining...';
-      var joinedAt = Date.now() + Math.random();
-      var newRef = db.ref('queues/' + qtype).push();
-      db.ref('queues/' + qtype).once('value').then(function(snap) {
-        var tokenNum = 1;
-        if (snap.exists()) {
-          var active = Object.values(snap.val()).filter(function(e) { return e.status === 'waiting' || e.status === 'called'; });
-          tokenNum = active.length + 1;
-        }
-        var tokenLabel = qtype.charAt(0).toUpperCase() + String(tokenNum).padStart(3,'0');
-        return newRef.set({ name: name, token: tokenLabel, status: 'waiting', joinedAt: joinedAt, queueType: qtype });
-      }).then(function() {
-        myTokenKey = newRef.key; myQueueType = qtype;
-        localStorage.setItem('ql_token', myTokenKey);
-        localStorage.setItem('ql_queue', myQueueType);
-        document.getElementById('ticketName').textContent = name;
-        var labels = { general:'General', emergency:'Emergency', followup:'Follow-up' };
-        document.getElementById('ticketQueue').textContent = labels[qtype];
-        document.getElementById('formView').style.display = 'none';
-        document.getElementById('ticketView').style.display = 'block';
+  function triggerCalledEffects() {
+    // Flash
+    var fl=document.getElementById('flashOverlay');
+    fl.classList.remove('flash');
+    void fl.offsetWidth;
+    fl.classList.add('flash');
+    // Sound
+    playSound();
+    // Vibrate
+    if (navigator.vibrate) navigator.vibrate([300,100,300,100,500]);
+    // Confetti
+    launchConfetti();
+    // Push notification
+    sendNotif("It's your turn! 🎉","Head over now — don't keep them waiting!");
+  }
+
+  function playSound() {
+    try {
+      var ctx = new (window.AudioContext||window.webkitAudioContext)();
+      var notes = [523,659,784,1047];
+      notes.forEach(function(freq,i){
+        var o=ctx.createOscillator(), g=ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+        o.frequency.value=freq; o.type='sine';
+        var t=ctx.currentTime+i*0.15;
+        g.gain.setValueAtTime(0,t);
+        g.gain.linearRampToValueAtTime(0.3,t+0.05);
+        g.gain.exponentialRampToValueAtTime(0.001,t+0.4);
+        o.start(t); o.stop(t+0.4);
+      });
+    } catch(e){}
+  }
+
+  function launchConfetti() {
+    var canvas=document.getElementById('confettiCanvas');
+    var ctx=canvas.getContext('2d');
+    canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+    var pieces=[];
+    var colors=['#a855f7','#06b6d4','#22c55e','#fbbf24','#f87171','#c084fc','#818cf8'];
+    for(var i=0;i<120;i++){
+      pieces.push({
+        x:Math.random()*canvas.width, y:-10,
+        w:Math.random()*10+5, h:Math.random()*6+4,
+        color:colors[Math.floor(Math.random()*colors.length)],
+        vx:(Math.random()-0.5)*6, vy:Math.random()*4+2,
+        rot:Math.random()*360, vrot:(Math.random()-0.5)*8, alpha:1
+      });
+    }
+    var frame=0;
+    function draw(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      pieces.forEach(function(p){
+        p.x+=p.vx; p.y+=p.vy; p.rot+=p.vrot; p.alpha-=0.008;
+        ctx.save(); ctx.globalAlpha=Math.max(0,p.alpha);
+        ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+        ctx.fillStyle=p.color; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+        ctx.restore();
+      });
+      frame++;
+      if(frame<200) requestAnimationFrame(draw);
+      else ctx.clearRect(0,0,canvas.width,canvas.height);
+    }
+    draw();
+  }
+
+  function requestNotifs() {
+    if(!('Notification' in window)) return;
+    if(Notification.permission==='granted'){
+      document.getElementById('notifStatus').textContent='✅ Alerts enabled — we got you!';
+      document.getElementById('notifStatus').style.cursor='default';
+    } else if(Notification.permission==='default'){
+      Notification.requestPermission().then(function(p){
+        if(p==='granted') document.getElementById('notifStatus').textContent='✅ Alerts enabled — we got you!';
+      });
+    } else {
+      document.getElementById('notifStatus').textContent='⚠️ Enable notifications in browser settings for alerts';
+    }
+  }
+
+  function sendNotif(title,body) {
+    if('Notification' in window && Notification.permission==='granted') new Notification(title,{body:body});
+  }
+
+  function showError(msg){ var el=document.getElementById('errorMsg'); el.textContent=msg; el.style.display='block'; setTimeout(function(){el.style.display='none';},4000); }
+
+  function leaveQueue(){
+    if(confirm('fr leaving? you\'ll lose your spot 😭')){ 
+      if(myTokenKey&&myQueueType) db.ref('queues/'+myQueueType+'/'+myTokenKey).remove();
+      localStorage.removeItem('ql_token'); localStorage.removeItem('ql_queue'); location.reload();
+    }
+  }
+
+  // Restore session
+  var sk=localStorage.getItem('ql_token'), sq=localStorage.getItem('ql_queue');
+  if(sk&&sq){
+    myTokenKey=sk; myQueueType=sq;
+    db.ref('queues/'+sq+'/'+sk).once('value').then(function(snap){
+      if(snap.exists()&&snap.val().status!=='done'){
+        document.getElementById('ticketName').textContent=snap.val().name;
+        var labs={general:'General',emergency:'Emergency',followup:'Follow-up'};
+        document.getElementById('ticketQueue').textContent=labs[sq];
+        document.getElementById('formView').style.display='none';
+        document.getElementById('ticketView').style.display='block';
         listenToPosition();
-        requestNotifPermission();
-      }).catch(function(e) { showError('Error: ' + e.message); btn.disabled = false; btn.textContent = 'Get My Token ✦'; });
-    }
-
-    function listenToPosition() {
-      db.ref('queues/' + myQueueType).on('value', function(snap) {
-        if (!snap.exists()) return;
-        var all = snap.val();
-        var myData = all[myTokenKey];
-        if (!myData) return;
-        document.getElementById('myToken').textContent = myData.token || '—';
-        var waiting = Object.entries(all).filter(function(e) { return e[1].status === 'waiting'; }).sort(function(a,b) { return a[1].joinedAt - b[1].joinedAt; });
-        var active = Object.entries(all).filter(function(e) { return e[1].status === 'waiting' || e[1].status === 'called'; });
-        document.getElementById('totalWaiting').textContent = active.length;
-        if (myData.status === 'called') {
-          document.getElementById('positionNum').textContent = '🎉';
-          document.getElementById('positionLabel').textContent = "It's your turn!";
-          document.getElementById('etaText').textContent = 'Please proceed now';
-          document.getElementById('statusBadge').textContent = 'CALLED';
-          document.getElementById('statusBadge').style.background = 'rgba(34,197,94,0.15)';
-          document.getElementById('statusBadge').style.color = '#22c55e';
-          document.getElementById('statusBadge').style.borderColor = 'rgba(34,197,94,0.3)';
-          sendBrowserNotif('Your turn! 🎉', "It's your turn at the queue. Please proceed!");
-        } else if (myData.status === 'done') {
-          document.getElementById('positionNum').textContent = '✓';
-          document.getElementById('positionLabel').textContent = 'Done!';
-          document.getElementById('etaText').textContent = 'Thank you for using Qless!';
-        } else {
-          var idx = waiting.findIndex(function(e) { return e[0] === myTokenKey; });
-          var pos = idx + 1;
-          document.getElementById('positionNum').textContent = pos;
-          document.getElementById('positionLabel').textContent = pos === 1 ? 'You are Next!' : 'Position in queue';
-          document.getElementById('etaText').textContent = pos === 1 ? "Get ready!" : '~' + Math.max(1,(pos-1)*5) + ' min';
-          if (pos === 2) sendBrowserNotif('Almost your turn!', 'One person ahead of you. Get ready!');
-        }
-      });
-    }
-
-    function requestNotifPermission() {
-      if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
-    }
-    function sendBrowserNotif(title, body) {
-      if ('Notification' in window && Notification.permission === 'granted') new Notification(title, { body: body, icon: '' });
-    }
-    function showError(msg) { var el = document.getElementById('errorMsg'); el.textContent = msg; el.style.display = 'block'; setTimeout(function(){ el.style.display='none'; }, 4000); }
-    function leaveQueue() {
-      if (confirm('Leave the queue? You will lose your spot.')) {
-        if (myTokenKey && myQueueType) db.ref('queues/' + myQueueType + '/' + myTokenKey).remove();
-        localStorage.removeItem('ql_token'); localStorage.removeItem('ql_queue'); location.reload();
-      }
-    }
-
-    // Restore session
-    var sk = localStorage.getItem('ql_token'), sq = localStorage.getItem('ql_queue');
-    if (sk && sq) {
-      myTokenKey = sk; myQueueType = sq;
-      db.ref('queues/' + sq + '/' + sk).once('value').then(function(snap) {
-        if (snap.exists() && snap.val().status !== 'done') {
-          document.getElementById('ticketName').textContent = snap.val().name;
-          var labels = { general:'General', emergency:'Emergency', followup:'Follow-up' };
-          document.getElementById('ticketQueue').textContent = labels[sq];
-          document.getElementById('formView').style.display = 'none';
-          document.getElementById('ticketView').style.display = 'block';
-          listenToPosition();
-        } else { localStorage.removeItem('ql_token'); localStorage.removeItem('ql_queue'); }
-      });
-    }
-
-    // QUEUE ANIMATION
-    var animPeople = [
-      {id:'a1',name:'Anika',token:'G01',cls:'pa'},{id:'a2',name:'Rohan',token:'G02',cls:'pb'},
-      {id:'a3',name:'Priya',token:'G03',cls:'pc'},{id:'a4',name:'Dev',token:'G04',cls:'pd'},
-      {id:'a5',name:'Sana',token:'G05',cls:'pe'}
-    ];
-    var animQueue = animPeople.slice(), animCounter = 6;
-    var allNames = ['Vikram','Meera','Arjun','Kavya','Rahul','Sneha','Karan','Divya','Arun','Pooja'];
-    var allCls = ['pa','pb','pc','pd','pe'];
-
-    function renderAnimQueue() {
-      var c = document.getElementById('personContainer');
-      if (!c) return;
-      c.innerHTML = animQueue.map(function(p,i) {
-        return '<div class="person ' + p.cls + '" id="ap-' + p.id + '">' +
-          '<div class="person-body"><div class="p-head"></div><div class="p-torso"></div><div class="p-legs"><div class="p-leg"></div><div class="p-leg"></div></div></div>' +
-          '<div class="p-label">' + (i===0?'📣 Next':'#'+(i+1)) + '</div></div>';
-      }).join('');
-    }
-    function animCallNext() {
-      if (animQueue.length === 0) return;
-      var first = animQueue[0];
-      var el = document.getElementById('ap-' + first.id);
-      if (el) {
-        el.classList.add('calling');
-        setTimeout(function() {
-          el.classList.add('called');
-          setTimeout(function() {
-            animQueue.shift();
-            var np = { id:'a'+animCounter, name:allNames[animCounter%allNames.length], token:'G'+String(animCounter).padStart(2,'0'), cls:allCls[animCounter%5] };
-            animCounter++; animQueue.push(np);
-            var cn = document.getElementById('counterNum');
-            if (cn) cn.textContent = first.token;
-            renderAnimQueue();
-          }, 500);
-        }, 600);
-      }
-    }
-    renderAnimQueue();
-    setInterval(animCallNext, 3000);
-  </script>
+      } else { localStorage.removeItem('ql_token'); localStorage.removeItem('ql_queue'); }
+    });
+  }
+</script>
 </body>
 </html>
