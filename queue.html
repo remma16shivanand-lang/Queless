@@ -3,122 +3,154 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Qless — Join Queue</title>
+  <title>QGo — Your Time Back</title>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet"/>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root { --bg:#080810;--surface:#0f0f1a;--card:#13131f;--border:#1e1e30;--accent:#7c3aed;--accent2:#a855f7;--neon:#c084fc;--cyan:#06b6d4;--green:#22c55e;--yellow:#fbbf24;--red:#ef4444;--white:#f0eeff;--muted:#6b6b8a;--text:#e2e2ff; }
-    html { scroll-behavior: smooth; }
-    body { background:var(--bg); color:var(--text); font-family:'Space Grotesk',sans-serif; overflow-x:hidden; }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--bg:#080810;--surface:#0f0f1a;--card:#13131f;--border:#1e1e30;--accent:#7c3aed;--accent2:#a855f7;--neon:#c084fc;--cyan:#06b6d4;--green:#22c55e;--yellow:#fbbf24;--orange:#f97316;--red:#ef4444;--white:#f0eeff;--muted:#6b6b8a;--text:#e2e2ff;}
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;overflow-x:hidden;}
+    #flashOverlay{position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:0;background:radial-gradient(circle,rgba(192,132,252,0.6),rgba(6,182,212,0.3));}
+    #flashOverlay.flash{animation:flashAnim 0.8s ease;}
+    @keyframes flashAnim{0%{opacity:0}15%{opacity:1}100%{opacity:0}}
+    #confettiCanvas{position:fixed;inset:0;z-index:9998;pointer-events:none;}
 
-    /* FLASH OVERLAY */
-    #flashOverlay { position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:0;background:radial-gradient(circle,rgba(192,132,252,0.6),rgba(6,182,212,0.3)); transition:opacity 0.1s; }
-    #flashOverlay.flash { animation:flashAnim 0.8s ease; }
-    @keyframes flashAnim { 0%{opacity:0} 15%{opacity:1} 100%{opacity:0} }
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:rgba(8,8,16,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+    .logo{font-family:'Bricolage Grotesque',sans-serif;font-size:1.6rem;font-weight:800;background:linear-gradient(135deg,#a855f7,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;letter-spacing:-1px;}
+    .logo sup{font-size:0.5rem;-webkit-text-fill-color:var(--neon);vertical-align:super;}
+    .nbtn{background:transparent;color:var(--muted);padding:0.4rem 0.9rem;border-radius:999px;text-decoration:none;font-size:0.85rem;font-weight:500;border:1px solid var(--border);transition:all 0.2s;}
+    .nbtn:hover{color:var(--white);border-color:var(--accent2);}
 
-    /* CONFETTI */
-    #confettiCanvas { position:fixed;inset:0;z-index:9998;pointer-events:none; }
+    .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:8rem 1.5rem 3rem;position:relative;overflow:hidden;}
+    .orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;}
+    .o1{width:450px;height:450px;background:rgba(124,58,237,0.18);top:-80px;left:-80px;}
+    .o2{width:350px;height:350px;background:rgba(6,182,212,0.12);bottom:0;right:-50px;}
+    .o3{width:250px;height:250px;background:rgba(168,85,247,0.1);top:40%;left:50%;transform:translate(-50%,-50%);}
+    .biz-pill{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);color:var(--neon);font-size:0.82rem;font-weight:600;padding:0.4rem 1rem;border-radius:999px;margin-bottom:1rem;position:relative;z-index:1;}
+    .ldot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:blink 1.5s infinite;flex-shrink:0;}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+    .hero h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(2.4rem,8vw,5.5rem);font-weight:800;line-height:0.95;letter-spacing:-2.5px;position:relative;z-index:1;animation:fadeUp 0.6s 0.1s ease both;}
+    .g1{display:block;color:var(--white);}
+    .g2{display:block;background:linear-gradient(135deg,#a855f7,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .hero-sub{font-size:0.98rem;color:var(--muted);max-width:420px;line-height:1.7;margin-top:1.2rem;position:relative;z-index:1;}
+    .hero-sub em{font-style:normal;color:var(--neon);font-weight:600;}
+    .scroll-btn{display:inline-block;margin-top:2rem;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;padding:0.85rem 2rem;border-radius:999px;font-weight:700;font-size:1rem;box-shadow:0 0 40px rgba(124,58,237,0.4);transition:all 0.2s;border:none;cursor:pointer;text-decoration:none;position:relative;z-index:1;}
+    .scroll-btn:hover{transform:translateY(-2px);box-shadow:0 0 60px rgba(124,58,237,0.6);}
 
-    /* NAV */
-    nav { position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:rgba(8,8,16,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border); }
-    .logo { font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:800;background:linear-gradient(135deg,#a855f7,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;letter-spacing:-1px; }
-    .nav-right { display:flex;gap:0.5rem; }
-    .nbtn { background:transparent;color:var(--muted);padding:0.4rem 0.9rem;border-radius:999px;text-decoration:none;font-size:0.85rem;font-weight:500;border:1px solid var(--border);transition:all 0.2s; }
-    .nbtn:hover { color:var(--white);border-color:var(--accent2); }
+    /* ANIME SCENE */
+    .scene-wrap{margin-top:2.5rem;position:relative;z-index:1;}
+    .queue-scene{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:1.5rem 2rem;display:inline-flex;align-items:flex-end;gap:0;position:relative;overflow:hidden;min-width:340px;}
+    .scene-tag{position:absolute;top:0.6rem;left:1rem;font-size:0.6rem;font-weight:700;letter-spacing:0.12em;color:var(--green);}
+    .scene-dot{position:absolute;top:0.75rem;right:1rem;width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.5s infinite;}
+    .counter-box{width:60px;height:86px;background:var(--surface);border:1px solid var(--border);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;flex-shrink:0;}
+    .c-num{font-family:'Bricolage Grotesque',sans-serif;font-size:1.1rem;font-weight:800;color:var(--neon);}
+    .c-lbl{font-size:0.5rem;color:var(--muted);font-weight:600;letter-spacing:0.05em;text-transform:uppercase;}
+    .anime-person{display:flex;flex-direction:column;align-items:center;transition:all 0.5s ease;}
+    .anime-person.calling{animation:abounce 0.7s ease;}
+    @keyframes abounce{0%{transform:translateY(0)}20%{transform:translateY(-16px) rotate(-5deg)}50%{transform:translateY(-8px) rotate(3deg)}80%{transform:translateY(-3px)}100%{transform:translateY(0)}}
+    .a-label{font-size:0.58rem;font-weight:700;margin-top:3px;padding:0.12rem 0.4rem;border-radius:4px;white-space:nowrap;}
 
-    /* HERO */
-    .hero { min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:8rem 1.5rem 3rem;position:relative;overflow:hidden; }
-    .orb { position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0; }
-    .o1 { width:450px;height:450px;background:rgba(124,58,237,0.18);top:-80px;left:-80px; }
-    .o2 { width:350px;height:350px;background:rgba(6,182,212,0.12);bottom:0;right:-50px; }
-    .o3 { width:250px;height:250px;background:rgba(168,85,247,0.1);top:40%;left:50%;transform:translate(-50%,-50%); }
-    .badge { display:inline-flex;align-items:center;gap:0.4rem;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);color:var(--neon);font-size:0.75rem;font-weight:600;padding:0.3rem 0.9rem;border-radius:999px;margin-bottom:1.2rem;position:relative;z-index:1;letter-spacing:0.05em;animation:fadeUp 0.5s ease both; }
-    .ldot { width:6px;height:6px;background:var(--green);border-radius:50%;animation:blink 1.5s infinite; }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-    .hero h1 { font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(2.4rem,8vw,5.5rem);font-weight:800;line-height:0.95;letter-spacing:-2.5px;position:relative;z-index:1;animation:fadeUp 0.6s 0.1s ease both; }
-    .g1 { display:block;color:var(--white); }
-    .g2 { display:block;background:linear-gradient(135deg,#a855f7,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent; }
-    .hero-sub { font-size:0.98rem;color:var(--muted);max-width:400px;line-height:1.7;margin-top:1.2rem;position:relative;z-index:1;animation:fadeUp 0.6s 0.2s ease both; }
-    .hero-sub em { font-style:normal;color:var(--neon);font-weight:600; }
-    .scroll-btn { display:inline-block;margin-top:2rem;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;padding:0.85rem 2rem;border-radius:999px;font-weight:700;font-size:1rem;box-shadow:0 0 40px rgba(124,58,237,0.4);transition:all 0.2s;border:none;cursor:pointer;text-decoration:none;position:relative;z-index:1;animation:fadeUp 0.6s 0.3s ease both; }
-    .scroll-btn:hover { transform:translateY(-2px);box-shadow:0 0 60px rgba(124,58,237,0.6); }
-
-    /* ANIME QUEUE SCENE */
-    .scene-wrap { margin-top:2.5rem;position:relative;z-index:1;animation:fadeUp 0.6s 0.35s ease both; }
-    .queue-scene { background:var(--card);border:1px solid var(--border);border-radius:20px;padding:1.5rem 2rem;display:inline-flex;align-items:flex-end;gap:0;position:relative;overflow:hidden;min-width:340px; }
-    .scene-tag { position:absolute;top:0.6rem;left:1rem;font-size:0.6rem;font-weight:700;letter-spacing:0.12em;color:var(--green); }
-    .scene-dot { position:absolute;top:0.75rem;right:1rem;width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.5s infinite; }
-    .counter-box { width:60px;height:86px;background:var(--surface);border:1px solid var(--border);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;flex-shrink:0; }
-    .c-num { font-family:'Bricolage Grotesque',sans-serif;font-size:1.1rem;font-weight:800;color:var(--neon); }
-    .c-lbl { font-size:0.5rem;color:var(--muted);font-weight:600;letter-spacing:0.05em;text-transform:uppercase; }
-
-    /* ANIME CHARACTERS - SVG based */
-    .anime-person { display:flex;flex-direction:column;align-items:center;transition:all 0.5s ease; }
-    .anime-person.called { transform:translateX(-80px) scale(0.8);opacity:0; }
-    .anime-person.calling { animation:abounce 0.7s ease; }
-    @keyframes abounce { 0%{transform:translateY(0)} 20%{transform:translateY(-16px) rotate(-5deg)} 50%{transform:translateY(-8px) rotate(3deg)} 80%{transform:translateY(-3px)} 100%{transform:translateY(0)} }
-    .a-label { font-size:0.58rem;font-weight:700;margin-top:3px;padding:0.12rem 0.4rem;border-radius:4px;white-space:nowrap; }
-
-    /* HOW IT WORKS */
-    .section { padding:4rem 1.5rem;max-width:900px;margin:0 auto;position:relative;z-index:1; }
-    .sec-tag { font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--neon);margin-bottom:0.6rem;display:block; }
-    .sec-title { font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;letter-spacing:-1px;color:var(--white);margin-bottom:2rem;line-height:1.1; }
-    .steps { display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem; }
-    .step { background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.4rem;text-align:center;transition:all 0.25s; }
-    .step:hover { border-color:rgba(168,85,247,0.3);transform:translateY(-3px); }
-    .step-n { width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-family:'Bricolage Grotesque',sans-serif;font-size:1.2rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 0.9rem;box-shadow:0 0 20px rgba(124,58,237,0.4); }
-    .step h4 { font-size:0.92rem;font-weight:700;color:var(--white);margin-bottom:0.4rem; }
-    .step p { font-size:0.82rem;color:var(--muted);line-height:1.5; }
-    .feats { display:flex;flex-wrap:wrap;gap:0.6rem;justify-content:center;padding:0 1.5rem 3rem;position:relative;z-index:1; }
-    .fpill { display:flex;align-items:center;gap:0.5rem;background:var(--card);border:1px solid var(--border);border-radius:999px;padding:0.55rem 1rem;font-size:0.82rem;color:var(--text); }
+    /* SECTIONS */
+    .section{padding:3.5rem 1.5rem;max-width:900px;margin:0 auto;position:relative;z-index:1;}
+    .sec-tag{font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--neon);margin-bottom:0.6rem;display:block;}
+    .sec-title{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;letter-spacing:-1px;color:var(--white);margin-bottom:2rem;line-height:1.1;}
+    .steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;}
+    .step{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.4rem;text-align:center;transition:all 0.25s;}
+    .step:hover{border-color:rgba(168,85,247,0.3);transform:translateY(-3px);}
+    .step-n{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-family:'Bricolage Grotesque',sans-serif;font-size:1.2rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 0.9rem;box-shadow:0 0 20px rgba(124,58,237,0.4);}
+    .step h4{font-size:0.92rem;font-weight:700;color:var(--white);margin-bottom:0.4rem;}
+    .step p{font-size:0.82rem;color:var(--muted);line-height:1.5;}
 
     /* JOIN FORM */
-    .join-section { padding:2rem 1.5rem 5rem;max-width:500px;margin:0 auto;position:relative;z-index:1; }
-    .join-card { background:var(--card);border:1px solid var(--border);border-radius:24px;padding:2.5rem;position:relative;overflow:hidden; }
-    .join-card::before { content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--cyan)); }
-    .j-title { font-family:'Bricolage Grotesque',sans-serif;font-size:1.8rem;font-weight:800;color:var(--white);letter-spacing:-0.5px;margin-bottom:0.3rem; }
-    .j-sub { color:var(--muted);font-size:0.85rem;margin-bottom:0.6rem; }
-    .genz-copy { font-size:0.8rem;color:var(--neon);margin-bottom:1.5rem;font-style:italic; }
-    label { display:block;font-size:0.78rem;font-weight:600;color:var(--muted);margin-bottom:0.35rem;letter-spacing:0.05em;text-transform:uppercase; }
-    input,select { width:100%;background:var(--surface);border:1px solid var(--border);border-radius:12px;color:var(--white);font-family:'Space Grotesk',sans-serif;font-size:0.95rem;padding:0.85rem 1rem;outline:none;margin-bottom:1.1rem;transition:border-color 0.2s; }
-    input:focus,select:focus { border-color:var(--accent2);box-shadow:0 0 0 3px rgba(168,85,247,0.1); }
-    select option { background:var(--card); }
-    .join-btn { width:100%;padding:1rem;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:12px;font-family:'Bricolage Grotesque',sans-serif;font-size:1.05rem;font-weight:800;cursor:pointer;transition:all 0.2s;box-shadow:0 0 30px rgba(124,58,237,0.3);letter-spacing:-0.3px; }
-    .join-btn:hover { transform:translateY(-2px);box-shadow:0 0 50px rgba(124,58,237,0.5); }
-    .join-btn:disabled { opacity:0.5;cursor:not-allowed;transform:none; }
-    #errorMsg { display:none;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#f87171;border-radius:10px;padding:0.7rem 1rem;font-size:0.85rem;margin-bottom:1rem; }
+    .join-section{padding:2rem 1.5rem 4rem;max-width:500px;margin:0 auto;position:relative;z-index:1;}
+    .join-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:2.5rem;position:relative;overflow:hidden;}
+    .join-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--cyan));}
+    .j-title{font-family:'Bricolage Grotesque',sans-serif;font-size:1.8rem;font-weight:800;color:var(--white);letter-spacing:-0.5px;margin-bottom:0.3rem;}
+    .j-sub{color:var(--muted);font-size:0.85rem;margin-bottom:0.5rem;}
+    .genz-copy{font-size:0.8rem;color:var(--neon);margin-bottom:1.5rem;font-style:italic;}
+    label{display:block;font-size:0.78rem;font-weight:600;color:var(--muted);margin-bottom:0.35rem;letter-spacing:0.05em;text-transform:uppercase;}
+    input,select{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:12px;color:var(--white);font-family:'Space Grotesk',sans-serif;font-size:0.95rem;padding:0.85rem 1rem;outline:none;margin-bottom:1.1rem;transition:border-color 0.2s;}
+    input:focus,select:focus{border-color:var(--accent2);box-shadow:0 0 0 3px rgba(168,85,247,0.1);}
+    select option{background:var(--card);}
+    .join-btn{width:100%;padding:1rem;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:12px;font-family:'Bricolage Grotesque',sans-serif;font-size:1.05rem;font-weight:800;cursor:pointer;transition:all 0.2s;box-shadow:0 0 30px rgba(124,58,237,0.3);}
+    .join-btn:hover{transform:translateY(-2px);box-shadow:0 0 50px rgba(124,58,237,0.5);}
+    .join-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+    #errorMsg{display:none;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#f87171;border-radius:10px;padding:0.7rem 1rem;font-size:0.85rem;margin-bottom:1rem;}
+    #noBizState{display:none;text-align:center;padding:2rem 0;}
 
-    /* TICKET */
-    #ticketView { display:none; }
-    .t-top { text-align:center;margin-bottom:1.5rem; }
-    .t-top h2 { font-family:'Bricolage Grotesque',sans-serif;font-size:1.4rem;font-weight:800;color:var(--white); }
-    .t-top .genz-msg { font-size:0.82rem;color:var(--neon);margin-top:0.3rem;font-style:italic; }
-    .pos-ring { width:150px;height:150px;border-radius:50%;border:3px solid var(--accent2);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 1.5rem;background:rgba(124,58,237,0.08);position:relative;animation:ringPulse 2s ease-in-out infinite; }
-    @keyframes ringPulse { 0%,100%{box-shadow:0 0 20px rgba(168,85,247,0.2)} 50%{box-shadow:0 0 50px rgba(168,85,247,0.5)} }
-    .pos-ring::before { content:'';position:absolute;inset:-6px;border-radius:50%;border:1px solid rgba(168,85,247,0.15); }
-    #positionNum { font-family:'Bricolage Grotesque',sans-serif;font-size:3.5rem;font-weight:800;color:var(--neon);line-height:1; }
-    #positionLabel { font-size:0.72rem;color:var(--muted);margin-top:0.2rem;font-weight:500; }
-    .sbadge { display:inline-block;font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.25rem 0.8rem;border-radius:999px;margin-bottom:1.2rem;background:rgba(124,58,237,0.15);color:var(--neon);border:1px solid rgba(124,58,237,0.3); }
-    .info-row { display:flex;gap:0.7rem;margin-bottom:1.2rem; }
-    .ichip { flex:1;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:0.8rem;text-align:center; }
-    .ichip .val { font-family:'Bricolage Grotesque',sans-serif;font-size:1.2rem;font-weight:800;color:var(--white); }
-    .ichip .lbl { font-size:0.68rem;color:var(--muted);margin-top:0.2rem;text-transform:uppercase;letter-spacing:0.05em; }
-    .eta-bar { background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:0.9rem 1rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem; }
-    .eta-lbl { font-size:0.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em; }
-    #etaText { font-family:'Bricolage Grotesque',sans-serif;font-size:1rem;font-weight:700;color:var(--yellow); }
-    .tok-show { background:linear-gradient(135deg,rgba(124,58,237,0.15),rgba(6,182,212,0.1));border:1px solid rgba(168,85,247,0.2);border-radius:12px;padding:0.8rem;text-align:center;margin-bottom:1.2rem; }
-    .tok-show .tl { font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em; }
-    .tok-show .tv { font-family:'Bricolage Grotesque',sans-serif;font-size:2rem;font-weight:800;background:linear-gradient(135deg,var(--neon),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent; }
-    .notif-status { background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:10px;padding:0.6rem 0.8rem;font-size:0.78rem;color:var(--green);text-align:center;margin-bottom:1rem;cursor:pointer; }
-    .leave-btn { width:100%;padding:0.75rem;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:12px;font-family:'Space Grotesk',sans-serif;font-size:0.88rem;cursor:pointer;transition:all 0.2s;margin-top:0.3rem; }
-    .leave-btn:hover { border-color:var(--red);color:#f87171; }
+    /* TICKET VIEW */
+    #ticketView{display:none;}
+    .t-top{text-align:center;margin-bottom:1.5rem;}
+    .t-top h2{font-family:'Bricolage Grotesque',sans-serif;font-size:1.4rem;font-weight:800;color:var(--white);}
+    .pos-ring{width:150px;height:150px;border-radius:50%;border:3px solid var(--accent2);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 1.2rem;background:rgba(124,58,237,0.08);position:relative;animation:ringPulse 2s ease-in-out infinite;}
+    @keyframes ringPulse{0%,100%{box-shadow:0 0 20px rgba(168,85,247,0.2)}50%{box-shadow:0 0 50px rgba(168,85,247,0.5)}}
+    .pos-ring::before{content:'';position:absolute;inset:-6px;border-radius:50%;border:1px solid rgba(168,85,247,0.15);}
+    #positionNum{font-family:'Bricolage Grotesque',sans-serif;font-size:3.5rem;font-weight:800;color:var(--neon);line-height:1;}
+    #positionLabel{font-size:0.72rem;color:var(--muted);margin-top:0.2rem;font-weight:500;}
+    .sbadge{display:inline-block;font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.25rem 0.8rem;border-radius:999px;margin-bottom:1.2rem;background:rgba(124,58,237,0.15);color:var(--neon);border:1px solid rgba(124,58,237,0.3);}
+    .info-row{display:flex;gap:0.7rem;margin-bottom:1rem;}
+    .ichip{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:0.8rem;text-align:center;}
+    .ichip .val{font-family:'Bricolage Grotesque',sans-serif;font-size:1.2rem;font-weight:800;color:var(--white);}
+    .ichip .lbl{font-size:0.68rem;color:var(--muted);margin-top:0.2rem;text-transform:uppercase;letter-spacing:0.05em;}
+    .tok-show{background:linear-gradient(135deg,rgba(124,58,237,0.15),rgba(6,182,212,0.1));border:1px solid rgba(168,85,247,0.2);border-radius:12px;padding:0.8rem;text-align:center;margin-bottom:1rem;}
+    .tok-show .tl{font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;}
+    .tok-show .tv{font-family:'Bricolage Grotesque',sans-serif;font-size:2rem;font-weight:800;background:linear-gradient(135deg,var(--neon),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
 
-    /* CALLED STATE - PARTY */
-    body.its-your-turn { animation:screenFlash 0.5s ease; }
-    @keyframes screenFlash { 0%{filter:brightness(1)} 50%{filter:brightness(2)} 100%{filter:brightness(1)} }
+    /* ✅ SMART WAIT ENGINE */
+    .smart-wait{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.2rem;margin-bottom:1rem;position:relative;overflow:hidden;}
+    .smart-wait::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--cyan));}
+    .sw-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.8rem;}
+    .sw-title{font-size:0.78rem;font-weight:700;color:var(--neon);text-transform:uppercase;letter-spacing:0.08em;}
+    .sw-badge{font-size:0.62rem;font-weight:700;padding:0.2rem 0.5rem;border-radius:999px;background:rgba(124,58,237,0.15);color:var(--neon);border:1px solid rgba(124,58,237,0.2);}
 
-    @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
-    @media(max-width:600px) { nav{padding:1rem;} }
+    /* ETA DISPLAY */
+    .eta-big{display:flex;align-items:center;gap:1rem;margin-bottom:1rem;}
+    .eta-num{font-family:'Bricolage Grotesque',sans-serif;font-size:2.8rem;font-weight:800;color:var(--yellow);line-height:1;}
+    .eta-unit{font-size:0.8rem;color:var(--muted);}
+    .eta-conf{font-size:0.72rem;font-weight:600;padding:0.2rem 0.6rem;border-radius:999px;background:rgba(34,197,94,0.1);color:var(--green);}
+
+    /* SAFE TO LEAVE INDICATOR */
+    .safe-indicator{border-radius:12px;padding:0.8rem 1rem;margin-bottom:1rem;display:flex;align-items:center;gap:0.8rem;transition:all 0.5s;}
+    .safe-indicator.safe{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);}
+    .safe-indicator.risky{background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.25);}
+    .safe-indicator.danger{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);}
+    .si-icon{font-size:1.4rem;flex-shrink:0;}
+    .si-text{flex:1;}
+    .si-title{font-weight:700;font-size:0.88rem;}
+    .si-sub{font-size:0.75rem;margin-top:0.1rem;}
+    .safe-indicator.safe .si-title{color:var(--green);}
+    .safe-indicator.safe .si-sub{color:rgba(34,197,94,0.7);}
+    .safe-indicator.risky .si-title{color:var(--yellow);}
+    .safe-indicator.risky .si-sub{color:rgba(251,191,36,0.7);}
+    .safe-indicator.danger .si-title{color:#f87171;}
+    .safe-indicator.danger .si-sub{color:rgba(239,68,68,0.7);}
+
+    /* NEARBY SUGGESTIONS */
+    .nearby-section{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.2rem;margin-bottom:1rem;position:relative;overflow:hidden;}
+    .nearby-section::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--green));}
+    .nb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.8rem;}
+    .nb-title{font-size:0.78rem;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:0.08em;}
+    .nb-time{font-size:0.72rem;color:var(--muted);}
+    .nb-cards{display:flex;flex-direction:column;gap:0.6rem;}
+    .nb-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:0.8rem;display:flex;align-items:center;gap:0.8rem;cursor:pointer;transition:all 0.2s;}
+    .nb-card:hover{border-color:rgba(6,182,212,0.4);transform:translateX(3px);}
+    .nb-icon{font-size:1.4rem;width:36px;height:36px;background:rgba(6,182,212,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .nb-info{flex:1;}
+    .nb-name{font-weight:600;font-size:0.88rem;color:var(--white);}
+    .nb-desc{font-size:0.74rem;color:var(--muted);margin-top:0.1rem;}
+    .nb-tag{font-size:0.65rem;font-weight:700;padding:0.2rem 0.5rem;border-radius:999px;white-space:nowrap;}
+    .tag-free{background:rgba(34,197,94,0.12);color:var(--green);}
+    .tag-off{background:rgba(251,191,36,0.12);color:var(--yellow);}
+    .tag-fit{background:rgba(6,182,212,0.12);color:var(--cyan);}
+
+    /* GENZ MSG */
+    .genz-msg{font-size:0.78rem;color:var(--neon);font-style:italic;text-align:center;margin-bottom:1rem;}
+    .notif-btn{background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:10px;padding:0.6rem 0.8rem;font-size:0.78rem;color:var(--green);text-align:center;margin-bottom:1rem;cursor:pointer;width:100%;}
+    .leave-btn{width:100%;padding:0.75rem;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:12px;font-family:'Space Grotesk',sans-serif;font-size:0.88rem;cursor:pointer;transition:all 0.2s;margin-top:0.3rem;}
+    .leave-btn:hover{border-color:var(--red);color:#f87171;}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+    @media(max-width:600px){nav{padding:1rem;}}
   </style>
 </head>
 <body>
@@ -127,30 +159,23 @@
 <canvas id="confettiCanvas"></canvas>
 
 <nav>
-  <a class="logo" href="index.html">Qless™</a>
-  <div class="nav-right">
+  <a class="logo" href="index.html">QGo<sup>™</sup></a>
+  <div style="display:flex;gap:0.5rem;">
     <a class="nbtn" href="index.html">Home</a>
-    <a class="nbtn" href="admin.html">Admin</a>
+    <a class="nbtn" href="register.html">Businesses</a>
   </div>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
   <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
-  <div class="badge"><div class="ldot"></div> Real-time Queue System</div>
-  <h1><span class="g1">Your spot.</span><span class="g2">Saved instantly.</span></h1>
-  <p class="hero-sub">No standing. No stressing. Get your token, <em>walk away freely</em> — we'll blow your phone up when it's time. fr fr 🔥</p>
-  <a class="scroll-btn" href="#joinForm">Get My Token →</a>
-
-  <!-- ANIME QUEUE SCENE -->
+  <div class="biz-pill" id="bizBadge" style="display:none;"><div class="ldot"></div><span id="bizBadgeName">Loading...</span></div>
+  <h1><span class="g1">Your time.</span><span class="g2">Don't waste it.</span></h1>
+  <p class="hero-sub">Join the queue, <em>walk away freely</em> — QGo tells you exactly what to do with your wait time. Smart alerts. Nearby rewards. fr fr 🔥</p>
+  <a class="scroll-btn" href="#joinForm">Reclaim My Time →</a>
   <div class="scene-wrap">
     <div class="queue-scene">
-      <div class="scene-tag">LIVE DEMO</div>
-      <div class="scene-dot"></div>
-      <div class="counter-box">
-        <div class="c-num" id="counterNum">G01</div>
-        <div class="c-lbl">Serving</div>
-      </div>
+      <div class="scene-tag">LIVE DEMO</div><div class="scene-dot"></div>
+      <div class="counter-box"><div class="c-num" id="counterNum">G01</div><div class="c-lbl">Serving</div></div>
       <div id="animeContainer" style="display:flex;align-items:flex-end;gap:8px;margin-left:12px;"></div>
     </div>
   </div>
@@ -158,34 +183,33 @@
 
 <!-- HOW IT WORKS -->
 <div class="section">
-  <span class="sec-tag">How it works</span>
-  <h2 class="sec-title">Four steps.<br>Zero stress.</h2>
+  <span class="sec-tag">How QGo works</span>
+  <h2 class="sec-title">Not just a queue.<br>A time engine.</h2>
   <div class="steps">
-    <div class="step"><div class="step-n">1</div><h4>Enter your name</h4><p>No app. No signup. Just type your name and go.</p></div>
-    <div class="step"><div class="step-n">2</div><h4>Get your token</h4><p>Instant position. See the whole queue live.</p></div>
-    <div class="step"><div class="step-n">3</div><h4>Walk away</h4><p>Live ETA shown. We'll alert you when you're next.</p></div>
-    <div class="step"><div class="step-n">4</div><h4>Get called 🎉</h4><p>Screen flashes, sound plays, phone vibrates. Unmissable.</p></div>
+    <div class="step"><div class="step-n">1</div><h4>Join in 10 seconds</h4><p>Scan QR or open link. Name + queue type. Done.</p></div>
+    <div class="step"><div class="step-n">2</div><h4>AI predicts your wait</h4><p>Dynamic ETA based on real speed — not a static guess.</p></div>
+    <div class="step"><div class="step-n">3</div><h4>QGo suggests what to do</h4><p>"You have 12 mins — grab coffee nearby ☕ — safe to leave!"</p></div>
+    <div class="step"><div class="step-n">4</div><h4>Alert when it's time</h4><p>Sound, flash, vibration — unmissable. Walk back and in.</p></div>
   </div>
-</div>
-
-<!-- FEATURE PILLS -->
-<div class="feats">
-  <div class="fpill">⚡ Real-time updates</div>
-  <div class="fpill">🔔 Push notifications</div>
-  <div class="fpill">📳 Vibration alert</div>
-  <div class="fpill">🔊 Sound alert</div>
-  <div class="fpill">🎉 Confetti when called</div>
-  <div class="fpill">⏱ Live ETA</div>
-  <div class="fpill">🌍 Works worldwide</div>
 </div>
 
 <!-- JOIN FORM -->
 <div class="join-section" id="joinForm">
   <div class="join-card">
-    <div id="formView">
-      <div class="j-title">Join the Queue ✦</div>
-      <div class="j-sub">Takes 10 seconds. No cap.</div>
-      <div class="genz-copy">"bestie your spot is about to be secured 🔒"</div>
+
+    <div id="noBizState">
+      <div style="text-align:center;padding:2rem 0;">
+        <div style="font-size:3rem;margin-bottom:1rem;">🏢</div>
+        <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.2rem;font-weight:800;color:var(--white);margin-bottom:0.5rem;">No business selected</div>
+        <div style="color:var(--muted);font-size:0.88rem;margin-bottom:1.5rem;line-height:1.6;">Use the QR code at a registered business<br>or browse businesses below.</div>
+        <a href="register.html" style="display:inline-block;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;padding:0.8rem 1.5rem;border-radius:12px;text-decoration:none;font-weight:700;font-size:0.9rem;">Browse Businesses →</a>
+      </div>
+    </div>
+
+    <div id="formView" style="display:none;">
+      <div class="j-title">Join Queue ✦</div>
+      <div class="j-sub">10 seconds. No cap.</div>
+      <div class="genz-copy">"bestie your time is about to be protected 🔒"</div>
       <div id="errorMsg"></div>
       <label>Your Name</label>
       <input type="text" id="nameInput" placeholder="e.g. Ravi Kumar" autocomplete="off"/>
@@ -195,14 +219,13 @@
         <option value="emergency">🔴 Emergency</option>
         <option value="followup">🔵 Follow-up / Appointment</option>
       </select>
-      <button class="join-btn" id="joinBtn" onclick="joinQueue()">Secure My Spot ✦</button>
+      <button class="join-btn" id="joinBtn" onclick="joinQueue()">Reclaim My Time ✦</button>
     </div>
 
     <div id="ticketView">
       <div class="t-top">
-        <h2>You're locked in! 🔒</h2>
-        <div id="ticketName" style="color:var(--neon);font-weight:700;margin-top:0.3rem;"></div>
-        <div class="genz-msg" id="genzMsg">"don't move bestie, your time is coming ⏳"</div>
+        <h2>You're in! Time is yours 🕐</h2>
+        <div id="ticketName" style="color:var(--neon);font-weight:700;margin-top:0.3rem;font-size:1rem;"></div>
       </div>
       <div style="text-align:center;"><div class="sbadge" id="statusBadge">WAITING</div></div>
       <div class="pos-ring">
@@ -213,15 +236,54 @@
       <div class="info-row">
         <div class="ichip"><div class="val" id="totalWaiting">—</div><div class="lbl">In Queue</div></div>
         <div class="ichip"><div class="val" id="ticketQueue" style="font-size:0.85rem;">—</div><div class="lbl">Queue Type</div></div>
+        <div class="ichip"><div class="val" id="servedCount">—</div><div class="lbl">Served Today</div></div>
       </div>
-      <div class="eta-bar">
-        <span class="eta-lbl">⏱ Est. Wait</span>
-        <span id="etaText">Calculating...</span>
+
+      <!-- ✅ SMART WAIT ENGINE -->
+      <div class="smart-wait" id="smartWaitPanel">
+        <div class="sw-header">
+          <div class="sw-title">⚡ Smart wait engine</div>
+          <div class="sw-badge" id="aiConfBadge">Calculating...</div>
+        </div>
+        <div class="eta-big">
+          <div>
+            <div class="eta-num" id="aiEtaNum">—</div>
+            <div class="eta-unit">minutes estimated</div>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.3rem;">Queue speed</div>
+            <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
+              <div id="speedBar" style="height:100%;background:linear-gradient(90deg,var(--accent),var(--cyan));border-radius:3px;width:50%;transition:width 1s;"></div>
+            </div>
+            <div id="speedLabel" style="font-size:0.7rem;color:var(--muted);margin-top:0.2rem;">Measuring...</div>
+          </div>
+        </div>
+
+        <!-- SAFE TO LEAVE -->
+        <div class="safe-indicator safe" id="safeIndicator">
+          <div class="si-icon">✅</div>
+          <div class="si-text">
+            <div class="si-title" id="safeTitle">Safe to leave</div>
+            <div class="si-sub" id="safeSub">You have enough time — go explore nearby!</div>
+          </div>
+        </div>
       </div>
-      <div class="notif-status" id="notifStatus" onclick="requestNotifs()">🔔 Tap to enable alerts — don't miss your turn!</div>
-      <p style="color:var(--muted);font-size:0.78rem;text-align:center;margin-bottom:1rem;">Keep this page open. Position updates live.</p>
-      <button class="leave-btn" onclick="leaveQueue()">Leave Queue (you'll lose your spot ngl)</button>
+
+      <!-- NEARBY SUGGESTIONS -->
+      <div class="nearby-section" id="nearbyPanel" style="display:none;">
+        <div class="nb-header">
+          <div class="nb-title">🗺 What to do nearby</div>
+          <div class="nb-time" id="nearbyTime">Fits your wait</div>
+        </div>
+        <div class="nb-cards" id="nearbyCards"></div>
+      </div>
+
+      <div class="genz-msg" id="genzMsg">"hang tight bestie, your time is coming ⏳"</div>
+      <button class="notif-btn" id="notifBtn" onclick="requestNotifs()">🔔 Enable alerts — don't miss your turn!</button>
+      <p style="color:var(--muted);font-size:0.78rem;text-align:center;margin-bottom:1rem;">Keep this tab open. Position updates live.</p>
+      <button class="leave-btn" onclick="leaveQueue()">Leave Queue (lose your spot ngl)</button>
     </div>
+
   </div>
 </div>
 
@@ -238,258 +300,309 @@
     appId:"1:661569229761:web:b7e05c6a22836c724e1540"
   });
   var db = firebase.database();
+
+  var urlParams = new URLSearchParams(window.location.search);
+  var BIZ_SLUG = urlParams.get('biz') || '';
   var myTokenKey=null, myQueueType=null, alreadyCalledAlert=false;
+  var queueHistory = []; // stores timestamps of completed entries for speed calc
+  var bizType = 'general';
 
-  // ANIME CHARACTERS (SVG-based)
-  var animeChars = [
-    { id:'c1', name:'Anika', token:'G01', hair:'#f59e0b', skin:'#fcd34d', outfit:'#7c3aed', badge:'rgba(34,197,94,0.15)', badgeColor:'#22c55e' },
-    { id:'c2', name:'Rohan', token:'G02', hair:'#1e1e30', skin:'#f87171', outfit:'#06b6d4', badge:'rgba(124,58,237,0.15)', badgeColor:'#c084fc' },
-    { id:'c3', name:'Priya', token:'G03', hair:'#a855f7', skin:'#86efac', outfit:'#ec4899', badge:'rgba(6,182,212,0.15)', badgeColor:'#06b6d4' },
-    { id:'c4', name:'Dev',   token:'G04', hair:'#fcd34d', skin:'#fbbf24', outfit:'#10b981', badge:'rgba(251,191,36,0.15)', badgeColor:'#fbbf24' },
-    { id:'c5', name:'Sana',  token:'G05', hair:'#c4b5fd', skin:'#ddd6fe', outfit:'#f97316', badge:'rgba(249,115,22,0.15)', badgeColor:'#fb923c' },
-  ];
-  var animQ = animeChars.slice(), animCounter = 6;
-  var allNames = ['Vikram','Meera','Arjun','Kavya','Rahul','Sneha','Karan','Divya','Arun','Pooja'];
+  // NEARBY SUGGESTIONS by business type
+  var nearbySuggestions = {
+    hospital: [
+      {icon:'☕',name:'Quick coffee run',desc:'Grab a coffee, back in time',tag:'tag-fit',tagText:'Fits your wait'},
+      {icon:'💊',name:'Pharmacy nearby',desc:'Pick up any prescriptions',tag:'tag-fit',tagText:'Useful stop'},
+      {icon:'🥗',name:'Light meal',desc:'Eat before your appointment',tag:'tag-fit',tagText:'Recommended'},
+    ],
+    restaurant: [
+      {icon:'🛒',name:'Quick grocery',desc:'Grab essentials while you wait',tag:'tag-fit',tagText:'Fits perfectly'},
+      {icon:'☕',name:'Coffee nearby',desc:'Chill with a coffee',tag:'tag-fit',tagText:'5 min away'},
+      {icon:'🏧',name:'ATM',desc:'Get cash before dining',tag:'tag-fit',tagText:'30 sec'},
+    ],
+    temple: [
+      {icon:'🌿',name:'Gardens nearby',desc:'Peaceful walk while you wait',tag:'tag-fit',tagText:'Serene'},
+      {icon:'🍵',name:'Prasad shop',desc:'Get offerings ready',tag:'tag-fit',tagText:'Nearby'},
+      {icon:'📿',name:'Pooja items',desc:'Pick up items for worship',tag:'tag-fit',tagText:'Quick stop'},
+    ],
+    salon: [
+      {icon:'☕',name:'Cafe next door',desc:'Relax with a coffee',tag:'tag-free',tagText:'Often free wifi'},
+      {icon:'📱',name:'Browse & relax',desc:'Shop online, we\'ll call you',tag:'tag-fit',tagText:'Right here'},
+      {icon:'🛍',name:'Window shopping',desc:'Walk the street, come back',tag:'tag-fit',tagText:'5 min walk'},
+    ],
+    bank: [
+      {icon:'☕',name:'Coffee nearby',desc:'Grab a cup, back in 8 min',tag:'tag-fit',tagText:'Fits wait'},
+      {icon:'🖨',name:'Print shop',desc:'Print any documents needed',tag:'tag-fit',tagText:'Useful'},
+      {icon:'🥪',name:'Quick snack',desc:'Fuel up while you wait',tag:'tag-fit',tagText:'Nearby'},
+    ],
+    default: [
+      {icon:'☕',name:'Grab a coffee',desc:'You have time — enjoy it',tag:'tag-fit',tagText:'Fits your wait'},
+      {icon:'🚶',name:'Short walk',desc:'Stretch your legs nearby',tag:'tag-fit',tagText:'Refreshing'},
+      {icon:'🛒',name:'Quick errand',desc:'Get something done nearby',tag:'tag-off',tagText:'Productive'},
+    ]
+  };
 
-  function makeSVGPerson(p, pos) {
-    return '<div class="anime-person" id="ap-'+p.id+'" style="display:flex;flex-direction:column;align-items:center;transition:all 0.5s;">' +
-      '<svg width="36" height="64" viewBox="0 0 36 64" xmlns="http://www.w3.org/2000/svg">' +
-        // Hair
-        '<ellipse cx="18" cy="10" rx="10" ry="7" fill="'+p.hair+'"/>' +
-        // Head
-        '<ellipse cx="18" cy="14" rx="9" ry="10" fill="'+p.skin+'"/>' +
-        // Eyes
-        '<circle cx="14" cy="13" r="1.5" fill="#1e1e30"/>' +
-        '<circle cx="22" cy="13" r="1.5" fill="#1e1e30"/>' +
-        // Smile
-        '<path d="M14 18 Q18 21 22 18" stroke="#1e1e30" stroke-width="1.2" fill="none" stroke-linecap="round"/>' +
-        // Body
-        '<rect x="9" y="24" width="18" height="20" rx="5" fill="'+p.outfit+'"/>' +
-        // Arms
-        '<rect x="2" y="24" width="6" height="14" rx="3" fill="'+p.outfit+'"/>' +
-        '<rect x="28" y="24" width="6" height="14" rx="3" fill="'+p.outfit+'"/>' +
-        // Legs
-        '<rect x="10" y="43" width="7" height="18" rx="3" fill="'+p.hair+'"/>' +
-        '<rect x="19" y="43" width="7" height="18" rx="3" fill="'+p.hair+'"/>' +
-        // Shoes
-        '<ellipse cx="13" cy="61" rx="5" ry="3" fill="#1e1e30"/>' +
-        '<ellipse cx="23" cy="61" rx="5" ry="3" fill="#1e1e30"/>' +
-      '</svg>' +
-      '<div class="a-label" style="background:'+p.badge+';color:'+p.badgeColor+';">'+(pos===1?'📣 Next':'#'+pos)+'</div>' +
-    '</div>';
-  }
+  window.addEventListener('DOMContentLoaded', function(){
+    if (!BIZ_SLUG) { document.getElementById('noBizState').style.display='block'; return; }
+    db.ref('businesses/'+BIZ_SLUG).once('value').then(function(snap){
+      if (!snap.exists()) { document.getElementById('noBizState').style.display='block'; return; }
+      var biz = snap.val();
+      bizType = biz.type || 'default';
+      var typeEmojis={hospital:'🏥',restaurant:'🍽',temple:'🛕',bank:'🏦',salon:'💈',office:'🏢',govt:'🏛',shop:'🏪',other:'📍'};
+      document.getElementById('bizBadgeName').textContent=(typeEmojis[biz.type]||'📍')+' '+biz.name;
+      document.getElementById('bizBadge').style.display='inline-flex';
+      document.title='QGo — '+biz.name;
+      document.getElementById('formView').style.display='block';
+      // Restore session
+      var sk=localStorage.getItem('ql_token_'+BIZ_SLUG),sq=localStorage.getItem('ql_queue_'+BIZ_SLUG);
+      if(sk&&sq){
+        myTokenKey=sk;myQueueType=sq;
+        db.ref('bizQueues/'+BIZ_SLUG+'/'+sq+'/'+sk).once('value').then(function(s){
+          if(s.exists()&&s.val().status!=='done'){
+            document.getElementById('ticketName').textContent=s.val().name;
+            var labs={general:'General',emergency:'Emergency',followup:'Follow-up'};
+            document.getElementById('ticketQueue').textContent=labs[sq];
+            document.getElementById('formView').style.display='none';
+            document.getElementById('ticketView').style.display='block';
+            listenToPosition();
+          } else { localStorage.removeItem('ql_token_'+BIZ_SLUG);localStorage.removeItem('ql_queue_'+BIZ_SLUG); }
+        });
+      }
+    });
+    renderAnimeQ();
+    setInterval(animCallNext, 3200);
+  });
 
-  function renderAnimeQ() {
-    var c = document.getElementById('animeContainer');
-    if (!c) return;
-    c.innerHTML = animQ.map(function(p,i){ return makeSVGPerson(p,i+1); }).join('');
-  }
-
-  function animCallNext() {
-    if (animQ.length===0) return;
-    var first = animQ[0];
-    var el = document.getElementById('ap-'+first.id);
-    if (el) {
-      el.classList.add('calling');
-      el.style.animation = 'abounce 0.7s ease';
-      setTimeout(function(){
-        el.style.transform = 'translateX(-80px) scale(0.8)';
-        el.style.opacity = '0';
-        setTimeout(function(){
-          animQ.shift();
-          var np = {
-            id:'c'+animCounter, name:allNames[animCounter%allNames.length], token:'G'+String(animCounter).padStart(2,'0'),
-            hair:animeChars[animCounter%5].hair, skin:animeChars[animCounter%5].skin,
-            outfit:animeChars[animCounter%5].outfit, badge:animeChars[animCounter%5].badge, badgeColor:animeChars[animCounter%5].badgeColor
-          };
-          animCounter++; animQ.push(np);
-          var cn = document.getElementById('counterNum');
-          if (cn) cn.textContent = first.token;
-          renderAnimeQ();
-        }, 500);
-      }, 700);
-    }
-  }
-  renderAnimeQ();
-  setInterval(animCallNext, 3200);
-
-  // FIREBASE QUEUE
-  function joinQueue() {
-    var name = document.getElementById('nameInput').value.trim();
-    var qtype = document.getElementById('queueType').value;
-    if (!name) { showError('yo enter your name bestie 😭'); return; }
-    var btn = document.getElementById('joinBtn');
-    btn.disabled = true; btn.textContent = 'Securing your spot...';
-    var joinedAt = Date.now() + Math.random();
-    var newRef = db.ref('queues/'+qtype).push();
-    db.ref('queues/'+qtype).once('value').then(function(snap){
+  function joinQueue(){
+    var name=document.getElementById('nameInput').value.trim();
+    var qtype=document.getElementById('queueType').value;
+    if(!name){showError('yo enter your name bestie 😭');return;}
+    var btn=document.getElementById('joinBtn');
+    btn.disabled=true;btn.textContent='Securing your time...';
+    var joinedAt=Date.now()+Math.random();
+    var newRef=db.ref('bizQueues/'+BIZ_SLUG+'/'+qtype).push();
+    db.ref('bizQueues/'+BIZ_SLUG+'/'+qtype).once('value').then(function(snap){
       var num=1;
-      if(snap.exists()){ var a=Object.values(snap.val()).filter(function(e){return e.status==='waiting'||e.status==='called';}); num=a.length+1; }
-      var tok = qtype.charAt(0).toUpperCase()+String(num).padStart(3,'0');
-      return newRef.set({name:name,token:tok,status:'waiting',joinedAt:joinedAt,queueType:qtype});
+      if(snap.exists()){var a=Object.values(snap.val()).filter(function(e){return e.status==='waiting'||e.status==='called';});num=a.length+1;}
+      var tok=qtype.charAt(0).toUpperCase()+String(num).padStart(3,'0');
+      return newRef.set({name:name,token:tok,status:'waiting',joinedAt:joinedAt,queueType:qtype,bizSlug:BIZ_SLUG});
     }).then(function(){
-      myTokenKey=newRef.key; myQueueType=qtype;
-      localStorage.setItem('ql_token',myTokenKey); localStorage.setItem('ql_queue',myQueueType);
-      document.getElementById('ticketName').textContent = name;
+      myTokenKey=newRef.key;myQueueType=qtype;
+      localStorage.setItem('ql_token_'+BIZ_SLUG,myTokenKey);localStorage.setItem('ql_queue_'+BIZ_SLUG,myQueueType);
+      document.getElementById('ticketName').textContent=name;
       var labs={general:'General',emergency:'Emergency',followup:'Follow-up'};
-      document.getElementById('ticketQueue').textContent = labs[qtype];
+      document.getElementById('ticketQueue').textContent=labs[qtype];
       document.getElementById('formView').style.display='none';
       document.getElementById('ticketView').style.display='block';
-      listenToPosition();
-      requestNotifs();
-    }).catch(function(e){ showError('Error: '+e.message); btn.disabled=false; btn.textContent='Secure My Spot ✦'; });
+      listenToPosition();requestNotifs();
+    }).catch(function(e){showError('Error: '+e.message);btn.disabled=false;btn.textContent='Reclaim My Time ✦';});
   }
 
-  function listenToPosition() {
-    db.ref('queues/'+myQueueType).on('value', function(snap){
+  function listenToPosition(){
+    db.ref('bizQueues/'+BIZ_SLUG+'/'+myQueueType).on('value',function(snap){
       if(!snap.exists()) return;
-      var all=snap.val(), myData=all[myTokenKey];
+      var all=snap.val(),myData=all[myTokenKey];
       if(!myData) return;
-      document.getElementById('myToken').textContent = myData.token||'—';
+      document.getElementById('myToken').textContent=myData.token||'—';
+
       var waiting=Object.entries(all).filter(function(e){return e[1].status==='waiting';}).sort(function(a,b){return a[1].joinedAt-b[1].joinedAt;});
       var active=Object.entries(all).filter(function(e){return e[1].status==='waiting'||e[1].status==='called';});
-      document.getElementById('totalWaiting').textContent = active.length;
+      var done=Object.entries(all).filter(function(e){return e[1].status==='done';});
+      document.getElementById('totalWaiting').textContent=active.length;
+      document.getElementById('servedCount').textContent=done.length;
 
-      if (myData.status==='called') {
-        document.getElementById('positionNum').textContent = '🎉';
-        document.getElementById('positionLabel').textContent = "IT'S YOUR TURN!";
-        document.getElementById('etaText').textContent = 'GO GO GO!';
-        document.getElementById('statusBadge').textContent = 'YOU\'RE UP!';
-        document.getElementById('statusBadge').style.cssText = 'background:rgba(34,197,94,0.15);color:#22c55e;border-color:rgba(34,197,94,0.3);';
-        document.getElementById('genzMsg').textContent = '"bestie it\'s YOUR TIME, let\'s go!! 🚀"';
-        if (!alreadyCalledAlert) {
-          alreadyCalledAlert = true;
-          triggerCalledEffects();
-        }
-      } else if (myData.status==='done') {
-        document.getElementById('positionNum').textContent = '✓';
-        document.getElementById('positionLabel').textContent = 'All done!';
-        document.getElementById('etaText').textContent = 'Thanks for using Qless!';
-        document.getElementById('genzMsg').textContent = '"slay, you\'re done! come back soon 💜"';
+      if(myData.status==='called'){
+        document.getElementById('positionNum').textContent='🎉';
+        document.getElementById('positionLabel').textContent="IT'S YOUR TIME!";
+        document.getElementById('statusBadge').textContent="YOUR TURN!";
+        document.getElementById('statusBadge').style.cssText='background:rgba(34,197,94,0.15);color:#22c55e;border-color:rgba(34,197,94,0.3);';
+        document.getElementById('genzMsg').textContent='"bestie GO GO GO your time is NOW 🚀"';
+        document.getElementById('aiEtaNum').textContent='0';
+        document.getElementById('aiConfBadge').textContent='GO NOW';
+        updateSafeIndicator('danger',0);
+        document.getElementById('nearbyPanel').style.display='none';
+        if(!alreadyCalledAlert){alreadyCalledAlert=true;triggerCalledEffects();}
+      } else if(myData.status==='done'){
+        document.getElementById('positionNum').textContent='✓';
+        document.getElementById('positionLabel').textContent='All done!';
+        document.getElementById('genzMsg').textContent='"slay! come back soon 💜"';
       } else {
         var idx=waiting.findIndex(function(e){return e[0]===myTokenKey;});
         var pos=idx+1;
-        document.getElementById('positionNum').textContent = pos;
-        document.getElementById('positionLabel').textContent = pos===1?'You are Next!':'Position in queue';
-        document.getElementById('etaText').textContent = pos===1?"Get ready!":'~'+Math.max(1,(pos-1)*5)+' min';
-        if (pos===2 && !alreadyCalledAlert) { sendNotif('Almost your turn!','One person ahead. Get ready! 🎯'); }
-        var msgs = [
-          '"hang tight bestie, almost there ✨"',
-          '"you\'re not cooked, queue is moving 🍳"',
-          '"the wait is giving character development 💅"',
-          '"position '+pos+'? you\'re gonna make it fr 🔥"'
-        ];
-        document.getElementById('genzMsg').textContent = msgs[Math.min(pos-1,msgs.length-1)];
+        document.getElementById('positionNum').textContent=pos;
+        document.getElementById('positionLabel').textContent=pos===1?'You are Next!':'Position in queue';
+
+        // ✅ SMART WAIT ENGINE - AI ETA calculation
+        updateSmartWait(pos, waiting, done);
+
+        var msgs=['"hang tight bestie, almost there ✨"','"you\'re not cooked, queue is moving 🍳"','"the wait is giving character development 💅"','"position '+pos+'? you\'re gonna make it fr 🔥"','"QGo\'s got your time protected 🕐"'];
+        document.getElementById('genzMsg').textContent=msgs[Math.min(pos-1,msgs.length-1)];
+        if(pos===2&&!alreadyCalledAlert) sendNotif('Almost your turn!','One person ahead — get ready! 🎯');
       }
     });
   }
 
-  function triggerCalledEffects() {
-    // Flash
+  // ✅ SMART WAIT ENGINE LOGIC
+  function updateSmartWait(pos, waiting, done) {
+    // Calculate queue speed from done entries
+    var avgMinPerPerson = 5; // default
+    if (done.length >= 2) {
+      var doneEntries = done.map(function(e){return e[1];}).filter(function(e){return e.joinedAt;}).sort(function(a,b){return a.joinedAt-b.joinedAt;});
+      if (doneEntries.length >= 2) {
+        var totalTime = (doneEntries[doneEntries.length-1].joinedAt - doneEntries[0].joinedAt) / 60000;
+        avgMinPerPerson = Math.max(1, Math.min(15, totalTime / doneEntries.length));
+      }
+    }
+
+    var etaMins = Math.max(1, Math.round((pos - 1) * avgMinPerPerson));
+    var speed = Math.max(10, Math.min(100, Math.round(100 / avgMinPerPerson * 3)));
+    var confidence = done.length >= 3 ? 'High accuracy' : done.length >= 1 ? 'Good estimate' : 'Early estimate';
+
+    document.getElementById('aiEtaNum').textContent = etaMins;
+    document.getElementById('aiConfBadge').textContent = confidence;
+    document.getElementById('speedBar').style.width = speed + '%';
+    document.getElementById('speedLabel').textContent = avgMinPerPerson < 3 ? 'Fast queue ⚡' : avgMinPerPerson < 6 ? 'Steady pace 👍' : 'Slow today 🐢';
+
+    // Safe to leave logic
+    updateSafeIndicator(etaMins > 8 ? 'safe' : etaMins > 3 ? 'risky' : 'danger', etaMins);
+
+    // Show nearby suggestions
+    if (etaMins >= 5) {
+      showNearbySuggestions(etaMins);
+    } else {
+      document.getElementById('nearbyPanel').style.display = 'none';
+    }
+  }
+
+  function updateSafeIndicator(state, etaMins) {
+    var ind = document.getElementById('safeIndicator');
+    ind.className = 'safe-indicator ' + state;
+    if (state === 'safe') {
+      document.getElementById('safeTitle').textContent = '✅ Safe to leave';
+      document.getElementById('safeSub').textContent = 'You have ~'+etaMins+' mins — explore nearby!';
+    } else if (state === 'risky') {
+      document.getElementById('safeTitle').textContent = '⚠️ Getting close';
+      document.getElementById('safeSub').textContent = 'Stay nearby — your turn in ~'+etaMins+' mins';
+    } else {
+      document.getElementById('safeTitle').textContent = '🔴 Stay here now';
+      document.getElementById('safeSub').textContent = 'You\'re up very soon — don\'t leave!';
+    }
+  }
+
+  function showNearbySuggestions(etaMins) {
+    var suggestions = nearbySuggestions[bizType] || nearbySuggestions.default;
+    var fitsCount = etaMins >= 12 ? 3 : etaMins >= 7 ? 2 : 1;
+    var toShow = suggestions.slice(0, fitsCount);
+
+    document.getElementById('nearbyTime').textContent = 'You have ~'+etaMins+' mins';
+    document.getElementById('nearbyCards').innerHTML = toShow.map(function(s){
+      return '<div class="nb-card">'+
+        '<div class="nb-icon">'+s.icon+'</div>'+
+        '<div class="nb-info"><div class="nb-name">'+s.name+'</div><div class="nb-desc">'+s.desc+'</div></div>'+
+        '<span class="nb-tag '+s.tag+'">'+s.tagText+'</span>'+
+      '</div>';
+    }).join('');
+    document.getElementById('nearbyPanel').style.display = 'block';
+  }
+
+  function triggerCalledEffects(){
     var fl=document.getElementById('flashOverlay');
-    fl.classList.remove('flash');
-    void fl.offsetWidth;
-    fl.classList.add('flash');
-    // Sound
+    fl.classList.remove('flash');void fl.offsetWidth;fl.classList.add('flash');
     playSound();
-    // Vibrate
-    if (navigator.vibrate) navigator.vibrate([300,100,300,100,500]);
-    // Confetti
+    if(navigator.vibrate)navigator.vibrate([300,100,300,100,500]);
     launchConfetti();
-    // Push notification
-    sendNotif("It's your turn! 🎉","Head over now — don't keep them waiting!");
+    sendNotif("It's your turn! 🎉","Head back now — QGo called you!");
   }
 
-  function playSound() {
-    try {
-      var ctx = new (window.AudioContext||window.webkitAudioContext)();
-      var notes = [523,659,784,1047];
-      notes.forEach(function(freq,i){
-        var o=ctx.createOscillator(), g=ctx.createGain();
-        o.connect(g); g.connect(ctx.destination);
-        o.frequency.value=freq; o.type='sine';
+  function playSound(){
+    try{
+      var ctx=new(window.AudioContext||window.webkitAudioContext)();
+      [523,659,784,1047].forEach(function(freq,i){
+        var o=ctx.createOscillator(),g=ctx.createGain();
+        o.connect(g);g.connect(ctx.destination);o.frequency.value=freq;o.type='sine';
         var t=ctx.currentTime+i*0.15;
-        g.gain.setValueAtTime(0,t);
-        g.gain.linearRampToValueAtTime(0.3,t+0.05);
-        g.gain.exponentialRampToValueAtTime(0.001,t+0.4);
-        o.start(t); o.stop(t+0.4);
+        g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.3,t+0.05);g.gain.exponentialRampToValueAtTime(0.001,t+0.4);
+        o.start(t);o.stop(t+0.4);
       });
-    } catch(e){}
+    }catch(e){}
   }
 
-  function launchConfetti() {
+  function launchConfetti(){
     var canvas=document.getElementById('confettiCanvas');
     var ctx=canvas.getContext('2d');
-    canvas.width=window.innerWidth; canvas.height=window.innerHeight;
-    var pieces=[];
-    var colors=['#a855f7','#06b6d4','#22c55e','#fbbf24','#f87171','#c084fc','#818cf8'];
-    for(var i=0;i<120;i++){
-      pieces.push({
-        x:Math.random()*canvas.width, y:-10,
-        w:Math.random()*10+5, h:Math.random()*6+4,
-        color:colors[Math.floor(Math.random()*colors.length)],
-        vx:(Math.random()-0.5)*6, vy:Math.random()*4+2,
-        rot:Math.random()*360, vrot:(Math.random()-0.5)*8, alpha:1
-      });
-    }
+    canvas.width=window.innerWidth;canvas.height=window.innerHeight;
+    var pieces=[],colors=['#a855f7','#06b6d4','#22c55e','#fbbf24','#f87171','#c084fc','#818cf8'];
+    for(var i=0;i<120;i++)pieces.push({x:Math.random()*canvas.width,y:-10,w:Math.random()*10+5,h:Math.random()*6+4,color:colors[Math.floor(Math.random()*colors.length)],vx:(Math.random()-0.5)*6,vy:Math.random()*4+2,rot:Math.random()*360,vrot:(Math.random()-0.5)*8,alpha:1});
     var frame=0;
     function draw(){
       ctx.clearRect(0,0,canvas.width,canvas.height);
-      pieces.forEach(function(p){
-        p.x+=p.vx; p.y+=p.vy; p.rot+=p.vrot; p.alpha-=0.008;
-        ctx.save(); ctx.globalAlpha=Math.max(0,p.alpha);
-        ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
-        ctx.fillStyle=p.color; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
-        ctx.restore();
-      });
-      frame++;
-      if(frame<200) requestAnimationFrame(draw);
-      else ctx.clearRect(0,0,canvas.width,canvas.height);
+      pieces.forEach(function(p){p.x+=p.vx;p.y+=p.vy;p.rot+=p.vrot;p.alpha-=0.008;ctx.save();ctx.globalAlpha=Math.max(0,p.alpha);ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);ctx.fillStyle=p.color;ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();});
+      frame++;if(frame<200)requestAnimationFrame(draw);else ctx.clearRect(0,0,canvas.width,canvas.height);
     }
     draw();
   }
 
-  function requestNotifs() {
-    if(!('Notification' in window)) return;
-    if(Notification.permission==='granted'){
-      document.getElementById('notifStatus').textContent='✅ Alerts enabled — we got you!';
-      document.getElementById('notifStatus').style.cursor='default';
-    } else if(Notification.permission==='default'){
-      Notification.requestPermission().then(function(p){
-        if(p==='granted') document.getElementById('notifStatus').textContent='✅ Alerts enabled — we got you!';
-      });
-    } else {
-      document.getElementById('notifStatus').textContent='⚠️ Enable notifications in browser settings for alerts';
-    }
+  function requestNotifs(){
+    if(!('Notification' in window))return;
+    if(Notification.permission==='granted'){document.getElementById('notifBtn').textContent='✅ Alerts on — we got you!';}
+    else if(Notification.permission==='default'){Notification.requestPermission().then(function(p){if(p==='granted')document.getElementById('notifBtn').textContent='✅ Alerts on — we got you!';});}
+    else{document.getElementById('notifBtn').textContent='⚠️ Enable notifications in browser settings';}
   }
 
-  function sendNotif(title,body) {
-    if('Notification' in window && Notification.permission==='granted') new Notification(title,{body:body});
-  }
-
-  function showError(msg){ var el=document.getElementById('errorMsg'); el.textContent=msg; el.style.display='block'; setTimeout(function(){el.style.display='none';},4000); }
-
+  function sendNotif(title,body){if('Notification' in window&&Notification.permission==='granted')new Notification(title,{body:body});}
+  function showError(msg){var el=document.getElementById('errorMsg');el.textContent=msg;el.style.display='block';setTimeout(function(){el.style.display='none';},4000);}
   function leaveQueue(){
-    if(confirm('fr leaving? you\'ll lose your spot 😭')){ 
-      if(myTokenKey&&myQueueType) db.ref('queues/'+myQueueType+'/'+myTokenKey).remove();
-      localStorage.removeItem('ql_token'); localStorage.removeItem('ql_queue'); location.reload();
+    if(confirm('fr leaving? you\'ll lose your spot 😭')){
+      if(myTokenKey&&myQueueType)db.ref('bizQueues/'+BIZ_SLUG+'/'+myQueueType+'/'+myTokenKey).remove();
+      localStorage.removeItem('ql_token_'+BIZ_SLUG);localStorage.removeItem('ql_queue_'+BIZ_SLUG);location.reload();
     }
   }
 
-  // Restore session
-  var sk=localStorage.getItem('ql_token'), sq=localStorage.getItem('ql_queue');
-  if(sk&&sq){
-    myTokenKey=sk; myQueueType=sq;
-    db.ref('queues/'+sq+'/'+sk).once('value').then(function(snap){
-      if(snap.exists()&&snap.val().status!=='done'){
-        document.getElementById('ticketName').textContent=snap.val().name;
-        var labs={general:'General',emergency:'Emergency',followup:'Follow-up'};
-        document.getElementById('ticketQueue').textContent=labs[sq];
-        document.getElementById('formView').style.display='none';
-        document.getElementById('ticketView').style.display='block';
-        listenToPosition();
-      } else { localStorage.removeItem('ql_token'); localStorage.removeItem('ql_queue'); }
-    });
+  // ANIME ANIMATION
+  var animeChars=[
+    {id:'c1',hair:'#f59e0b',skin:'#fcd34d',outfit:'#7c3aed',badge:'rgba(34,197,94,0.15)',bc:'#22c55e'},
+    {id:'c2',hair:'#1e1e30',skin:'#f87171',outfit:'#06b6d4',badge:'rgba(124,58,237,0.15)',bc:'#c084fc'},
+    {id:'c3',hair:'#a855f7',skin:'#86efac',outfit:'#ec4899',badge:'rgba(6,182,212,0.15)',bc:'#06b6d4'},
+    {id:'c4',hair:'#fcd34d',skin:'#fbbf24',outfit:'#10b981',badge:'rgba(251,191,36,0.15)',bc:'#fbbf24'},
+    {id:'c5',hair:'#c4b5fd',skin:'#ddd6fe',outfit:'#f97316',badge:'rgba(249,115,22,0.15)',bc:'#fb923c'}
+  ];
+  var animQ=animeChars.map(function(c,i){return Object.assign({},c,{token:'G'+String(i+1).padStart(2,'0')});}),animCounter=6;
+  var allNames=['Vikram','Meera','Arjun','Kavya','Rahul','Sneha','Karan','Divya'];
+
+  function makeSVGPerson(p,pos){
+    return '<div class="anime-person" id="ap-'+p.id+'" style="display:flex;flex-direction:column;align-items:center;transition:all 0.5s;">'+
+      '<svg width="34" height="62" viewBox="0 0 34 62" xmlns="http://www.w3.org/2000/svg">'+
+        '<ellipse cx="17" cy="9" rx="9" ry="7" fill="'+p.hair+'"/>'+
+        '<ellipse cx="17" cy="13" rx="8" ry="9" fill="'+p.skin+'"/>'+
+        '<circle cx="13" cy="12" r="1.4" fill="#080810"/><circle cx="21" cy="12" r="1.4" fill="#080810"/>'+
+        '<path d="M13 17 Q17 20 21 17" stroke="#080810" stroke-width="1.2" fill="none" stroke-linecap="round"/>'+
+        '<rect x="8" y="22" width="18" height="18" rx="5" fill="'+p.outfit+'"/>'+
+        '<rect x="1" y="22" width="6" height="13" rx="3" fill="'+p.outfit+'"/>'+
+        '<rect x="27" y="22" width="6" height="13" rx="3" fill="'+p.outfit+'"/>'+
+        '<rect x="9" y="39" width="6" height="16" rx="3" fill="'+p.hair+'"/>'+
+        '<rect x="19" y="39" width="6" height="16" rx="3" fill="'+p.hair+'"/>'+
+        '<ellipse cx="12" cy="58" rx="4" ry="3" fill="#080810"/><ellipse cx="22" cy="58" rx="4" ry="3" fill="#080810"/>'+
+      '</svg>'+
+      '<div class="a-label" style="background:'+p.badge+';color:'+p.bc+';">'+(pos===1?'📣 Next':'#'+pos)+'</div>'+
+    '</div>';
+  }
+
+  function renderAnimeQ(){var c=document.getElementById('animeContainer');if(!c)return;c.innerHTML=animQ.map(function(p,i){return makeSVGPerson(p,i+1);}).join('');}
+  function animCallNext(){
+    if(animQ.length===0)return;
+    var first=animQ[0],el=document.getElementById('ap-'+first.id);
+    if(el){
+      el.style.animation='abounce 0.7s ease';
+      setTimeout(function(){
+        el.style.transform='translateX(-80px) scale(0.8)';el.style.opacity='0';
+        setTimeout(function(){
+          animQ.shift();
+          var np=Object.assign({},animeChars[animCounter%5],{id:'c'+animCounter,token:'G'+String(animCounter).padStart(2,'0')});
+          animCounter++;animQ.push(np);
+          var cn=document.getElementById('counterNum');if(cn)cn.textContent=first.token;
+          renderAnimeQ();
+        },500);
+      },700);
+    }
   }
 </script>
 </body>
