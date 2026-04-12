@@ -1,441 +1,198 @@
 <!DOCTYPE html>
 <html lang="en">
-  <link rel="manifest" href="manifest.json"/>
-<meta name="theme-color" content="#7c3aed"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-title" content="QGo"/>
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Qless — Skip the Line</title>
+  <title>QGo — Your Time Back</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json"/>
+  <meta name="theme-color" content="#7c3aed"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="QGo"/>
+  <link rel="apple-touch-icon" href="icon.svg"/>
+
+  <!-- SEO -->
+  <meta name="description" content="We don't manage queues. We give your time back. Join smart queues, get AI-powered wait times, explore nearby while you wait."/>
+
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet"/>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg: #080810;
-      --surface: #0f0f1a;
-      --card: #13131f;
-      --border: #1e1e30;
-      --accent: #7c3aed;
-      --accent2: #a855f7;
-      --neon: #c084fc;
-      --cyan: #06b6d4;
-      --green: #22c55e;
-      --yellow: #fbbf24;
-      --white: #f0eeff;
-      --muted: #6b6b8a;
-      --text: #e2e2ff;
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{
+      --bg:#080810;--surface:#0f0f1a;--card:#13131f;--border:#1e1e30;
+      --accent:#7c3aed;--accent2:#a855f7;--neon:#c084fc;--cyan:#06b6d4;
+      --green:#22c55e;--yellow:#fbbf24;--white:#f0eeff;--muted:#6b6b8a;--text:#e2e2ff;
     }
-
-    html { scroll-behavior: smooth; }
-    body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
-
-    /* NOISE OVERLAY */
-    body::before {
-      content: '';
-      position: fixed; inset: 0; z-index: 0; pointer-events: none;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-      opacity: 0.4;
-    }
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;overflow-x:hidden;}
 
     /* NAV */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 1rem 2rem;
-      background: rgba(8,8,16,0.7);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
-    }
-    .logo {
-      font-family: 'Bricolage Grotesque', sans-serif;
-      font-size: 1.6rem; font-weight: 800;
-      background: linear-gradient(135deg, #a855f7, #06b6d4);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      text-decoration: none;
-      letter-spacing: -1px;
-    }
-    .logo sup { font-size: 0.5rem; -webkit-text-fill-color: var(--neon); vertical-align: super; }
-    nav .nav-links { display: flex; gap: 0.5rem; align-items: center; }
-    .btn-ghost {
-      background: transparent; color: var(--muted);
-      padding: 0.5rem 1rem; border-radius: 999px;
-      text-decoration: none; font-size: 0.88rem; font-weight: 500;
-      border: 1px solid var(--border);
-      transition: all 0.2s; cursor: pointer;
-    }
-    .btn-ghost:hover { color: var(--white); border-color: var(--accent2); }
-    .btn-nav {
-      background: var(--accent); color: #fff;
-      padding: 0.5rem 1.2rem; border-radius: 999px;
-      text-decoration: none; font-size: 0.88rem; font-weight: 600;
-      transition: all 0.2s;
-      box-shadow: 0 0 20px rgba(124,58,237,0.4);
-      border: none; cursor: pointer;
-    }
-    .btn-nav:hover { background: var(--accent2); box-shadow: 0 0 30px rgba(168,85,247,0.5); }
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:rgba(8,8,16,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+    .logo{font-family:'Bricolage Grotesque',sans-serif;font-size:1.6rem;font-weight:800;background:linear-gradient(135deg,#a855f7,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;letter-spacing:-1px;}
+    .logo sup{font-size:0.45rem;-webkit-text-fill-color:var(--neon);vertical-align:super;}
+    .nav-links{display:flex;gap:0.5rem;align-items:center;}
+    .nbtn{background:transparent;color:var(--muted);padding:0.45rem 0.9rem;border-radius:999px;text-decoration:none;font-size:0.85rem;font-weight:500;border:1px solid var(--border);transition:all 0.2s;}
+    .nbtn:hover{color:var(--white);border-color:var(--accent2);}
+    .nbtn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;padding:0.5rem 1.2rem;border-radius:999px;text-decoration:none;font-size:0.88rem;font-weight:600;transition:all 0.2s;box-shadow:0 0 20px rgba(124,58,237,0.3);}
+    .nbtn-primary:hover{box-shadow:0 0 35px rgba(124,58,237,0.5);}
 
     /* HERO */
-    .hero {
-      min-height: 100vh;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      text-align: center;
-      padding: 8rem 1.5rem 4rem;
-      position: relative;
-      overflow: hidden;
-    }
-    .hero-orb {
-      position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0;
-    }
-    .orb1 { width: 500px; height: 500px; background: rgba(124,58,237,0.15); top: -100px; left: -100px; }
-    .orb2 { width: 400px; height: 400px; background: rgba(6,182,212,0.1); bottom: -50px; right: -50px; }
-    .orb3 { width: 300px; height: 300px; background: rgba(168,85,247,0.1); top: 50%; left: 50%; transform: translate(-50%,-50%); }
+    .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:8rem 1.5rem 4rem;position:relative;overflow:hidden;}
+    .orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;}
+    .o1{width:500px;height:500px;background:rgba(124,58,237,0.15);top:-100px;left:-100px;}
+    .o2{width:400px;height:400px;background:rgba(6,182,212,0.1);bottom:-50px;right:-50px;}
+    .o3{width:300px;height:300px;background:rgba(168,85,247,0.1);top:50%;left:50%;transform:translate(-50%,-50%);}
+    .badge{display:inline-flex;align-items:center;gap:0.4rem;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);color:var(--neon);font-size:0.78rem;font-weight:600;padding:0.35rem 1rem;border-radius:999px;margin-bottom:1.5rem;position:relative;z-index:1;letter-spacing:0.05em;animation:fadeUp 0.5s ease both;}
+    .ldot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:blink 1.5s infinite;flex-shrink:0;}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+    .hero h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(3rem,10vw,7rem);font-weight:800;line-height:0.95;letter-spacing:-3px;position:relative;z-index:1;animation:fadeUp 0.6s 0.1s ease both;}
+    .g1{display:block;color:var(--white);}
+    .g2{display:block;background:linear-gradient(135deg,#a855f7 0%,#06b6d4 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .hero-sub{font-size:clamp(1rem,2.5vw,1.15rem);color:var(--muted);max-width:500px;line-height:1.7;margin-top:1.5rem;position:relative;z-index:1;animation:fadeUp 0.6s 0.2s ease both;}
+    .hero-cta{display:flex;gap:0.8rem;flex-wrap:wrap;justify-content:center;margin-top:2.5rem;position:relative;z-index:1;animation:fadeUp 0.6s 0.3s ease both;}
+    .btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;padding:0.9rem 2rem;border-radius:999px;text-decoration:none;font-weight:700;font-size:1rem;box-shadow:0 0 40px rgba(124,58,237,0.4);transition:all 0.2s;}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 60px rgba(124,58,237,0.6);}
+    .btn-outline{background:transparent;color:var(--white);padding:0.9rem 2rem;border-radius:999px;text-decoration:none;font-weight:600;font-size:1rem;border:1px solid var(--border);transition:all 0.2s;}
+    .btn-outline:hover{border-color:var(--accent2);background:rgba(124,58,237,0.08);}
 
-    .badge {
-      display: inline-flex; align-items: center; gap: 0.4rem;
-      background: rgba(124,58,237,0.12);
-      border: 1px solid rgba(124,58,237,0.3);
-      color: var(--neon); font-size: 0.78rem; font-weight: 600;
-      padding: 0.35rem 1rem; border-radius: 999px;
-      margin-bottom: 1.5rem; position: relative; z-index: 1;
-      animation: fadeUp 0.5s ease both;
-      letter-spacing: 0.05em;
-    }
-    .badge::before { content: ''; width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: blink 1.5s infinite; }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-    .hero h1 {
-      font-family: 'Bricolage Grotesque', sans-serif;
-      font-size: clamp(3rem, 10vw, 7rem);
-      font-weight: 800; line-height: 0.95;
-      letter-spacing: -3px;
-      position: relative; z-index: 1;
-      animation: fadeUp 0.6s 0.1s ease both;
-    }
-    .hero h1 .line1 { display: block; color: var(--white); }
-    .hero h1 .line2 {
-      display: block;
-      background: linear-gradient(135deg, #a855f7 0%, #06b6d4 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    }
-    .hero-sub {
-      font-size: clamp(1rem, 2.5vw, 1.15rem);
-      color: var(--muted); max-width: 480px;
-      line-height: 1.7; margin-top: 1.5rem;
-      position: relative; z-index: 1;
-      animation: fadeUp 0.6s 0.2s ease both;
-    }
-    .hero-cta {
-      display: flex; gap: 0.8rem; flex-wrap: wrap;
-      justify-content: center; margin-top: 2.5rem;
-      position: relative; z-index: 1;
-      animation: fadeUp 0.6s 0.3s ease both;
-    }
-    .btn-primary {
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: #fff; padding: 0.85rem 2rem;
-      border-radius: 999px; text-decoration: none;
-      font-weight: 700; font-size: 1rem;
-      box-shadow: 0 0 40px rgba(124,58,237,0.4);
-      transition: all 0.2s; border: none; cursor: pointer;
-    }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 60px rgba(124,58,237,0.6); }
-    .btn-outline {
-      background: transparent; color: var(--white);
-      padding: 0.85rem 2rem; border-radius: 999px;
-      text-decoration: none; font-weight: 600; font-size: 1rem;
-      border: 1px solid var(--border); transition: all 0.2s;
-    }
-    .btn-outline:hover { border-color: var(--accent2); background: rgba(124,58,237,0.08); }
+    /* INSTALL BANNER */
+    #installBanner{display:none;position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:200;background:var(--card);border:1px solid rgba(168,85,247,0.4);border-radius:16px;padding:1rem 1.5rem;display:none;align-items:center;gap:1rem;box-shadow:0 0 40px rgba(124,58,237,0.3);max-width:340px;width:90%;}
+    #installBanner .ib-icon{font-size:1.8rem;flex-shrink:0;}
+    #installBanner .ib-text{flex:1;}
+    #installBanner .ib-title{font-weight:700;font-size:0.92rem;color:var(--white);}
+    #installBanner .ib-sub{font-size:0.75rem;color:var(--muted);margin-top:0.1rem;}
+    #installBanner .ib-btn{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;padding:0.5rem 1rem;border-radius:999px;font-weight:700;font-size:0.82rem;cursor:pointer;white-space:nowrap;}
+    #installBanner .ib-close{background:none;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer;padding:0.2rem;flex-shrink:0;}
 
     /* QUEUE ANIMATION */
-    .queue-animation {
-      position: relative; z-index: 1;
-      margin-top: 3rem;
-      animation: fadeUp 0.6s 0.4s ease both;
-    }
-    .queue-scene {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 1.5rem 2rem;
-      display: inline-flex;
-      align-items: flex-end;
-      gap: 0;
-      position: relative;
-      overflow: hidden;
-      min-width: 320px;
-    }
-    .queue-scene::before {
-      content: 'LIVE QUEUE';
-      position: absolute; top: 0.6rem; left: 1rem;
-      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em;
-      color: var(--green);
-    }
-    .queue-scene::after {
-      content: '';
-      position: absolute; top: 0.75rem; right: 1rem;
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--green);
-      animation: blink 1.5s infinite;
-    }
+    .anim-wrap{position:relative;z-index:1;margin-top:3rem;animation:fadeUp 0.6s 0.4s ease both;}
+    .queue-scene{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:1.5rem 2rem;display:inline-flex;align-items:flex-end;gap:0;position:relative;overflow:hidden;min-width:320px;}
+    .scene-tag{position:absolute;top:0.6rem;left:1rem;font-size:0.6rem;font-weight:700;letter-spacing:0.12em;color:var(--green);}
+    .scene-dot{position:absolute;top:0.75rem;right:1rem;width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.5s infinite;}
+    .counter-box{width:58px;height:84px;background:var(--surface);border:1px solid var(--border);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;flex-shrink:0;}
+    .c-num{font-family:'Bricolage Grotesque',sans-serif;font-size:1.1rem;font-weight:800;color:var(--neon);}
+    .c-lbl{font-size:0.5rem;color:var(--muted);font-weight:600;letter-spacing:0.05em;text-transform:uppercase;}
+    .anime-person{display:flex;flex-direction:column;align-items:center;transition:all 0.5s ease;}
+    .anime-person.calling{animation:abounce 0.7s ease;}
+    @keyframes abounce{0%{transform:translateY(0)}20%{transform:translateY(-16px) rotate(-5deg)}50%{transform:translateY(-8px) rotate(3deg)}80%{transform:translateY(-3px)}100%{transform:translateY(0)}}
+    .a-label{font-size:0.58rem;font-weight:700;margin-top:3px;padding:0.12rem 0.4rem;border-radius:4px;white-space:nowrap;}
 
-    /* PERSON SVG CHARACTERS */
-    .person {
-      display: flex; flex-direction: column; align-items: center;
-      gap: 0; transition: all 0.5s ease;
-      position: relative;
-    }
-    .person-body {
-      width: 32px; display: flex; flex-direction: column; align-items: center;
-    }
-    .person-head {
-      width: 18px; height: 18px; border-radius: 50%;
-      margin-bottom: 2px;
-    }
-    .person-torso {
-      width: 22px; height: 24px; border-radius: 6px 6px 4px 4px;
-    }
-    .person-legs {
-      display: flex; gap: 2px;
-    }
-    .person-leg {
-      width: 8px; height: 16px; border-radius: 0 0 4px 4px;
-    }
-    .person-label {
-      font-size: 0.62rem; font-weight: 600; margin-top: 4px;
-      padding: 0.15rem 0.4rem; border-radius: 4px;
-      white-space: nowrap;
-    }
-
-    /* PERSON COLORS */
-    .p1 .person-head { background: #f59e0b; }
-    .p1 .person-torso { background: #7c3aed; }
-    .p1 .person-leg { background: #4c1d95; }
-    .p1 .person-label { background: rgba(34,197,94,0.15); color: var(--green); }
-
-    .p2 .person-head { background: #f87171; }
-    .p2 .person-torso { background: #06b6d4; }
-    .p2 .person-leg { background: #164e63; }
-    .p2 .person-label { background: rgba(124,58,237,0.15); color: var(--neon); }
-
-    .p3 .person-head { background: #86efac; }
-    .p3 .person-torso { background: #ec4899; }
-    .p3 .person-leg { background: #831843; }
-    .p3 .person-label { background: rgba(6,182,212,0.15); color: var(--cyan); }
-
-    .p4 .person-head { background: #fcd34d; }
-    .p4 .person-torso { background: #10b981; }
-    .p4 .person-leg { background: #064e3b; }
-    .p4 .person-label { background: rgba(251,191,36,0.15); color: var(--yellow); }
-
-    .p5 .person-head { background: #c4b5fd; }
-    .p5 .person-torso { background: #f97316; }
-    .p5 .person-leg { background: #7c2d12; }
-    .p5 .person-label { background: rgba(249,115,22,0.15); color: #fb923c; }
-
-    /* CALLED STATE */
-    .person.called {
-      transform: translateX(-80px) scale(0.8);
-      opacity: 0;
-    }
-    .person.calling {
-      animation: calling 0.6s ease;
-    }
-    @keyframes calling {
-      0% { transform: translateY(0); }
-      30% { transform: translateY(-12px); }
-      60% { transform: translateY(-6px); }
-      100% { transform: translateY(0); }
-    }
-
-    /* COUNTER */
-    .counter {
-      width: 60px; height: 90px;
-      background: linear-gradient(180deg, #1e1e30, #13131f);
-      border: 1px solid var(--border);
-      border-radius: 10px; margin-left: 1.5rem;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 4px;
-      position: relative;
-    }
-    .counter-icon { font-size: 1.2rem; }
-    .counter-label { font-size: 0.55rem; color: var(--muted); font-weight: 600; letter-spacing: 0.05em; }
-    .counter-num { font-family: 'Bricolage Grotesque', sans-serif; font-size: 1.2rem; font-weight: 800; color: var(--neon); }
-
-    /* NOTIFICATION POPUP */
-    .notif-popup {
-      position: absolute; top: -60px; left: 50%;
-      transform: translateX(-50%);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px; padding: 0.5rem 0.8rem;
-      display: flex; align-items: center; gap: 0.5rem;
-      white-space: nowrap; font-size: 0.72rem;
-      opacity: 0; transition: opacity 0.3s;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-      pointer-events: none;
-    }
-    .notif-popup.show { opacity: 1; }
-    .notif-dot { width: 8px; height: 8px; background: var(--accent2); border-radius: 50%; flex-shrink: 0; }
-
-    /* STATS ROW */
-    .stats-row {
-      display: flex; gap: 2rem; flex-wrap: wrap;
-      justify-content: center; margin-top: 2rem;
-      position: relative; z-index: 1;
-      animation: fadeUp 0.6s 0.5s ease both;
-    }
-    .stat-item { text-align: center; }
-    .stat-num {
-      font-family: 'Bricolage Grotesque', sans-serif;
-      font-size: 1.8rem; font-weight: 800;
-      background: linear-gradient(135deg, var(--neon), var(--cyan));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    }
-    .stat-lbl { font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem; }
+    /* STATS */
+    .stats-row{display:flex;gap:2rem;flex-wrap:wrap;justify-content:center;margin-top:2.5rem;position:relative;z-index:1;animation:fadeUp 0.6s 0.5s ease both;}
+    .stat-item{text-align:center;}
+    .stat-num{font-family:'Bricolage Grotesque',sans-serif;font-size:1.8rem;font-weight:800;background:linear-gradient(135deg,var(--neon),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .stat-lbl{font-size:0.78rem;color:var(--muted);margin-top:0.2rem;}
 
     /* TICKER */
-    .ticker { background: var(--accent); padding: 0.55rem 0; overflow: hidden; white-space: nowrap; }
-    .ticker-track { display: inline-block; animation: ticker 25s linear infinite; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.9); }
-    @keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+    .ticker{background:var(--accent);padding:0.55rem 0;overflow:hidden;white-space:nowrap;}
+    .ticker-track{display:inline-block;animation:ticker 25s linear infinite;font-size:0.8rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.9);}
+    @keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
     /* SECTIONS */
-    .section { padding: 5rem 1.5rem; max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
-    .section-tag { display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--neon); margin-bottom: 0.8rem; }
-    .section-title {
-      font-family: 'Bricolage Grotesque', sans-serif;
-      font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800;
-      letter-spacing: -1px; line-height: 1.1;
-      margin-bottom: 2.5rem; color: var(--white);
-    }
-
-    /* FEATURE CARDS */
-    .feat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
-    .feat-card {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 16px; padding: 1.8rem;
-      transition: all 0.25s; position: relative; overflow: hidden;
-    }
-    .feat-card::before {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(124,58,237,0.06), transparent);
-      opacity: 0; transition: opacity 0.3s;
-    }
-    .feat-card:hover { border-color: rgba(168,85,247,0.3); transform: translateY(-3px); }
-    .feat-card:hover::before { opacity: 1; }
-    .feat-icon {
-      width: 44px; height: 44px; border-radius: 12px;
-      background: rgba(124,58,237,0.12);
-      border: 1px solid rgba(124,58,237,0.2);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.3rem; margin-bottom: 1rem;
-    }
-    .feat-card h3 { font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 0.5rem; }
-    .feat-card p { color: var(--muted); font-size: 0.88rem; line-height: 1.6; }
-    .feat-tag { display: inline-block; margin-top: 1rem; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 6px; }
-    .tag-live { background: rgba(34,197,94,0.1); color: var(--green); }
-    .tag-soon { background: rgba(251,191,36,0.1); color: var(--yellow); }
+    .section{padding:5rem 1.5rem;max-width:1100px;margin:0 auto;position:relative;z-index:1;}
+    .sec-tag{font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--neon);margin-bottom:0.8rem;display:block;}
+    .sec-title{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;letter-spacing:-1px;color:var(--white);margin-bottom:2.5rem;line-height:1.1;}
 
     /* USE CASE PILLS */
-    .usecase-grid { display: flex; flex-wrap: wrap; gap: 0.8rem; }
-    .usecase-pill {
-      display: flex; align-items: center; gap: 0.6rem;
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 999px; padding: 0.7rem 1.2rem;
-      font-size: 0.9rem; font-weight: 500; color: var(--text);
-      transition: all 0.2s; cursor: default;
-    }
-    .usecase-pill:hover { border-color: var(--accent2); color: var(--white); background: rgba(124,58,237,0.08); }
-    .usecase-pill .pill-icon { font-size: 1.1rem; }
+    .usecase-grid{display:flex;flex-wrap:wrap;gap:0.8rem;}
+    .usecase-pill{display:flex;align-items:center;gap:0.6rem;background:var(--card);border:1px solid var(--border);border-radius:999px;padding:0.7rem 1.2rem;font-size:0.9rem;font-weight:500;color:var(--text);transition:all 0.2s;cursor:default;}
+    .usecase-pill:hover{border-color:var(--accent2);color:var(--white);background:rgba(124,58,237,0.08);}
 
-    /* COMING SOON SECTION */
-    .coming-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
-    .coming-card {
-      background: var(--card); border: 1px dashed var(--border);
-      border-radius: 14px; padding: 1.4rem;
-      text-align: center; opacity: 0.7;
-    }
-    .coming-card .c-icon { font-size: 1.8rem; margin-bottom: 0.6rem; }
-    .coming-card h4 { font-size: 0.9rem; font-weight: 600; color: var(--white); margin-bottom: 0.3rem; }
-    .coming-card p { font-size: 0.78rem; color: var(--muted); }
-    .soon-badge { display: inline-block; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 999px; background: rgba(251,191,36,0.1); color: var(--yellow); margin-top: 0.6rem; }
+    /* FEATURES */
+    .feat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;margin-top:2rem;}
+    .feat-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.8rem;transition:all 0.25s;position:relative;overflow:hidden;}
+    .feat-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(124,58,237,0.06),transparent);opacity:0;transition:opacity 0.3s;}
+    .feat-card:hover{border-color:rgba(168,85,247,0.3);transform:translateY(-3px);}
+    .feat-card:hover::before{opacity:1;}
+    .feat-icon{width:44px;height:44px;border-radius:12px;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.2);display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1rem;}
+    .feat-card h3{font-size:1rem;font-weight:700;color:var(--white);margin-bottom:0.5rem;}
+    .feat-card p{color:var(--muted);font-size:0.88rem;line-height:1.6;}
+    .feat-tag{display:inline-block;margin-top:1rem;font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:0.2rem 0.6rem;border-radius:6px;}
+    .tag-live{background:rgba(34,197,94,0.1);color:var(--green);}
+    .tag-soon{background:rgba(251,191,36,0.1);color:var(--yellow);}
+
+    /* COMING SOON */
+    .coming-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;}
+    .coming-card{background:var(--card);border:1px dashed var(--border);border-radius:14px;padding:1.4rem;text-align:center;opacity:0.75;}
+    .coming-card .ci{font-size:1.8rem;margin-bottom:0.6rem;}
+    .coming-card h4{font-size:0.9rem;font-weight:600;color:var(--white);margin-bottom:0.3rem;}
+    .coming-card p{font-size:0.78rem;color:var(--muted);}
+    .soon-pill{display:inline-block;font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.2rem 0.6rem;border-radius:999px;background:rgba(251,191,36,0.1);color:var(--yellow);margin-top:0.6rem;}
+
+    /* PWA SECTION */
+    .pwa-section{background:linear-gradient(135deg,rgba(124,58,237,0.12),rgba(6,182,212,0.08));border:1px solid rgba(168,85,247,0.2);border-radius:20px;padding:2.5rem;text-align:center;margin-top:3rem;}
+    .pwa-section h3{font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:800;color:var(--white);margin-bottom:0.5rem;}
+    .pwa-section p{color:var(--muted);font-size:0.9rem;margin-bottom:1.5rem;line-height:1.6;}
+    .pwa-steps{display:flex;justify-content:center;gap:1.5rem;flex-wrap:wrap;margin-bottom:1.5rem;}
+    .pwa-step{text-align:center;}
+    .pwa-step .ps-icon{font-size:1.5rem;margin-bottom:0.3rem;}
+    .pwa-step .ps-text{font-size:0.78rem;color:var(--muted);}
+    #installBtn{display:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;padding:0.85rem 2rem;border-radius:999px;font-weight:700;font-size:1rem;cursor:pointer;box-shadow:0 0 30px rgba(124,58,237,0.4);transition:all 0.2s;}
+    #installBtn:hover{transform:translateY(-2px);}
 
     /* CTA */
-    .cta-section {
-      text-align: center; padding: 6rem 1.5rem;
-      position: relative; z-index: 1;
-    }
-    .cta-section h2 {
-      font-family: 'Bricolage Grotesque', sans-serif;
-      font-size: clamp(2rem, 6vw, 4.5rem);
-      font-weight: 800; letter-spacing: -2px;
-      color: var(--white); margin-bottom: 1rem; line-height: 1;
-    }
-    .cta-section h2 span {
-      background: linear-gradient(135deg, #a855f7, #06b6d4);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    }
-    .cta-section p { color: var(--muted); max-width: 400px; margin: 0 auto 2.5rem; line-height: 1.7; }
+    .cta-section{text-align:center;padding:6rem 1.5rem;position:relative;z-index:1;}
+    .cta-section h2{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(2rem,6vw,4.5rem);font-weight:800;letter-spacing:-2px;color:var(--white);margin-bottom:1rem;line-height:1;}
+    .cta-section h2 span{background:linear-gradient(135deg,#a855f7,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .cta-section p{color:var(--muted);max-width:400px;margin:0 auto 2.5rem;line-height:1.7;}
 
     /* FOOTER */
-    footer { border-top: 1px solid var(--border); padding: 2rem 1.5rem; text-align: center; color: var(--muted); font-size: 0.83rem; position: relative; z-index: 1; }
-    footer .f-logo { font-family: 'Bricolage Grotesque', sans-serif; font-size: 1.1rem; font-weight: 800; background: linear-gradient(135deg, #a855f7, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    footer{border-top:1px solid var(--border);padding:2rem 1.5rem;text-align:center;color:var(--muted);font-size:0.83rem;position:relative;z-index:1;}
+    .f-logo{font-family:'Bricolage Grotesque',sans-serif;font-size:1.2rem;font-weight:800;background:linear-gradient(135deg,#a855f7,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:0.5rem;}
 
-    @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
-
-    @media(max-width:600px) {
-      nav { padding: 1rem; }
-      .hero-cta { flex-direction: column; align-items: center; }
-      .stats-row { gap: 1.2rem; }
-    }
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    @media(max-width:600px){nav{padding:1rem;}.hero-cta{flex-direction:column;align-items:center;}.stats-row{gap:1.2rem;}}
   </style>
 </head>
 <body>
 
+  <!-- INSTALL BANNER -->
+  <div id="installBanner">
+    <div class="ib-icon">📱</div>
+    <div class="ib-text">
+      <div class="ib-title">Install QGo App</div>
+      <div class="ib-sub">Add to home screen — works offline!</div>
+    </div>
+    <button class="ib-btn" id="installBannerBtn">Install</button>
+    <button class="ib-close" onclick="document.getElementById('installBanner').style.display='none'">✕</button>
+  </div>
+
   <!-- NAV -->
   <nav>
-    <a class="logo" href="index.html">Qless<sup>™</sup></a>
+    <a class="logo" href="index.html">QGo<sup>™</sup></a>
     <div class="nav-links">
-      <a class="btn-ghost" href="admin.html">Admin</a>
-      <a class="btn-nav" href="queue.html">Join Queue →</a>
+      <a class="nbtn" href="register.html">Businesses</a>
+      <a class="nbtn" href="admin.html">Admin</a>
+      <a class="nbtn-primary" href="queue.html">Join Queue →</a>
     </div>
   </nav>
 
   <!-- HERO -->
   <section class="hero">
-    <div class="hero-orb orb1"></div>
-    <div class="hero-orb orb2"></div>
-    <div class="hero-orb orb3"></div>
-
-    <div class="badge">Live in 190+ countries</div>
-
+    <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+    <div class="badge"><div class="ldot"></div> Live in 190+ countries — Free to start</div>
     <h1>
-      <span class="line1">No more lines.</span>
-      <span class="line2">No more waiting.</span>
+      <span class="g1">No more lines.</span>
+      <span class="g2">No more waiting.</span>
     </h1>
-    <p class="hero-sub">Qless turns any physical queue into a smart digital experience. Scan. Join. Chill. We'll call you.</p>
-
+    <p class="hero-sub">QGo turns any physical queue into a smart digital experience. Scan. Join. Walk away. We'll call you when it's your turn — with confetti 🎉</p>
     <div class="hero-cta">
       <a class="btn-primary" href="queue.html">Join a Queue →</a>
-      <a class="btn-outline" href="admin.html">Set Up My Business</a>
+      <a class="btn-outline" href="register.html">Register My Business</a>
     </div>
 
-    <!-- QUEUE ANIMATION -->
-    <div class="queue-animation">
-      <div id="notifPopup" class="notif-popup">
-        <div class="notif-dot"></div>
-        <span id="notifText">Your turn is next!</span>
-      </div>
-      <div class="queue-scene" id="queueScene">
-        <div class="counter">
-          <div class="counter-icon">🪑</div>
-          <div class="counter-num" id="counterNum">G01</div>
-          <div class="counter-label">NOW SERVING</div>
+    <!-- ANIME QUEUE ANIMATION -->
+    <div class="anim-wrap">
+      <div class="queue-scene">
+        <div class="scene-tag">LIVE DEMO</div>
+        <div class="scene-dot"></div>
+        <div class="counter-box">
+          <div class="c-num" id="counterNum">G01</div>
+          <div class="c-lbl">Serving</div>
         </div>
-        <div id="personContainer" style="display:flex;align-items:flex-end;gap:6px;margin-left:12px;"></div>
+        <div id="animeContainer" style="display:flex;align-items:flex-end;gap:8px;margin-left:12px;"></div>
       </div>
     </div>
 
@@ -443,6 +200,7 @@
       <div class="stat-item"><div class="stat-num">∞</div><div class="stat-lbl">Queue Size</div></div>
       <div class="stat-item"><div class="stat-num">0s</div><div class="stat-lbl">Setup Time</div></div>
       <div class="stat-item"><div class="stat-num">100%</div><div class="stat-lbl">Free to Start</div></div>
+      <div class="stat-item"><div class="stat-num">📱</div><div class="stat-lbl">Installable App</div></div>
     </div>
   </section>
 
@@ -456,210 +214,166 @@
 
   <!-- USE CASES -->
   <div class="section">
-    <div class="section-tag">Where it works</div>
-    <h2 class="section-title">Built for every place<br>people wait.</h2>
+    <span class="sec-tag">Where it works</span>
+    <h2 class="sec-title">Built for every place<br>people wait.</h2>
     <div class="usecase-grid">
-      <div class="usecase-pill"><span class="pill-icon">🏥</span> Hospitals & Clinics</div>
-      <div class="usecase-pill"><span class="pill-icon">🍽</span> Restaurants</div>
-      <div class="usecase-pill"><span class="pill-icon">🛕</span> Temples & Shrines</div>
-      <div class="usecase-pill"><span class="pill-icon">🏦</span> Banks</div>
-      <div class="usecase-pill"><span class="pill-icon">💈</span> Salons & Spas</div>
-      <div class="usecase-pill"><span class="pill-icon">🏛</span> Govt Offices</div>
-      <div class="usecase-pill"><span class="pill-icon">🎟</span> Events & Counters</div>
-      <div class="usecase-pill"><span class="pill-icon">🧑‍💼</span> Corporate Offices</div>
-      <div class="usecase-pill"><span class="pill-icon">🏪</span> Retail Shops</div>
-      <div class="usecase-pill"><span class="pill-icon">📚</span> Universities</div>
+      <div class="usecase-pill">🏥 Hospitals & Clinics</div>
+      <div class="usecase-pill">🍽 Restaurants</div>
+      <div class="usecase-pill">🛕 Temples & Shrines</div>
+      <div class="usecase-pill">🏦 Banks</div>
+      <div class="usecase-pill">💈 Salons & Spas</div>
+      <div class="usecase-pill">🏛 Govt Offices</div>
+      <div class="usecase-pill">🎟 Events & Counters</div>
+      <div class="usecase-pill">🏪 Retail Shops</div>
+      <div class="usecase-pill">📚 Universities</div>
+      <div class="usecase-pill">🧑‍💼 Corporate Offices</div>
     </div>
   </div>
 
   <!-- FEATURES -->
   <div class="section">
-    <div class="section-tag">Features</div>
-    <h2 class="section-title">Everything your queue<br>needs to be smart.</h2>
+    <span class="sec-tag">Features</span>
+    <h2 class="sec-title">Everything your queue<br>needs to be smart.</h2>
     <div class="feat-grid">
-      <div class="feat-card">
-        <div class="feat-icon">⚡</div>
-        <h3>Real-time Updates</h3>
-        <p>Queue position updates live for every person. No refresh. No guessing. Powered by Firebase.</p>
-        <span class="feat-tag tag-live">Live</span>
+      <div class="feat-card"><div class="feat-icon">⚡</div><h3>Real-time Queue</h3><p>Position updates live for every person — no refresh, no guessing. Powered by Firebase.</p><span class="feat-tag tag-live">Live</span></div>
+      <div class="feat-card"><div class="feat-icon">🧠</div><h3>Smart Wait Engine</h3><p>AI-powered ETA based on real queue speed — not a fixed guess. Gets smarter over time.</p><span class="feat-tag tag-live">Live</span></div>
+      <div class="feat-card"><div class="feat-icon">🗺</div><h3>Explore Nearby</h3><p>Tells you exactly what to do with your wait time — coffee, errands, shopping — matched to your ETA.</p><span class="feat-tag tag-live">Live</span></div>
+      <div class="feat-card"><div class="feat-icon">✅</div><h3>Safe to Leave</h3><p>Live indicator — Safe / Risky / Stay. Walk away freely, we'll alert you before your turn.</p><span class="feat-tag tag-live">Live</span></div>
+      <div class="feat-card"><div class="feat-icon">📲</div><h3>QR Code Entry</h3><p>Scan QR at entrance → join → walk away. Zero friction, zero app install required.</p><span class="feat-tag tag-live">Live</span></div>
+      <div class="feat-card"><div class="feat-icon">🎉</div><h3>Called Alert</h3><p>Screen flash, confetti, sound, vibration when it's your turn. Impossible to miss.</p><span class="feat-tag tag-live">Live</span></div>
+      <div class="feat-card"><div class="feat-icon">🏢</div><h3>Business Portal</h3><p>Each business gets isolated queue link + QR + admin panel. Total separation.</p><span class="feat-tag tag-live">Live</span></div>
+      <div class="feat-card"><div class="feat-icon">📱</div><h3>Installable App</h3><p>Add to home screen on Android or iPhone. Works like a real app — no App Store needed.</p><span class="feat-tag tag-live">Live</span></div>
+    </div>
+
+    <!-- PWA INSTALL SECTION -->
+    <div class="pwa-section">
+      <h3>📱 Install QGo on Your Phone</h3>
+      <p>No App Store. No Play Store. Just tap install and QGo lives on your home screen like a real app.</p>
+      <div class="pwa-steps">
+        <div class="pwa-step"><div class="ps-icon">🌐</div><div class="ps-text">Open in Chrome</div></div>
+        <div class="pwa-step"><div class="ps-icon">⋮</div><div class="ps-text">Tap 3-dot menu</div></div>
+        <div class="pwa-step"><div class="ps-icon">➕</div><div class="ps-text">Add to Home Screen</div></div>
+        <div class="pwa-step"><div class="ps-icon">🎉</div><div class="ps-text">QGo installed!</div></div>
       </div>
-      <div class="feat-card">
-        <div class="feat-icon">📲</div>
-        <h3>QR Code Entry</h3>
-        <p>Place a QR at your entrance. Customers scan → join → walk away. Zero friction, zero app install.</p>
-        <span class="feat-tag tag-live">Live</span>
-      </div>
-      <div class="feat-card">
-        <div class="feat-icon">🔔</div>
-        <h3>Push Notifications</h3>
-        <p>Browser push alerts when your turn is near. Customers don't need to stare at the screen.</p>
-        <span class="feat-tag tag-live">Live</span>
-      </div>
-      <div class="feat-card">
-        <div class="feat-icon">⏱</div>
-        <h3>Live ETA</h3>
-        <p>Tells customers exactly how long until their turn. Reduces anxiety. Reduces walk-outs.</p>
-        <span class="feat-tag tag-live">Live</span>
-      </div>
-      <div class="feat-card">
-        <div class="feat-icon">🚨</div>
-        <h3>Priority Override</h3>
-        <p>Emergency? VIP? Admin bumps anyone to the top in one tap. Your queue, your rules.</p>
-        <span class="feat-tag tag-live">Live</span>
-      </div>
-      <div class="feat-card">
-        <div class="feat-icon">🪙</div>
-        <h3>Token System</h3>
-        <p>G001, E001, F001 — tokens instead of names. Privacy-first, clean, professional.</p>
-        <span class="feat-tag tag-live">Live</span>
-      </div>
+      <button id="installBtn">📱 Install QGo App</button>
+      <p style="margin-top:1rem;font-size:0.78rem;">iPhone? Open in Safari → Share button → Add to Home Screen</p>
     </div>
   </div>
 
   <!-- COMING SOON -->
   <div class="section">
-    <div class="section-tag">Coming Soon</div>
-    <h2 class="section-title">What's dropping next. 🔥</h2>
+    <span class="sec-tag">Coming Soon</span>
+    <h2 class="sec-title">What's dropping next 🔥</h2>
     <div class="coming-grid">
-      <div class="coming-card">
-        <div class="c-icon">👤</div>
-        <h4>User Profiles</h4>
-        <p>Login, save your history, skip re-entering details</p>
-        <div class="soon-badge">Soon</div>
-      </div>
-      <div class="coming-card">
-        <div class="c-icon">💬</div>
-        <h4>WhatsApp Alerts</h4>
-        <p>Get notified on WhatsApp when your turn is near</p>
-        <div class="soon-badge">Soon</div>
-      </div>
-      <div class="coming-card">
-        <div class="c-icon">🏢</div>
-        <h4>Business Portal</h4>
-        <p>Each business gets their own branded queue link</p>
-        <div class="soon-badge">Soon</div>
-      </div>
-      <div class="coming-card">
-        <div class="c-icon">📊</div>
-        <h4>Analytics</h4>
-        <p>Busiest hours, avg wait time, weekly reports</p>
-        <div class="soon-badge">Soon</div>
-      </div>
-      <div class="coming-card">
-        <div class="c-icon">💳</div>
-        <h4>Priority Pass</h4>
-        <p>Pay to skip the line at temples & events</p>
-        <div class="soon-badge">Soon</div>
-      </div>
+      <div class="coming-card"><div class="ci">🎁</div><h4>Wait & Earn</h4><p>Get coupons and cashback while waiting</p><div class="soon-pill">Soon</div></div>
+      <div class="coming-card"><div class="ci">💬</div><h4>WhatsApp Alerts</h4><p>Notified on WhatsApp when turn is near</p><div class="soon-pill">Soon</div></div>
+      <div class="coming-card"><div class="ci">🎮</div><h4>Gamification</h4><p>Points, streaks, missions, fast pass</p><div class="soon-pill">Soon</div></div>
+      <div class="coming-card"><div class="ci">📊</div><h4>Analytics</h4><p>Busiest hours, avg wait, weekly reports</p><div class="soon-pill">Soon</div></div>
+      <div class="coming-card"><div class="ci">👤</div><h4>User Profiles</h4><p>Login, queue history, preferences</p><div class="soon-pill">Soon</div></div>
     </div>
   </div>
 
   <!-- CTA -->
   <div class="cta-section">
-    <h2>Ready to go<br><span>Qless?</span></h2>
-    <p>Join as a customer in 10 seconds or set up your business queue for free.</p>
+    <h2>Ready to go<br><span>QGo?</span></h2>
+    <p>Join as a customer in 10 seconds or register your business for free — no credit card needed.</p>
     <div style="display:flex;gap:0.8rem;justify-content:center;flex-wrap:wrap;">
       <a class="btn-primary" href="queue.html">Join a Queue →</a>
-      <a class="btn-outline" href="admin.html">Set Up My Business</a>
+      <a class="btn-outline" href="register.html">Register My Business</a>
     </div>
   </div>
 
   <!-- FOOTER -->
   <footer>
-    <div class="f-logo" style="margin-bottom:0.5rem;">Qless™</div>
-    No more lines. No more waiting. Built for the world. 🌍
+    <div class="f-logo">QGo™</div>
+    We don't manage queues. We give your time back. 🌍
+    <div style="margin-top:0.8rem;display:flex;justify-content:center;gap:1.5rem;">
+      <a href="queue.html" style="color:var(--muted);text-decoration:none;font-size:0.82rem;">Join Queue</a>
+      <a href="register.html" style="color:var(--muted);text-decoration:none;font-size:0.82rem;">Register Business</a>
+      <a href="admin.html" style="color:var(--muted);text-decoration:none;font-size:0.82rem;">Admin</a>
+    </div>
   </footer>
 
   <script>
-    // QUEUE ANIMATION
-    var people = [
-      { id:'p1', name:'Anika', token:'G01', cls:'p1' },
-      { id:'p2', name:'Rohan', token:'G02', cls:'p2' },
-      { id:'p3', name:'Priya', token:'G03', cls:'p3' },
-      { id:'p4', name:'Dev',   token:'G04', cls:'p4' },
-      { id:'p5', name:'Sana',  token:'G05', cls:'p5' },
-    ];
-    var queue = [...people];
-    var tokenCounter = 6;
+    // PWA INSTALL PROMPT
+    var deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', function(e) {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById('installBtn').style.display = 'inline-block';
+      var banner = document.getElementById('installBanner');
+      banner.style.display = 'flex';
+      document.getElementById('installBannerBtn').onclick = triggerInstall;
+    });
+    document.getElementById('installBtn').addEventListener('click', triggerInstall);
+    function triggerInstall() {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(function(result) {
+        if (result.outcome === 'accepted') {
+          document.getElementById('installBanner').style.display = 'none';
+          document.getElementById('installBtn').style.display = 'none';
+        }
+        deferredPrompt = null;
+      });
+    }
+    window.addEventListener('appinstalled', function() {
+      document.getElementById('installBanner').style.display = 'none';
+    });
 
-    function renderPerson(p, pos) {
-      return '<div class="person ' + p.cls + '" id="person-' + p.id + '">' +
-        '<div class="person-body">' +
-          '<div class="person-head"></div>' +
-          '<div class="person-torso"></div>' +
-          '<div class="person-legs">' +
-            '<div class="person-leg"></div>' +
-            '<div class="person-leg"></div>' +
-          '</div>' +
-        '</div>' +
-        '<div class="person-label">' + (pos === 1 ? '📣 Next' : '#' + pos) + '</div>' +
+    // SERVICE WORKER
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js')
+        .then(function(reg) { console.log('QGo PWA ready!'); })
+        .catch(function(err) { console.log('SW:', err); });
+    }
+
+    // ANIME CHARACTERS
+    var animeChars=[
+      {id:'c1',hair:'#f59e0b',skin:'#fcd34d',outfit:'#7c3aed',badge:'rgba(34,197,94,0.15)',bc:'#22c55e'},
+      {id:'c2',hair:'#1e1e30',skin:'#f87171',outfit:'#06b6d4',badge:'rgba(124,58,237,0.15)',bc:'#c084fc'},
+      {id:'c3',hair:'#a855f7',skin:'#86efac',outfit:'#ec4899',badge:'rgba(6,182,212,0.15)',bc:'#06b6d4'},
+      {id:'c4',hair:'#fcd34d',skin:'#fbbf24',outfit:'#10b981',badge:'rgba(251,191,36,0.15)',bc:'#fbbf24'},
+      {id:'c5',hair:'#c4b5fd',skin:'#ddd6fe',outfit:'#f97316',badge:'rgba(249,115,22,0.15)',bc:'#fb923c'}
+    ];
+    var animQ=animeChars.map(function(c,i){return Object.assign({},c,{token:'G'+String(i+1).padStart(2,'0')});}),animCounter=6;
+    function makePerson(p,pos){
+      return '<div class="anime-person" id="ap-'+p.id+'" style="display:flex;flex-direction:column;align-items:center;transition:all 0.5s;">'+
+        '<svg width="32" height="58" viewBox="0 0 32 58" xmlns="http://www.w3.org/2000/svg">'+
+          '<ellipse cx="16" cy="8" rx="8" ry="6" fill="'+p.hair+'"/>'+
+          '<ellipse cx="16" cy="12" rx="7" ry="8" fill="'+p.skin+'"/>'+
+          '<circle cx="12" cy="11" r="1.3" fill="#080810"/><circle cx="20" cy="11" r="1.3" fill="#080810"/>'+
+          '<path d="M12 16 Q16 19 20 16" stroke="#080810" stroke-width="1.1" fill="none" stroke-linecap="round"/>'+
+          '<rect x="7" y="20" width="18" height="17" rx="5" fill="'+p.outfit+'"/>'+
+          '<rect x="0" y="20" width="6" height="12" rx="3" fill="'+p.outfit+'"/>'+
+          '<rect x="26" y="20" width="6" height="12" rx="3" fill="'+p.outfit+'"/>'+
+          '<rect x="8" y="36" width="6" height="15" rx="3" fill="'+p.hair+'"/>'+
+          '<rect x="18" y="36" width="6" height="15" rx="3" fill="'+p.hair+'"/>'+
+          '<ellipse cx="11" cy="54" rx="4" ry="3" fill="#080810"/><ellipse cx="21" cy="54" rx="4" ry="3" fill="#080810"/>'+
+        '</svg>'+
+        '<div class="a-label" style="background:'+p.badge+';color:'+p.bc+';">'+(pos===1?'📣':'#'+pos)+'</div>'+
       '</div>';
     }
-
-    function renderQueue() {
-      var container = document.getElementById('personContainer');
-      if (!container) return;
-      container.innerHTML = queue.map(function(p, i) {
-        return renderPerson(p, i + 1);
-      }).join('');
-    }
-
-    function callNext() {
-      if (queue.length === 0) return;
-      var first = queue[0];
-
-      // Show notification
-      var popup = document.getElementById('notifPopup');
-      var notifText = document.getElementById('notifText');
-      if (popup && notifText) {
-        notifText.textContent = first.name + ', please proceed!';
-        popup.classList.add('show');
-        setTimeout(function() { popup.classList.remove('show'); }, 2500);
-      }
-
-      // Animate calling
-      var el = document.getElementById('person-' + first.id);
-      if (el) {
-        el.classList.add('calling');
-        setTimeout(function() {
-          el.classList.add('called');
-          setTimeout(function() {
-            queue.shift();
-            // Add new person at end
-            var newPerson = {
-              id: 'p' + (tokenCounter),
-              name: ['Vikram','Meera','Arjun','Kavya','Rahul','Sneha','Karan','Divya'][tokenCounter % 8],
-              token: 'G' + String(tokenCounter).padStart(2,'0'),
-              cls: people[tokenCounter % 5].cls
-            };
-            tokenCounter++;
-            queue.push(newPerson);
-
-            // Update counter
-            var counterEl = document.getElementById('counterNum');
-            if (counterEl) counterEl.textContent = first.token;
-
-            renderQueue();
-          }, 500);
-        }, 600);
+    function renderQ(){var c=document.getElementById('animeContainer');if(c)c.innerHTML=animQ.map(function(p,i){return makePerson(p,i+1);}).join('');}
+    function callNext(){
+      if(!animQ.length)return;
+      var first=animQ[0],el=document.getElementById('ap-'+first.id);
+      if(el){
+        el.style.animation='abounce 0.7s ease';
+        setTimeout(function(){
+          el.style.transform='translateX(-70px) scale(0.8)';el.style.opacity='0';
+          setTimeout(function(){
+            animQ.shift();
+            var np=Object.assign({},animeChars[animCounter%5],{id:'c'+animCounter,token:'G'+String(animCounter).padStart(2,'0')});
+            animCounter++;animQ.push(np);
+            var cn=document.getElementById('counterNum');if(cn)cn.textContent=first.token;
+            renderQ();
+          },500);
+        },700);
       }
     }
-
-    renderQueue();
-    setInterval(callNext, 3000);
-
-    // PUSH NOTIFICATIONS
-    function requestNotifications() {
-      if ('Notification' in window && Notification.permission === 'default') {
-        Notification.requestPermission();
-      }
-    }
-    setTimeout(requestNotifications, 5000);
+    renderQ();
+    setInterval(callNext,3200);
   </script>
-  <script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js');
-  }
-</script>
 </body>
 </html>
