@@ -1,183 +1,516 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Qless — Ultimate Admin</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet"/>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a0a0a">
+<title>QGO Business Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-body{margin:0;background:#080810;color:#e2e2ff;font-family:'Space Grotesk',sans-serif;}
-.container{padding:20px}
-button{cursor:pointer}
-.card{background:#13131f;border:1px solid #1e1e30;border-radius:12px;padding:15px;margin-bottom:10px}
-.hidden{display:none}
-input{padding:10px;border-radius:8px;border:1px solid #333;background:#0f0f1a;color:#fff}
-.btn{background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;border:none;padding:10px 15px;border-radius:8px}
+  :root { --ink:#0a0a0a; --paper:#f5f2eb; --accent:#00c896; --accent2:#ff5c35; --mid:#6b6b6b; --warn:#ff9500; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'DM Sans',sans-serif;background:#f5f2eb;color:#0a0a0a;min-height:100vh;}
+
+  .sidebar {
+    position:fixed;top:0;left:0;bottom:0;width:220px;
+    background:var(--ink);color:#fff;padding:28px 20px;
+    display:flex;flex-direction:column;gap:8px;
+    z-index:100;
+  }
+  @media(max-width:768px){.sidebar{display:none}}
+  .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:#fff;margin-bottom:24px;}
+  .logo span{color:var(--accent);}
+  .nav-item{
+    display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;
+    color:rgba(255,255,255,0.4);font-size:14px;cursor:pointer;transition:all 0.15s;
+    text-decoration:none;border:none;background:none;font-family:'DM Sans',sans-serif;width:100%;text-align:left;
+  }
+  .nav-item:hover,.nav-item.active{background:rgba(255,255,255,0.08);color:#fff;}
+  .nav-item.active{color:var(--accent);}
+  .nav-icon{font-size:16px;width:20px;text-align:center;}
+  .sidebar-bottom{margin-top:auto;}
+  .biz-badge{background:rgba(0,200,150,0.1);border:0.5px solid rgba(0,200,150,0.2);border-radius:10px;padding:12px;margin-top:8px;}
+  .biz-name{font-size:13px;font-weight:500;color:#fff;}
+  .biz-plan{font-size:11px;color:var(--accent);}
+
+  .main{margin-left:220px;padding:32px;}
+  @media(max-width:768px){.main{margin-left:0;padding:16px;}}
+
+  .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px;}
+  .page-title{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;}
+  .page-sub{font-size:14px;color:var(--mid);margin-top:2px;}
+  .header-actions{display:flex;gap:10px;}
+  .btn{padding:10px 20px;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all 0.15s;}
+  .btn-primary{background:var(--ink);color:#fff;}
+  .btn-primary:hover{background:var(--accent);color:var(--ink);}
+  .btn-secondary{background:rgba(0,0,0,0.06);color:var(--ink);}
+
+  /* STAT CARDS */
+  .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:28px;}
+  .stat-card{background:#fff;border-radius:16px;padding:20px;border:0.5px solid rgba(0,0,0,0.06);}
+  .sc-label{font-size:12px;color:var(--mid);margin-bottom:6px;}
+  .sc-val{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--ink);}
+  .sc-change{font-size:12px;color:var(--accent);margin-top:4px;}
+
+  /* MAIN GRID */
+  .main-grid{display:grid;grid-template-columns:1fr 340px;gap:20px;}
+  @media(max-width:1100px){.main-grid{grid-template-columns:1fr;}}
+
+  .card{background:#fff;border-radius:20px;padding:24px;border:0.5px solid rgba(0,0,0,0.06);}
+  .card-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
+  .card-title .live-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+  /* QUEUE LIST */
+  .queue-list{display:flex;flex-direction:column;gap:8px;}
+  .queue-person{
+    display:flex;align-items:center;gap:12px;padding:12px 14px;
+    border-radius:12px;background:#f9f8f5;transition:background 0.15s;
+  }
+  .queue-person:hover{background:#f0ede4;}
+  .queue-person.current{background:rgba(0,200,150,0.08);border:0.5px solid rgba(0,200,150,0.2);}
+  .qp-num{
+    width:32px;height:32px;border-radius:50%;
+    background:rgba(0,0,0,0.07);color:var(--ink);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Syne',sans-serif;font-size:13px;font-weight:700;flex-shrink:0;
+  }
+  .qp-num.first{background:var(--accent);color:var(--ink);}
+  .qp-info{flex:1;}
+  .qp-name{font-size:13px;font-weight:500;}
+  .qp-time{font-size:11px;color:var(--mid);}
+  .qp-wait{font-size:12px;color:var(--mid);white-space:nowrap;}
+  .qp-action{
+    padding:6px 14px;border-radius:100px;background:var(--ink);color:#fff;
+    font-size:12px;font-weight:500;border:none;cursor:pointer;transition:all 0.15s;
+  }
+  .qp-action:hover{background:var(--accent);color:var(--ink);}
+
+  /* CHART */
+  .chart-wrap{height:200px;position:relative;}
+
+  /* OFFER FORM */
+  .offer-form{display:flex;flex-direction:column;gap:12px;}
+  .field-label{font-size:12px;font-weight:500;color:var(--mid);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.04em;}
+  .field-input{
+    width:100%;background:#f9f8f5;border:1px solid rgba(0,0,0,0.1);
+    border-radius:10px;padding:10px 14px;font-family:'DM Sans',sans-serif;
+    font-size:14px;color:var(--ink);outline:none;transition:border-color 0.2s;
+  }
+  .field-input:focus{border-color:var(--accent);}
+
+  /* ACTIVE OFFERS */
+  .offer-item{
+    display:flex;align-items:center;gap:10px;padding:10px 14px;
+    background:#f9f8f5;border-radius:10px;margin-bottom:8px;
+  }
+  .offer-icon{font-size:18px;}
+  .offer-text-wrap{flex:1;}
+  .offer-deal{font-size:13px;font-weight:500;}
+  .offer-exp{font-size:11px;color:var(--mid);}
+  .offer-del{background:none;border:none;color:#ff3b30;cursor:pointer;font-size:16px;padding:4px;}
+
+  /* QR CODE */
+  .qr-section{text-align:center;padding:20px 0;}
+  .qr-box{
+    width:140px;height:140px;background:var(--ink);
+    border-radius:16px;margin:0 auto 12px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:11px;color:rgba(255,255,255,0.3);
+  }
+  .qr-url{font-size:11px;color:var(--mid);word-break:break-all;}
+
+  /* MOBILE TOP BAR */
+  .mobile-topbar{
+    display:none;align-items:center;justify-content:space-between;
+    background:var(--ink);padding:16px 20px;position:sticky;top:0;z-index:50;
+  }
+  @media(max-width:768px){.mobile-topbar{display:flex;}}
+  .mobile-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:#fff;}
+  .mobile-logo span{color:var(--accent);}
 </style>
 </head>
 <body>
 
-<div id="loginScreen" class="container">
-  <h2>🔐 Admin Login</h2>
-  <input type="password" id="pwInput" placeholder="Enter password"/>
-  <br/><br/>
-  <button class="btn" onclick="doLogin()">Login</button>
-  <p id="loginError" style="color:red;display:none">Wrong password</p>
+<!-- MOBILE TOPBAR -->
+<div class="mobile-topbar">
+  <div class="mobile-logo">Q<span>G</span>O <span style="font-size:12px;color:rgba(255,255,255,0.4);font-family:'DM Sans'">Business</span></div>
+  <div style="display:flex;gap:10px;">
+    <button class="btn btn-primary" onclick="advanceQueue()" style="padding:8px 16px;font-size:12px;">Next →</button>
+  </div>
 </div>
 
-<div id="dashboard" class="container hidden">
-  <h2>🚀 Qless Admin Dashboard</h2>
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="logo">Q<span>G</span>O</div>
+  <button class="nav-item active" onclick="showSection('dashboard')"><span class="nav-icon">📊</span>Dashboard</button>
+  <button class="nav-item" onclick="showSection('queue')"><span class="nav-icon">🎟</span>Live queue</button>
+  <button class="nav-item" onclick="showSection('offers')"><span class="nav-icon">🎯</span>Offers</button>
+  <button class="nav-item" onclick="showSection('analytics')"><span class="nav-icon">📈</span>Analytics</button>
+  <button class="nav-item" onclick="showSection('settings')"><span class="nav-icon">⚙️</span>Settings</button>
+  <div class="sidebar-bottom">
+    <div class="biz-badge">
+      <div class="biz-name" id="sidebar-biz-name">Loading...</div>
+      <div class="biz-plan">Free plan · QGO</div>
+    </div>
+    <a href="/" class="nav-item" style="margin-top:8px;"><span class="nav-icon">←</span>Back to app</a>
+  </div>
+</div>
 
-  <div class="card">
-    <button class="btn" onclick="callNext()">📣 Call Next</button>
-    <button class="btn" onclick="clearDone()">🧹 Clear Done</button>
+<!-- MAIN -->
+<div class="main">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div>
+      <div class="page-title" id="page-title">Dashboard</div>
+      <div class="page-sub" id="today-date"></div>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" onclick="refreshData()">↻ Refresh</button>
+      <button class="btn btn-primary" onclick="advanceQueue()">Call next →</button>
+    </div>
   </div>
 
-  <div id="stats" class="card"></div>
-  <div id="queueList"></div>
+  <!-- STATS ROW -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="sc-label">Waiting now</div>
+      <div class="sc-val" id="stat-waiting">0</div>
+      <div class="sc-change" id="stat-wait-time">~0 min estimated wait</div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-label">Served today</div>
+      <div class="sc-val" id="stat-served">0</div>
+      <div class="sc-change">customers</div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-label">Total today</div>
+      <div class="sc-val" id="stat-total">0</div>
+      <div class="sc-change">queue joins</div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-label">Avg wait time</div>
+      <div class="sc-val" id="stat-avg">5</div>
+      <div class="sc-change">minutes/person</div>
+    </div>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="main-grid">
+
+    <!-- LEFT COLUMN -->
+    <div style="display:flex;flex-direction:column;gap:20px;">
+
+      <!-- LIVE QUEUE -->
+      <div class="card">
+        <div class="card-title">
+          Live queue <div class="live-dot"></div>
+        </div>
+        <div class="queue-list" id="queue-list">
+          <div style="color:var(--mid);font-size:14px;text-align:center;padding:20px;">No one in queue right now</div>
+        </div>
+      </div>
+
+      <!-- HOURLY CHART -->
+      <div class="card">
+        <div class="card-title">Queue volume today</div>
+        <div class="chart-wrap">
+          <canvas id="hourly-chart"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div style="display:flex;flex-direction:column;gap:20px;">
+
+      <!-- OFFERS -->
+      <div class="card">
+        <div class="card-title">Active offers</div>
+        <div id="active-offers">
+          <div style="color:var(--mid);font-size:13px;margin-bottom:16px;">No active offers. Add one to attract nearby QGO users.</div>
+        </div>
+        <div class="offer-form" id="offer-form">
+          <div>
+            <div class="field-label">Offer text</div>
+            <input class="field-input" id="offer-text" placeholder="e.g. Free coffee with any visit" maxlength="80">
+          </div>
+          <div>
+            <div class="field-label">Valid for (minutes)</div>
+            <input class="field-input" id="offer-duration" type="number" value="60" min="10" max="480">
+          </div>
+          <button class="btn btn-primary" onclick="postOffer()" style="border-radius:10px;">Post offer →</button>
+        </div>
+      </div>
+
+      <!-- QR CODE -->
+      <div class="card">
+        <div class="card-title">Queue QR code</div>
+        <div class="qr-section">
+          <div class="qr-box" id="qr-placeholder">
+            Generating...
+          </div>
+          <div class="qr-url" id="qr-url">Set up your business to generate QR</div>
+          <button class="btn btn-secondary" style="margin-top:12px;font-size:12px;" onclick="downloadQR()">Download QR</button>
+        </div>
+        <p style="font-size:12px;color:var(--mid);text-align:center;margin-top:8px;line-height:1.5;">
+          Place this at your entrance. Customers scan to join your queue instantly.
+        </p>
+      </div>
+
+    </div>
+  </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
 <script>
-firebase.initializeApp({
-  apiKey:"AIzaSyAtdD2Ppri0JAGIDR8aOOn_PLfjGc5q5j4",
-  authDomain:"queless-79a19.firebaseapp.com",
-  databaseURL:"https://queless-79a19-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId:"queless-79a19",
-  storageBucket:"queless-79a19.firebasestorage.app",
-  messagingSenderId:"661569229761",
-  appId:"1:661569229761:web:b7e05c6a22836c724e1540"
-});
+  const API_BASE = window.location.origin;
+  const token = localStorage.getItem('qgo_token');
+  let bizId = localStorage.getItem('qgo_biz_id');
+  let hourlyChart;
 
-var db = firebase.database();
-var BIZ_SLUG = new URLSearchParams(window.location.search).get('biz');
-var BIZ_PASSWORD = '';
-var queueData = {};
+  // ─── INIT ────────────────────────────────────────────────────────────────────
+  document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long' });
 
-// LOAD BUSINESS
-function loadBusiness(){
-  if(!BIZ_SLUG){alert('Missing biz');return;}
-
-  db.ref('businesses/'+BIZ_SLUG).once('value')
-  .then(snap=>{
-    if(!snap.exists()) throw new Error('Not found');
-    BIZ_PASSWORD = snap.val().password;
-  })
-  .catch(err=>{
-    console.error(err);
-    alert('Error loading business');
-  });
-}
-
-loadBusiness();
-
-// LOGIN
-function doLogin(){
-  var pw = document.getElementById('pwInput').value;
-  if(btoa(pw) === BIZ_PASSWORD){
-    document.getElementById('loginScreen').classList.add('hidden');
-    document.getElementById('dashboard').classList.remove('hidden');
-    startListening();
-  }else{
-    document.getElementById('loginError').style.display='block';
-  }
-}
-
-// LISTENER
-function startListening(){
-  db.ref('bizQueues/'+BIZ_SLUG+'/general').on('value',snap=>{
-    queueData = snap.val() || {};
-    renderQueue();
-    updateStats();
-  });
-}
-
-// RENDER
-function renderQueue(){
-  var list = document.getElementById('queueList');
-
-  var arr = Object.entries(queueData)
-    .sort((a,b)=>a[1].joinedAt - b[1].joinedAt);
-
-  if(arr.length===0){
-    list.innerHTML = '<p>✅ Queue empty</p>';
-    return;
+  function showSection(sec) {
+    document.getElementById('page-title').textContent = sec.charAt(0).toUpperCase() + sec.slice(1);
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    event.target.closest('.nav-item').classList.add('active');
   }
 
-  list.innerHTML = arr.map((e,i)=>{
-    var user=e[1];
-    return `<div class="card">
-      <b>#${i+1} ${escapeHtml(user.name)}</b><br/>
-      Status: ${user.status}<br/>
-      <button onclick="callPerson('${e[0]}')">Call</button>
-      <button onclick="markDone('${e[0]}')">Done</button>
-      <button onclick="removePerson('${e[0]}')">Remove</button>
-    </div>`;
-  }).join('');
-}
+  // ─── LOAD DATA ────────────────────────────────────────────────────────────────
+  function refreshData() {
+    if (!bizId) { loadDemoData(); return; }
 
-// STATS
-function updateStats(){
-  var waiting=0,called=0,done=0;
+    fetch(`${API_BASE}/api/business/${bizId}/stats`, {
+      headers: { 'Authorization': 'Bearer ' + token }
+    })
+    .then(r => r.json())
+    .then(data => {
+      document.getElementById('stat-waiting').textContent = data.waiting_now;
+      document.getElementById('stat-wait-time').textContent = `~${data.estimated_wait} min estimated wait`;
+      document.getElementById('stat-served').textContent = data.served_today;
+      document.getElementById('stat-total').textContent = data.today_total;
+      document.getElementById('stat-avg').textContent = data.avg_service;
+      updateHourlyChart(data.hourly);
+    })
+    .catch(() => loadDemoData());
 
-  Object.values(queueData).forEach(e=>{
-    if(e.status==='waiting') waiting++;
-    if(e.status==='called') called++;
-    if(e.status==='done') done++;
-  });
+    loadQueueList();
+    loadOffers();
+  }
 
-  document.getElementById('stats').innerHTML = `
-    Waiting: ${waiting} | Called: ${called} | Done: ${done}
-  `;
-}
+  function loadDemoData() {
+    document.getElementById('stat-waiting').textContent = 7;
+    document.getElementById('stat-wait-time').textContent = '~28 min estimated wait';
+    document.getElementById('stat-served').textContent = 23;
+    document.getElementById('stat-total').textContent = 31;
+    document.getElementById('stat-avg').textContent = 4;
+    document.getElementById('sidebar-biz-name').textContent = 'Apollo Clinic';
 
-// ACTIONS
-function callNext(){
-  var next = Object.entries(queueData)
-    .filter(e=>e[1].status==='waiting')
-    .sort((a,b)=>a[1].joinedAt - b[1].joinedAt)[0];
+    updateHourlyChart([0,0,0,0,0,0,2,5,8,12,9,7,4,6,8,10,7,5,3,2,1,0,0,0]);
 
-  if(!next){alert('Empty');return;}
-  callPerson(next[0]);
-}
+    const demoQueue = [
+      { position: 1, name: 'Priya S.', joined: '5 min ago', wait: 'Now', current: true },
+      { position: 2, name: 'Rahul M.', joined: '8 min ago', wait: '~4 min' },
+      { position: 3, name: 'Kavya R.', joined: '12 min ago', wait: '~8 min' },
+      { position: 4, name: 'Arun K.', joined: '15 min ago', wait: '~12 min' },
+      { position: 5, name: 'Sita D.', joined: '18 min ago', wait: '~16 min' },
+    ];
+    renderQueueList(demoQueue);
 
-function callPerson(key){
-  db.ref('bizQueues/'+BIZ_SLUG+'/general/'+key)
-    .update({status:'called',calledAt:Date.now()});
-}
+    const joinUrl = `${window.location.origin}/register.html?biz=demo`;
+    document.getElementById('qr-url').textContent = joinUrl;
+    generateQRCode(joinUrl);
+  }
 
-function markDone(key){
-  db.ref('bizQueues/'+BIZ_SLUG+'/general/'+key)
-    .update({status:'done'});
-}
+  function loadQueueList() {
+    if (!bizId) return;
+    fetch(`${API_BASE}/api/business/${bizId}`, { headers: { 'Authorization': 'Bearer ' + token } })
+      .then(r => r.json())
+      .then(data => {
+        // In a full implementation you'd fetch the queue members list
+        // For now this shows the count
+        document.getElementById('stat-waiting').textContent = data.queue_count;
+      })
+      .catch(() => {});
+  }
 
-function removePerson(key){
-  db.ref('bizQueues/'+BIZ_SLUG+'/general/'+key).remove();
-}
-
-function clearDone(){
-  Object.entries(queueData).forEach(e=>{
-    if(e[1].status==='done'){
-      db.ref('bizQueues/'+BIZ_SLUG+'/general/'+e[0]).remove();
+  function renderQueueList(items) {
+    const list = document.getElementById('queue-list');
+    if (!items.length) {
+      list.innerHTML = '<div style="color:var(--mid);font-size:14px;text-align:center;padding:20px;">Queue is empty</div>';
+      return;
     }
+    list.innerHTML = items.map(p => `
+      <div class="queue-person ${p.current ? 'current' : ''}">
+        <div class="qp-num ${p.position === 1 ? 'first' : ''}">${p.position}</div>
+        <div class="qp-info">
+          <div class="qp-name">${p.name}</div>
+          <div class="qp-time">Joined ${p.joined}</div>
+        </div>
+        <div class="qp-wait">${p.wait}</div>
+        ${p.current ? `<button class="qp-action" onclick="advanceQueue()">Serve →</button>` : ''}
+      </div>
+    `).join('');
+  }
+
+  // ─── CHART ────────────────────────────────────────────────────────────────────
+  function updateHourlyChart(hourly) {
+    const labels = hourly.map((_, i) => i < 10 ? `0${i}:00` : `${i}:00`);
+    if (hourlyChart) {
+      hourlyChart.data.datasets[0].data = hourly;
+      hourlyChart.update();
+      return;
+    }
+    const ctx = document.getElementById('hourly-chart').getContext('2d');
+    hourlyChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          data: hourly,
+          backgroundColor: '#00c896',
+          borderRadius: 6,
+          barPercentage: 0.7,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { font: { size: 10 }, maxTicksLimit: 8, color: '#6b6b6b' }
+          },
+          y: {
+            grid: { color: 'rgba(0,0,0,0.05)' },
+            ticks: { font: { size: 10 }, color: '#6b6b6b' }
+          }
+        }
+      }
+    });
+  }
+
+  // ─── ADVANCE QUEUE ────────────────────────────────────────────────────────────
+  function advanceQueue() {
+    if (!bizId) {
+      showToast('Demo mode — connect your business to advance queue');
+      return;
+    }
+    fetch(`${API_BASE}/api/business/${bizId}/advance`, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token }
+    })
+    .then(r => r.json())
+    .then(data => {
+      showToast('Next customer called!');
+      refreshData();
+    })
+    .catch(() => showToast('Error calling next customer'));
+  }
+
+  // ─── OFFERS ───────────────────────────────────────────────────────────────────
+  function postOffer() {
+    const text = document.getElementById('offer-text').value.trim();
+    const duration = parseInt(document.getElementById('offer-duration').value);
+    if (!text) { showToast('Enter an offer description'); return; }
+
+    if (!bizId) {
+      // Demo: show it locally
+      addOfferToUI({ deal: text, valid_mins: duration });
+      document.getElementById('offer-text').value = '';
+      showToast('Offer posted! (demo mode)');
+      return;
+    }
+
+    fetch(`${API_BASE}/api/offers`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ business_id: bizId, deal_text: text, valid_mins: duration })
+    })
+    .then(r => r.json())
+    .then(() => { showToast('Offer live! Nearby QGO users will see it.'); loadOffers(); document.getElementById('offer-text').value = ''; })
+    .catch(() => showToast('Error posting offer'));
+  }
+
+  function loadOffers() {
+    fetch(`${API_BASE}/api/offers`)
+      .then(r => r.json())
+      .then(offers => {
+        if (offers.length) {
+          document.getElementById('active-offers').innerHTML = offers.map(o => `
+            <div class="offer-item">
+              <div class="offer-icon">🎯</div>
+              <div class="offer-text-wrap">
+                <div class="offer-deal">${o.deal}</div>
+                <div class="offer-exp">Valid ${o.valid_mins} more min · ${o.business}</div>
+              </div>
+              <button class="offer-del" title="Remove">✕</button>
+            </div>
+          `).join('');
+        }
+      })
+      .catch(() => {});
+  }
+
+  function addOfferToUI(o) {
+    document.getElementById('active-offers').innerHTML = `
+      <div class="offer-item">
+        <div class="offer-icon">🎯</div>
+        <div class="offer-text-wrap">
+          <div class="offer-deal">${o.deal}</div>
+          <div class="offer-exp">Valid ${o.valid_mins} more min</div>
+        </div>
+        <button class="offer-del" title="Remove">✕</button>
+      </div>
+    ` + document.getElementById('active-offers').innerHTML;
+  }
+
+  // ─── QR CODE ─────────────────────────────────────────────────────────────────
+  function generateQRCode(url) {
+    // Uses Google Charts QR API (free)
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(url)}`;
+    const img = document.createElement('img');
+    img.src = qrUrl;
+    img.style.width = '120px'; img.style.height = '120px'; img.style.borderRadius = '8px';
+    const box = document.getElementById('qr-placeholder');
+    box.innerHTML = '';
+    box.appendChild(img);
+  }
+
+  function downloadQR() {
+    const url = document.getElementById('qr-url').textContent;
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=${encodeURIComponent(url)}`;
+    const a = document.createElement('a'); a.href = qrUrl; a.download = 'qgo-qr.png'; a.click();
+  }
+
+  // ─── TOAST ────────────────────────────────────────────────────────────────────
+  function showToast(msg) {
+    let t = document.getElementById('toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'toast';
+      t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0a0a0a;color:#fff;padding:10px 20px;border-radius:100px;font-size:13px;font-weight:500;z-index:9999;transition:opacity 0.3s;opacity:0;white-space:nowrap;';
+      document.body.appendChild(t);
+    }
+    t.textContent = msg; t.style.opacity = '1';
+    setTimeout(() => t.style.opacity = '0', 2500);
+  }
+
+  // ─── SOCKET FOR LIVE UPDATES ──────────────────────────────────────────────────
+  const socket = io(API_BASE, { transports: ['websocket', 'polling'] });
+  socket.on('connect', () => {
+    if (bizId) socket.emit('join_business_room', { business_id: bizId, token });
   });
-}
+  socket.on('queue_update', () => refreshData());
 
-// SECURITY
-function escapeHtml(str){
-  return String(str)
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;');
-}
-
+  // ─── AUTO-REFRESH ─────────────────────────────────────────────────────────────
+  refreshData();
+  setInterval(refreshData, 30000);
 </script>
-
-<script src="chatbot.js"></script>
-
+  <script src="chatbot.js"></script>
 </body>
 </html>
