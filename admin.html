@@ -44,10 +44,13 @@ input{padding:10px;border-radius:8px;border:1px solid #333;background:#0f0f1a;co
 
 <script>
 firebase.initializeApp({
-  apiKey:"YOUR_API_KEY",
-  authDomain:"YOUR_AUTH",
-  databaseURL:"YOUR_DB",
-  projectId:"YOUR_PROJECT"
+  apiKey:"AIzaSyAtdD2Ppri0JAGIDR8aOOn_PLfjGc5q5j4",
+  authDomain:"queless-79a19.firebaseapp.com",
+  databaseURL:"https://queless-79a19-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"queless-79a19",
+  storageBucket:"queless-79a19.firebasestorage.app",
+  messagingSenderId:"661569229761",
+  appId:"1:661569229761:web:b7e05c6a22836c724e1540"
 });
 
 var db = firebase.database();
@@ -75,7 +78,7 @@ loadBusiness();
 // LOGIN
 function doLogin(){
   var pw = document.getElementById('pwInput').value;
-  if(pw === BIZ_PASSWORD){
+  if(btoa(pw) === BIZ_PASSWORD){
     document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('dashboard').classList.remove('hidden');
     startListening();
