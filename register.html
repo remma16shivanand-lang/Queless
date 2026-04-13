@@ -1,401 +1,246 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0a0a0a">
-<title>QGO — Join</title>
-<link rel="manifest" href="/manifest.json">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-  :root { --ink:#0a0a0a; --paper:#f5f2eb; --accent:#00c896; --mid:#6b6b6b; }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'DM Sans',sans-serif;background:#0f0f0f;color:#fff;min-height:100vh;display:flex;flex-direction:column;}
-  .page{flex:1;display:flex;flex-direction:column;padding:0;max-width:440px;margin:0 auto;width:100%;}
-
-  .top-bar{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;}
-  .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;text-decoration:none;color:#fff;}
-  .logo span{color:var(--accent);}
-  .skip-btn{font-size:13px;color:rgba(255,255,255,0.3);text-decoration:none;}
-
-  .hero-area{padding:24px 24px 32px;flex:1;}
-  .step-indicator{display:flex;gap:6px;margin-bottom:32px;}
-  .step-dot{width:24px;height:4px;border-radius:2px;background:rgba(255,255,255,0.1);transition:background 0.3s;}
-  .step-dot.active{background:var(--accent);}
-  .step-dot.done{background:rgba(0,200,150,0.4);}
-
-  h1{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;line-height:1.15;margin-bottom:8px;}
-  .hero-sub{font-size:15px;color:rgba(255,255,255,0.4);line-height:1.6;margin-bottom:36px;}
-
-  /* TOGGLE */
-  .type-toggle{display:flex;background:rgba(255,255,255,0.06);border-radius:14px;padding:4px;margin-bottom:32px;}
-  .type-btn{flex:1;padding:11px;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;background:transparent;color:rgba(255,255,255,0.4);transition:all 0.2s;}
-  .type-btn.active{background:var(--accent);color:var(--ink);}
-
-  /* FORM FIELDS */
-  .field-group{margin-bottom:20px;}
-  .field-label{font-size:12px;font-weight:500;color:rgba(255,255,255,0.4);margin-bottom:8px;letter-spacing:0.04em;text-transform:uppercase;}
-  .phone-input-row{display:flex;gap:10px;}
-  .country-code{
-    background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
-    border-radius:14px;padding:14px 16px;font-family:'DM Sans',sans-serif;
-    font-size:15px;color:#fff;cursor:pointer;white-space:nowrap;
-    display:flex;align-items:center;gap:6px;
-  }
-  .field-input{
-    width:100%;background:rgba(255,255,255,0.06);
-    border:1px solid rgba(255,255,255,0.1);border-radius:14px;
-    padding:14px 18px;font-family:'DM Sans',sans-serif;font-size:16px;color:#fff;
-    outline:none;transition:border-color 0.2s;-webkit-appearance:none;
-  }
-  .field-input:focus{border-color:var(--accent);}
-  .field-input::placeholder{color:rgba(255,255,255,0.2);}
-  .field-input.error{border-color:#ff3b30;}
-
-  .otp-row{display:flex;gap:10px;justify-content:center;}
-  .otp-digit{
-    width:52px;height:60px;background:rgba(255,255,255,0.06);
-    border:1px solid rgba(255,255,255,0.1);border-radius:14px;
-    font-family:'Syne',sans-serif;font-size:24px;font-weight:700;
-    color:#fff;text-align:center;outline:none;
-    transition:border-color 0.2s;-webkit-appearance:none;
-  }
-  .otp-digit:focus{border-color:var(--accent);}
-
-  .resend-row{text-align:center;margin-top:16px;}
-  .resend-btn{background:none;border:none;color:rgba(255,255,255,0.3);font-size:13px;cursor:pointer;}
-  .resend-btn.active{color:var(--accent);}
-  #resend-timer{color:rgba(255,255,255,0.2);font-size:13px;}
-
-  /* PREFERENCES */
-  .pref-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px;}
-  .pref-chip{
-    padding:10px 16px;border-radius:100px;
-    border:1px solid rgba(255,255,255,0.12);
-    background:rgba(255,255,255,0.04);
-    color:rgba(255,255,255,0.5);font-size:13px;
-    cursor:pointer;transition:all 0.15s;user-select:none;
-  }
-  .pref-chip.selected{background:var(--accent);color:var(--ink);border-color:var(--accent);font-weight:500;}
-
-  /* BOTTOM ACTION */
-  .bottom-action{padding:24px;border-top:0.5px solid rgba(255,255,255,0.06);}
-  .main-btn{
-    width:100%;padding:17px;border-radius:100px;
-    background:var(--accent);color:var(--ink);
-    border:none;font-family:'DM Sans',sans-serif;
-    font-size:16px;font-weight:500;cursor:pointer;
-    transition:all 0.2s;
-  }
-  .main-btn:hover{filter:brightness(1.1);transform:translateY(-1px);}
-  .main-btn:disabled{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.3);transform:none;cursor:not-allowed;}
-  .main-btn.loading{position:relative;color:transparent;}
-  .main-btn.loading::after{
-    content:'';position:absolute;top:50%;left:50%;
-    width:20px;height:20px;border-radius:50%;
-    border:2px solid rgba(0,0,0,0.3);border-top-color:#0a0a0a;
-    transform:translate(-50%,-50%);animation:spin 0.7s linear infinite;
-  }
-  @keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
-  .terms-text{text-align:center;font-size:11px;color:rgba(255,255,255,0.2);margin-top:12px;line-height:1.5;}
-  .terms-text a{color:rgba(255,255,255,0.3);text-decoration:underline;}
-
-  .error-msg{font-size:12px;color:#ff3b30;margin-top:6px;display:none;}
-  .success-icon{text-align:center;font-size:64px;margin-bottom:16px;}
-</style>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Qless — Register Your Business</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--bg:#080810;--surface:#0f0f1a;--card:#13131f;--border:#1e1e30;--accent:#7c3aed;--accent2:#a855f7;--neon:#c084fc;--cyan:#06b6d4;--green:#22c55e;--yellow:#fbbf24;--white:#f0eeff;--muted:#6b6b8a;--text:#e2e2ff;}
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;min-height:100vh;}
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:rgba(8,8,16,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+    .logo{font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:800;background:linear-gradient(135deg,#a855f7,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;letter-spacing:-1px;}
+    .nbtn{background:transparent;color:var(--muted);padding:0.4rem 0.9rem;border-radius:999px;text-decoration:none;font-size:0.85rem;font-weight:500;border:1px solid var(--border);transition:all 0.2s;}
+    .nbtn:hover{color:var(--white);border-color:var(--accent2);}
+    .hero{padding:8rem 1.5rem 3rem;text-align:center;position:relative;overflow:hidden;}
+    .orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;}
+    .o1{width:400px;height:400px;background:rgba(124,58,237,0.18);top:-80px;left:-80px;}
+    .o2{width:300px;height:300px;background:rgba(6,182,212,0.12);bottom:0;right:-50px;}
+    .badge{display:inline-flex;align-items:center;gap:0.4rem;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);color:var(--neon);font-size:0.75rem;font-weight:600;padding:0.3rem 0.9rem;border-radius:999px;margin-bottom:1.2rem;position:relative;z-index:1;}
+    .ldot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:blink 1.5s infinite;}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+    .hero h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(2rem,7vw,4.5rem);font-weight:800;line-height:0.95;letter-spacing:-2px;position:relative;z-index:1;margin-bottom:1rem;}
+    .g1{display:block;color:var(--white);}
+    .g2{display:block;background:linear-gradient(135deg,#a855f7,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .hero-sub{color:var(--muted);max-width:480px;margin:0 auto 2rem;line-height:1.7;position:relative;z-index:1;}
+    .steps-row{display:flex;justify-content:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:3rem;position:relative;z-index:1;}
+    .step-pill{display:flex;align-items:center;gap:0.5rem;background:var(--card);border:1px solid var(--border);border-radius:999px;padding:0.5rem 1rem;font-size:0.82rem;}
+    .sn{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:0.7rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .main{max-width:1000px;margin:0 auto;padding:0 1.5rem 5rem;display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+    @media(max-width:700px){.main{grid-template-columns:1fr;}}
+    .reg-card,.list-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:2rem;position:relative;overflow:hidden;}
+    .reg-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--cyan));}
+    .list-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--cyan),#06b6d4aa);}
+    .card-title{font-family:'Bricolage Grotesque',sans-serif;font-size:1.4rem;font-weight:800;color:var(--white);margin-bottom:0.3rem;}
+    .card-sub{color:var(--muted);font-size:0.85rem;margin-bottom:1.5rem;}
+    label{display:block;font-size:0.75rem;font-weight:600;color:var(--muted);margin-bottom:0.3rem;letter-spacing:0.05em;text-transform:uppercase;}
+    input,select{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--white);font-family:'Space Grotesk',sans-serif;font-size:0.92rem;padding:0.75rem 0.9rem;outline:none;margin-bottom:1rem;transition:border-color 0.2s;}
+    input:focus,select:focus{border-color:var(--accent2);box-shadow:0 0 0 3px rgba(168,85,247,0.1);}
+    select option{background:var(--card);}
+    .reg-btn{width:100%;padding:0.95rem;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:12px;font-family:'Bricolage Grotesque',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;transition:all 0.2s;box-shadow:0 0 30px rgba(124,58,237,0.3);}
+    .reg-btn:hover{transform:translateY(-2px);box-shadow:0 0 50px rgba(124,58,237,0.5);}
+    .reg-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+    #regError{display:none;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#f87171;border-radius:10px;padding:0.7rem 1rem;font-size:0.85rem;margin-bottom:1rem;}
+    #successView{display:none;}
+    .success-icon{font-size:3rem;text-align:center;margin-bottom:1rem;}
+    .success-title{font-family:'Bricolage Grotesque',sans-serif;font-size:1.4rem;font-weight:800;color:var(--white);text-align:center;margin-bottom:0.5rem;}
+    .success-sub{color:var(--muted);font-size:0.85rem;text-align:center;margin-bottom:1.5rem;}
+    .link-box,.admin-link-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:0.8rem;}
+    .link-label{font-size:0.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.5rem;}
+    .link-val{font-size:0.82rem;color:var(--neon);word-break:break-all;margin-bottom:0.8rem;}
+    .copy-btn{width:100%;padding:0.7rem;background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);color:var(--neon);border-radius:8px;font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.2s;}
+    .copy-btn:hover{background:rgba(124,58,237,0.25);}
+    .qr-preview{background:white;border-radius:10px;padding:8px;margin-top:0.8rem;display:flex;align-items:center;justify-content:center;}
+    .type-icons{display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem;margin-bottom:1rem;}
+    .type-opt{background:var(--surface);border:2px solid var(--border);border-radius:10px;padding:0.6rem;text-align:center;cursor:pointer;transition:all 0.2s;}
+    .type-opt.selected{border-color:var(--accent2);background:rgba(124,58,237,0.12);}
+    .type-opt .ti{font-size:1.2rem;}
+    .type-opt .tn{font-size:0.68rem;color:var(--muted);margin-top:0.2rem;}
+    .search-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--white);font-family:'Space Grotesk',sans-serif;font-size:0.88rem;padding:0.65rem 0.9rem;outline:none;margin-bottom:1rem;transition:border-color 0.2s;}
+    .search-input:focus{border-color:var(--accent2);}
+    .biz-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:0.7rem;display:flex;align-items:center;gap:0.8rem;cursor:pointer;transition:all 0.2s;}
+    .biz-item:hover{border-color:rgba(168,85,247,0.3);}
+    .biz-icon{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,rgba(124,58,237,0.2),rgba(6,182,212,0.15));display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+    .biz-name{font-weight:700;font-size:0.92rem;color:var(--white);}
+    .biz-type{font-size:0.75rem;color:var(--muted);margin-top:0.1rem;}
+    .biz-badge{margin-left:auto;font-size:0.65rem;font-weight:700;padding:0.2rem 0.5rem;border-radius:999px;background:rgba(34,197,94,0.1);color:var(--green);white-space:nowrap;}
+    .info-note{background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:10px;padding:0.8rem;font-size:0.82rem;color:var(--green);text-align:center;margin-top:0.8rem;}
+  </style>
 </head>
 <body>
-<div class="page">
-
-  <div class="top-bar">
-    <a href="/" class="logo">Q<span>G</span>O</a>
-    <a href="/" class="skip-btn">Skip for now</a>
+<nav>
+  <a class="logo" href="index.html">Qless™</a>
+  <div style="display:flex;gap:0.5rem;">
+    <a class="nbtn" href="index.html">Home</a>
+    <a class="nbtn" href="queue.html">Join Queue</a>
   </div>
+</nav>
 
-  <!-- STEP DOTS -->
-  <div class="hero-area">
-    <div class="step-indicator">
-      <div class="step-dot active" id="dot-0"></div>
-      <div class="step-dot" id="dot-1"></div>
-      <div class="step-dot" id="dot-2"></div>
-    </div>
-
-    <!-- STEP 0: TYPE + PHONE -->
-    <div id="step-0">
-      <h1>Join QGO.<br>It's free.</h1>
-      <p class="hero-sub">Queue smarter, explore nearby, earn rewards. Takes 30 seconds.</p>
-
-      <div class="type-toggle">
-        <button class="type-btn active" id="user-btn" onclick="setType('user')">I'm a user</button>
-        <button class="type-btn" id="biz-btn" onclick="setType('business')">I'm a business</button>
-      </div>
-
-      <div class="field-group" id="biz-name-field" style="display:none;">
-        <div class="field-label">Business name</div>
-        <input class="field-input" id="biz-name" type="text" placeholder="e.g. Apollo Clinic, Banjara Hills">
-      </div>
-
-      <div class="field-group">
-        <div class="field-label">Mobile number</div>
-        <div class="phone-input-row">
-          <div class="country-code">🇮🇳 +91</div>
-          <input class="field-input" id="phone" type="tel" maxlength="10" placeholder="98765 43210" inputmode="numeric"
-            oninput="this.value=this.value.replace(/\D/g,'');validatePhone()">
-        </div>
-        <div class="error-msg" id="phone-error">Enter a valid 10-digit mobile number</div>
-      </div>
-
-      <div class="field-group">
-        <div class="field-label">Your name</div>
-        <input class="field-input" id="user-name" type="text" placeholder="What should we call you?">
-      </div>
-    </div>
-
-    <!-- STEP 1: OTP -->
-    <div id="step-1" style="display:none;">
-      <h1>Enter the<br>OTP.</h1>
-      <p class="hero-sub">Sent to +91 <span id="phone-display">--</span></p>
-      <div class="otp-row">
-        <input class="otp-digit" id="otp-0" maxlength="1" inputmode="numeric" oninput="otpInput(this,0)">
-        <input class="otp-digit" id="otp-1" maxlength="1" inputmode="numeric" oninput="otpInput(this,1)">
-        <input class="otp-digit" id="otp-2" maxlength="1" inputmode="numeric" oninput="otpInput(this,2)">
-        <input class="otp-digit" id="otp-3" maxlength="1" inputmode="numeric" oninput="otpInput(this,3)">
-        <input class="otp-digit" id="otp-4" maxlength="1" inputmode="numeric" oninput="otpInput(this,4)">
-        <input class="otp-digit" id="otp-5" maxlength="1" inputmode="numeric" oninput="otpInput(this,5)">
-      </div>
-      <div class="error-msg" id="otp-error">Incorrect OTP. Please try again.</div>
-      <div class="resend-row">
-        <span id="resend-timer">Resend in 30s</span>
-        <button class="resend-btn" id="resend-btn" style="display:none;" onclick="sendOTP()">Resend OTP</button>
-      </div>
-    </div>
-
-    <!-- STEP 2: PREFERENCES -->
-    <div id="step-2" style="display:none;">
-      <h1>What do you<br>like to do?</h1>
-      <p class="hero-sub">We'll suggest the best things nearby while you wait.</p>
-      <div class="pref-grid" id="pref-grid">
-        <div class="pref-chip" onclick="togglePref(this,'coffee')">☕ Coffee</div>
-        <div class="pref-chip" onclick="togglePref(this,'shopping')">🛒 Shopping</div>
-        <div class="pref-chip" onclick="togglePref(this,'food')">🍽 Food</div>
-        <div class="pref-chip" onclick="togglePref(this,'pharmacy')">💊 Pharmacy runs</div>
-        <div class="pref-chip" onclick="togglePref(this,'atm')">🏧 ATM / banking</div>
-        <div class="pref-chip" onclick="togglePref(this,'reading')">📚 Sit & read</div>
-        <div class="pref-chip" onclick="togglePref(this,'fitness')">🏋️ Fitness</div>
-        <div class="pref-chip" onclick="togglePref(this,'browsing')">🏪 Window browsing</div>
-      </div>
-    </div>
-
-    <!-- STEP 3: SUCCESS -->
-    <div id="step-success" style="display:none;text-align:center;padding-top:20px;">
-      <div class="success-icon">🎉</div>
-      <h1>You're in!</h1>
-      <p class="hero-sub" style="text-align:center;">Welcome to QGO. Your time is about to get a whole lot better.</p>
-      <div style="background:rgba(0,200,150,0.08);border:0.5px solid rgba(0,200,150,0.2);border-radius:16px;padding:20px;margin-top:24px;text-align:left;">
-        <div style="font-size:12px;color:var(--accent);font-weight:500;margin-bottom:8px;">YOUR STARTER PACK</div>
-        <div style="font-size:14px;color:rgba(255,255,255,0.7);line-height:1.8;">
-          ⭐ 50 welcome points<br>
-          🎟 First queue FREE (already free)<br>
-          🔔 Smart leave-now alerts enabled
-        </div>
-      </div>
-    </div>
-
+<div class="hero">
+  <div class="orb o1"></div><div class="orb o2"></div>
+  <div class="badge"><div class="ldot"></div> Business Portal</div>
+  <h1><span class="g1">Your business.</span><span class="g2">Your queue link.</span></h1>
+  <p class="hero-sub">Register and get a unique QR code + queue link. Each business is completely separate — customers only see their own queue.</p>
+  <div class="steps-row">
+    <div class="step-pill"><div class="sn">1</div> Register below</div>
+    <div class="step-pill"><div class="sn">2</div> Get unique link</div>
+    <div class="step-pill"><div class="sn">3</div> Print QR at entrance</div>
+    <div class="step-pill"><div class="sn">4</div> Manage from admin</div>
   </div>
-
-  <!-- BOTTOM ACTION -->
-  <div class="bottom-action" id="bottom-action">
-    <button class="main-btn" id="main-btn" onclick="nextStep()" disabled>Continue →</button>
-    <div class="terms-text">By continuing you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a></div>
-  </div>
-
 </div>
 
+<div class="main">
+  <div class="reg-card">
+    <div id="regFormView">
+      <div class="card-title">Register Business ✦</div>
+      <div class="card-sub">Free to start. 60 seconds to set up.</div>
+      <div id="regError"></div>
+      <label>Business Name</label>
+      <input type="text" id="bizName" placeholder="e.g. City Hospital, Sharma Restaurant"/>
+      <label>Business Type</label>
+      <div class="type-icons" id="typeIcons">
+        <div class="type-opt selected" onclick="selectType(this,'hospital')"><div class="ti">🏥</div><div class="tn">Hospital</div></div>
+        <div class="type-opt" onclick="selectType(this,'restaurant')"><div class="ti">🍽</div><div class="tn">Restaurant</div></div>
+        <div class="type-opt" onclick="selectType(this,'temple')"><div class="ti">🛕</div><div class="tn">Temple</div></div>
+        <div class="type-opt" onclick="selectType(this,'bank')"><div class="ti">🏦</div><div class="tn">Bank</div></div>
+        <div class="type-opt" onclick="selectType(this,'salon')"><div class="ti">💈</div><div class="tn">Salon</div></div>
+        <div class="type-opt" onclick="selectType(this,'office')"><div class="ti">🏢</div><div class="tn">Office</div></div>
+        <div class="type-opt" onclick="selectType(this,'govt')"><div class="ti">🏛</div><div class="tn">Govt</div></div>
+        <div class="type-opt" onclick="selectType(this,'shop')"><div class="ti">🏪</div><div class="tn">Shop</div></div>
+        <div class="type-opt" onclick="selectType(this,'other')"><div class="ti">📍</div><div class="tn">Other</div></div>
+      </div>
+      <label>City / Location</label>
+      <input type="text" id="bizCity" placeholder="e.g. Hyderabad, Telangana"/>
+      <label>Admin Password</label>
+      <input type="password" id="bizPassword" placeholder="Set a strong password (min 4 chars)"/>
+      <label>Contact Number (optional)</label>
+      <input type="tel" id="bizPhone" placeholder="e.g. 9876543210"/>
+      <button class="reg-btn" id="regBtn" onclick="registerBusiness()">Register & Get My Link →</button>
+    </div>
+
+    <div id="successView">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">You're live!</div>
+      <div class="success-sub">Your business has its own isolated queue. No one else can see your customers.</div>
+      <div class="link-box">
+        <div class="link-label">Customer Queue Link (share this)</div>
+        <div class="link-val" id="customerLink">—</div>
+        <button class="copy-btn" onclick="copyLink('customerLink','Copy Customer Link',this)">Copy Customer Link</button>
+      </div>
+      <div class="admin-link-box">
+        <div class="link-label">Your Admin Panel</div>
+        <div class="link-val" id="adminLink">—</div>
+        <button class="copy-btn" onclick="copyLink('adminLink','Copy Admin Link',this)">Copy Admin Link</button>
+      </div>
+      <div class="qr-preview"><canvas id="qrCanvas" width="160" height="160"></canvas></div>
+      <div class="info-note">✅ Print the QR and place it at your entrance!</div>
+      <button class="copy-btn" style="margin-top:1rem;" onclick="location.reload()">Register Another Business</button>
+    </div>
+  </div>
+
+  <div class="list-card">
+    <div class="card-title">All Businesses</div>
+    <div class="card-sub">Click to visit their queue page</div>
+    <input class="search-input" type="text" id="searchInput" placeholder="Search by name or city..." oninput="filterBiz()"/>
+    <div id="bizList"><div style="text-align:center;padding:2rem;color:var(--muted);"><div style="font-size:2rem;margin-bottom:0.5rem;">🏢</div><p>No businesses yet.<br>Register yours above!</p></div></div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-  const API_BASE = window.location.origin;
-  let currentStep = 0;
-  let accountType = 'user';
-  let selectedPrefs = [];
-  let resendTimer;
+  firebase.initializeApp({
+    apiKey:"AIzaSyAtdD2Ppri0JAGIDR8aOOn_PLfjGc5q5j4",
+    authDomain:"queless-79a19.firebaseapp.com",
+    databaseURL:"https://queless-79a19-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId:"queless-79a19",
+    storageBucket:"queless-79a19.firebasestorage.app",
+    messagingSenderId:"661569229761",
+    appId:"1:661569229761:web:b7e05c6a22836c724e1540"
+  });
+  var db=firebase.database();
+  var selectedType='hospital', allBizData={};
+  var typeEmojis={hospital:'🏥',restaurant:'🍽',temple:'🛕',bank:'🏦',salon:'💈',office:'🏢',govt:'🏛',shop:'🏪',other:'📍'};
 
-  // Pre-select type from URL
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('type') === 'business') setType('business');
-
-  function setType(type) {
-    accountType = type;
-    document.getElementById('user-btn').classList.toggle('active', type === 'user');
-    document.getElementById('biz-btn').classList.toggle('active', type === 'business');
-    document.getElementById('biz-name-field').style.display = type === 'business' ? 'block' : 'none';
-    validatePhone();
+  function selectType(el,type){
+    document.querySelectorAll('.type-opt').forEach(function(t){t.classList.remove('selected');});
+    el.classList.add('selected'); selectedType=type;
   }
 
-  function validatePhone() {
-    const phone = document.getElementById('phone').value;
-    const name = document.getElementById('user-name').value.trim();
-    const valid = phone.length === 10 && /^[6-9]\d{9}$/.test(phone) && name.length >= 2;
-    document.getElementById('main-btn').disabled = !valid;
-    document.getElementById('phone-error').style.display = phone.length >= 10 && !valid ? 'block' : 'none';
+  function generateSlug(name){
+    return name.toLowerCase().replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'')+'-'+Math.random().toString(36).substr(2,5);
   }
 
-  document.getElementById('user-name').addEventListener('input', validatePhone);
-
-  function nextStep() {
-    if (currentStep === 0) {
-      sendOTP();
-    } else if (currentStep === 1) {
-      verifyOTP();
-    } else if (currentStep === 2) {
-      savePreferences();
-    }
+  function registerBusiness(){
+    var name=document.getElementById('bizName').value.trim();
+    var city=document.getElementById('bizCity').value.trim();
+    var pass=document.getElementById('bizPassword').value;
+    var phone=document.getElementById('bizPhone').value.trim();
+    if(!name){showRegError('Enter business name!');return;}
+    if(!city){showRegError('Enter city/location!');return;}
+    if(!pass||pass.length<4){showRegError('Set a password (min 4 chars)!');return;}
+    var btn=document.getElementById('regBtn');
+    btn.disabled=true;btn.textContent='Registering...';
+    var slug=generateSlug(name);
+    var baseUrl=window.location.origin+window.location.pathname.replace('register.html','');
+    db.ref('businesses/'+slug).set({name:name,type:selectedType,city:city,phone:phone,slug:slug,password:pass,createdAt:Date.now(),active:true}).then(function(){
+      // ✅ Links include ?biz=slug so each business is isolated
+      var customerUrl=baseUrl+'queue.html?biz='+slug;
+      var adminUrl=baseUrl+'admin.html?biz='+slug;
+      document.getElementById('customerLink').textContent=customerUrl;
+      document.getElementById('adminLink').textContent=adminUrl;
+      var canvas=document.getElementById('qrCanvas'),ctx=canvas.getContext('2d');
+      ctx.clearRect(0,0,160,160);
+      var tmp=document.createElement('div');
+      new QRCode(tmp,{text:customerUrl,width:150,height:150,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
+      setTimeout(function(){var img=tmp.querySelector('img');if(img){ctx.fillStyle='#fff';ctx.fillRect(0,0,160,160);ctx.drawImage(img,5,5,150,150);}},300);
+      document.getElementById('regFormView').style.display='none';
+      document.getElementById('successView').style.display='block';
+      btn.disabled=false;btn.textContent='Register & Get My Link →';
+    }).catch(function(e){showRegError('Error: '+e.message);btn.disabled=false;btn.textContent='Register & Get My Link →';});
   }
 
-  function sendOTP() {
-    const phone = document.getElementById('phone').value;
-    const name = document.getElementById('user-name').value.trim();
-    const btn = document.getElementById('main-btn');
-    btn.classList.add('loading');
-
-    fetch(`${API_BASE}/api/auth/send-otp`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone: '+91' + phone, name, type: accountType })
-    })
-    .then(r => r.json())
-    .then(data => {
-      btn.classList.remove('loading');
-      goToStep(1);
-      document.getElementById('phone-display').textContent = phone;
-      startResendTimer();
-    })
-    .catch(() => {
-      // Demo mode — skip OTP verification
-      btn.classList.remove('loading');
-      goToStep(1);
-      document.getElementById('phone-display').textContent = phone;
-      startResendTimer();
+  function copyLink(id,label,btn){
+    var text=document.getElementById(id).textContent;
+    navigator.clipboard.writeText(text).then(function(){
+      var orig=btn.textContent;btn.textContent='✅ Copied!';
+      setTimeout(function(){btn.textContent=orig;},2000);
     });
   }
 
-  function otpInput(el, idx) {
-    el.value = el.value.replace(/\D/g, '');
-    if (el.value && idx < 5) document.getElementById('otp-' + (idx + 1)).focus();
-    if (idx === 5 && el.value) verifyOTP();
+  function showRegError(msg){var el=document.getElementById('regError');el.textContent=msg;el.style.display='block';setTimeout(function(){el.style.display='none';},4000);}
+
+  db.ref('businesses').on('value',function(snap){allBizData=snap.exists()?snap.val():{};renderBizList(allBizData);});
+
+  function renderBizList(data){
+    var list=document.getElementById('bizList');
+    var entries=Object.entries(data);
+    if(entries.length===0){list.innerHTML='<div style="text-align:center;padding:2rem;color:var(--muted);"><div style="font-size:2rem;margin-bottom:0.5rem;">🏢</div><p>No businesses yet.<br>Register yours above!</p></div>';return;}
+    var baseUrl=window.location.origin+window.location.pathname.replace('register.html','');
+    list.innerHTML=entries.sort(function(a,b){return b[1].createdAt-a[1].createdAt;}).map(function(e){
+      var b=e[1],icon=typeEmojis[b.type]||'📍';
+      var url=baseUrl+'queue.html?biz='+b.slug;
+      return '<div class="biz-item" onclick="window.open(\''+url+'\',\'_blank\')">'+
+        '<div class="biz-icon">'+icon+'</div>'+
+        '<div><div class="biz-name">'+escHtml(b.name)+'</div>'+
+        '<div class="biz-type">'+escHtml(b.city)+' · '+b.type+'</div></div>'+
+        '<div class="biz-badge">Live ●</div></div>';
+    }).join('');
   }
 
-  function verifyOTP() {
-    const otp = [0,1,2,3,4,5].map(i => document.getElementById('otp-'+i).value).join('');
-    if (otp.length < 6) return;
-    const btn = document.getElementById('main-btn');
-    btn.classList.add('loading'); btn.disabled = true;
-
-    const phone = '+91' + document.getElementById('phone').value;
-
-    fetch(`${API_BASE}/api/auth/verify-otp`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone, otp })
-    })
-    .then(r => r.json())
-    .then(data => {
-      btn.classList.remove('loading');
-      if (data.token) {
-        localStorage.setItem('qgo_token', data.token);
-        localStorage.setItem('qgo_user', JSON.stringify(data.user));
-        if (accountType === 'user') goToStep(2);
-        else showSuccess();
-      } else {
-        showOTPError();
-      }
-    })
-    .catch(() => {
-      // Demo mode
-      btn.classList.remove('loading');
-      localStorage.setItem('qgo_token', 'demo_token_' + Date.now());
-      localStorage.setItem('qgo_user', JSON.stringify({ name: document.getElementById('user-name').value, phone: document.getElementById('phone').value, type: accountType }));
-      if (accountType === 'user') goToStep(2);
-      else showSuccess();
-    });
+  function filterBiz(){
+    var q=document.getElementById('searchInput').value.toLowerCase();
+    if(!q){renderBizList(allBizData);return;}
+    var f={};
+    Object.entries(allBizData).forEach(function(e){if(e[1].name.toLowerCase().includes(q)||e[1].city.toLowerCase().includes(q)||(e[1].type||'').includes(q))f[e[0]]=e[1];});
+    renderBizList(f);
   }
 
-  function showOTPError() {
-    const err = document.getElementById('otp-error');
-    err.style.display = 'block';
-    document.getElementById('main-btn').classList.remove('loading');
-    document.getElementById('main-btn').disabled = false;
-  }
-
-  function togglePref(el, key) {
-    el.classList.toggle('selected');
-    if (selectedPrefs.includes(key)) selectedPrefs = selectedPrefs.filter(p => p !== key);
-    else selectedPrefs.push(key);
-    document.getElementById('main-btn').disabled = selectedPrefs.length === 0;
-  }
-
-  function savePreferences() {
-    const token = localStorage.getItem('qgo_token');
-    const btn = document.getElementById('main-btn');
-    btn.classList.add('loading');
-
-    fetch(`${API_BASE}/api/user/preferences`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-      body: JSON.stringify({ preferences: selectedPrefs })
-    })
-    .then(() => { btn.classList.remove('loading'); showSuccess(); })
-    .catch(() => { btn.classList.remove('loading'); showSuccess(); });
-  }
-
-  function showSuccess() {
-    document.getElementById('step-2').style.display = 'none';
-    document.getElementById('step-success').style.display = 'block';
-    document.getElementById('main-btn').textContent = 'Start using QGO →';
-    document.getElementById('main-btn').disabled = false;
-    document.getElementById('main-btn').classList.remove('loading');
-    document.getElementById('main-btn').onclick = () => {
-      if (accountType === 'business') window.location.href = '/admin.html';
-      else window.location.href = '/';
-    };
-    [0,1,2].forEach(i => document.getElementById('dot-'+i).classList.add('done'));
-  }
-
-  function goToStep(step) {
-    document.getElementById('step-' + currentStep).style.display = 'none';
-    document.getElementById('dot-' + currentStep).classList.remove('active');
-    document.getElementById('dot-' + currentStep).classList.add('done');
-    currentStep = step;
-    document.getElementById('step-' + step).style.display = 'block';
-    document.getElementById('dot-' + step).classList.add('active');
-
-    const btn = document.getElementById('main-btn');
-    if (step === 1) { btn.textContent = 'Verify OTP →'; btn.disabled = true; }
-    if (step === 2) { btn.textContent = 'Finish setup →'; btn.disabled = true; }
-  }
-
-  function startResendTimer() {
-    let secs = 30;
-    document.getElementById('resend-timer').style.display = 'inline';
-    document.getElementById('resend-btn').style.display = 'none';
-    resendTimer = setInterval(() => {
-      secs--;
-      document.getElementById('resend-timer').textContent = 'Resend in ' + secs + 's';
-      if (secs <= 0) {
-        clearInterval(resendTimer);
-        document.getElementById('resend-timer').style.display = 'none';
-        document.getElementById('resend-btn').style.display = 'inline';
-        document.getElementById('resend-btn').classList.add('active');
-      }
-    }, 1000);
-  }
-
-  // Enable main-btn when OTP fully entered
-  setInterval(() => {
-    if (currentStep === 1) {
-      const otp = [0,1,2,3,4,5].map(i => document.getElementById('otp-'+i).value).join('');
-      document.getElementById('main-btn').disabled = otp.length < 6;
-    }
-  }, 200);
+  function escHtml(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 </script>
-  <script src="chatbot.js"></script>
+<script src="chatbot.js"></script>
 </body>
 </html>
