@@ -3,27 +3,39 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Qless — Admin (Upgraded)</title>
+<title>Qless — Ultimate Admin</title>
 
-<!-- Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet"/>
 
 <style>
-/* SAME CSS (unchanged for performance) */
-body{background:#080810;color:#e2e2ff;font-family:'Space Grotesk',sans-serif;}
+body{margin:0;background:#080810;color:#e2e2ff;font-family:'Space Grotesk',sans-serif;}
+.container{padding:20px}
+button{cursor:pointer}
+.card{background:#13131f;border:1px solid #1e1e30;border-radius:12px;padding:15px;margin-bottom:10px}
+.hidden{display:none}
+input{padding:10px;border-radius:8px;border:1px solid #333;background:#0f0f1a;color:#fff}
+.btn{background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;border:none;padding:10px 15px;border-radius:8px}
 </style>
 </head>
 <body>
 
-<div id="loginScreen">
+<div id="loginScreen" class="container">
+  <h2>🔐 Admin Login</h2>
   <input type="password" id="pwInput" placeholder="Enter password"/>
-  <button onclick="doLogin()">Login</button>
-  <div id="loginError" style="display:none;color:red;">Wrong password</div>
+  <br/><br/>
+  <button class="btn" onclick="doLogin()">Login</button>
+  <p id="loginError" style="color:red;display:none">Wrong password</p>
 </div>
 
-<div id="dashboard" style="display:none;">
-  <h2>Admin Dashboard</h2>
-  <button onclick="callNext()">Call Next</button>
+<div id="dashboard" class="container hidden">
+  <h2>🚀 Qless Admin Dashboard</h2>
+
+  <div class="card">
+    <button class="btn" onclick="callNext()">📣 Call Next</button>
+    <button class="btn" onclick="clearDone()">🧹 Clear Done</button>
+  </div>
+
+  <div id="stats" class="card"></div>
   <div id="queueList"></div>
 </div>
 
@@ -31,7 +43,6 @@ body{background:#080810;color:#e2e2ff;font-family:'Space Grotesk',sans-serif;}
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <script>
-// 🔐 Firebase Init
 firebase.initializeApp({
   apiKey:"YOUR_API_KEY",
   authDomain:"YOUR_AUTH",
@@ -44,78 +55,116 @@ var BIZ_SLUG = new URLSearchParams(window.location.search).get('biz');
 var BIZ_PASSWORD = '';
 var queueData = {};
 
-// 🔥 Load Business
+// LOAD BUSINESS
 function loadBusiness(){
+  if(!BIZ_SLUG){alert('Missing biz');return;}
+
   db.ref('businesses/'+BIZ_SLUG).once('value')
-  .then(function(snap){
-    if(!snap.exists()){
-      alert('Business not found');
-      return;
-    }
+  .then(snap=>{
+    if(!snap.exists()) throw new Error('Not found');
     BIZ_PASSWORD = snap.val().password;
   })
-  .catch(function(err){
+  .catch(err=>{
     console.error(err);
+    alert('Error loading business');
   });
 }
 
 loadBusiness();
 
-// 🔐 Login
+// LOGIN
 function doLogin(){
   var pw = document.getElementById('pwInput').value;
   if(pw === BIZ_PASSWORD){
-    document.getElementById('loginScreen').style.display='none';
-    document.getElementById('dashboard').style.display='block';
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('dashboard').classList.remove('hidden');
     startListening();
   }else{
     document.getElementById('loginError').style.display='block';
   }
 }
 
-// 📡 Listen Queue
+// LISTENER
 function startListening(){
-  db.ref('bizQueues/'+BIZ_SLUG+'/general').on('value',function(snap){
+  db.ref('bizQueues/'+BIZ_SLUG+'/general').on('value',snap=>{
     queueData = snap.val() || {};
     renderQueue();
+    updateStats();
   });
 }
 
-// 🎯 Render
+// RENDER
 function renderQueue(){
   var list = document.getElementById('queueList');
+
   var arr = Object.entries(queueData)
-    .filter(e=>e[1].status==='waiting')
     .sort((a,b)=>a[1].joinedAt - b[1].joinedAt);
 
+  if(arr.length===0){
+    list.innerHTML = '<p>✅ Queue empty</p>';
+    return;
+  }
+
   list.innerHTML = arr.map((e,i)=>{
-    return `<div>
-      ${i+1}. ${escapeHtml(e[1].name)}
+    var user=e[1];
+    return `<div class="card">
+      <b>#${i+1} ${escapeHtml(user.name)}</b><br/>
+      Status: ${user.status}<br/>
       <button onclick="callPerson('${e[0]}')">Call</button>
+      <button onclick="markDone('${e[0]}')">Done</button>
+      <button onclick="removePerson('${e[0]}')">Remove</button>
     </div>`;
   }).join('');
 }
 
-// 📣 Call Next
+// STATS
+function updateStats(){
+  var waiting=0,called=0,done=0;
+
+  Object.values(queueData).forEach(e=>{
+    if(e.status==='waiting') waiting++;
+    if(e.status==='called') called++;
+    if(e.status==='done') done++;
+  });
+
+  document.getElementById('stats').innerHTML = `
+    Waiting: ${waiting} | Called: ${called} | Done: ${done}
+  `;
+}
+
+// ACTIONS
 function callNext(){
   var next = Object.entries(queueData)
     .filter(e=>e[1].status==='waiting')
     .sort((a,b)=>a[1].joinedAt - b[1].joinedAt)[0];
 
-  if(!next){
-    alert('Queue empty');
-    return;
-  }
-
+  if(!next){alert('Empty');return;}
   callPerson(next[0]);
 }
 
 function callPerson(key){
   db.ref('bizQueues/'+BIZ_SLUG+'/general/'+key)
-    .update({status:'called'});
+    .update({status:'called',calledAt:Date.now()});
 }
 
-// 🛡 Escape HTML
+function markDone(key){
+  db.ref('bizQueues/'+BIZ_SLUG+'/general/'+key)
+    .update({status:'done'});
+}
+
+function removePerson(key){
+  db.ref('bizQueues/'+BIZ_SLUG+'/general/'+key).remove();
+}
+
+function clearDone(){
+  Object.entries(queueData).forEach(e=>{
+    if(e[1].status==='done'){
+      db.ref('bizQueues/'+BIZ_SLUG+'/general/'+e[0]).remove();
+    }
+  });
+}
+
+// SECURITY
 function escapeHtml(str){
   return String(str)
     .replace(/&/g,'&amp;')
@@ -125,7 +174,6 @@ function escapeHtml(str){
 
 </script>
 
-<!-- FIXED SCRIPT TAG -->
 <script src="chatbot.js"></script>
 
 </body>
