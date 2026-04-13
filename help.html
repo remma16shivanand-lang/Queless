@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QGo — AI Help Center</title>
+  <link rel="manifest" href="manifest.json"/>
+  <meta name="theme-color" content="#7c3aed"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-title" content="QGo"/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--bg:#080810;--surface:#0f0f1a;--card:#13131f;--border:#1e1e30;--accent:#7c3aed;--accent2:#a855f7;--neon:#c084fc;--cyan:#06b6d4;--green:#22c55e;--yellow:#fbbf24;--white:#f0eeff;--muted:#6b6b8a;--text:#e2e2ff;}
+    body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;min-height:100vh;}
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:rgba(8,8,16,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+    .logo{font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:800;background:linear-gradient(135deg,#a855f7,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;letter-spacing:-1px;}
+    .logo sup{font-size:0.45rem;-webkit-text-fill-color:var(--neon);vertical-align:super;}
+    .nbtn{background:transparent;color:var(--muted);padding:0.4rem 0.9rem;border-radius:999px;text-decoration:none;font-size:0.85rem;font-weight:500;border:1px solid var(--border);transition:all 0.2s;}
+    .nbtn:hover{color:var(--white);border-color:var(--accent2);}
+
+    .main{max-width:900px;margin:0 auto;padding:6rem 1.5rem 4rem;}
+
+    /* HERO */
+    .help-hero{text-align:center;margin-bottom:3rem;}
+    .help-hero h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(2rem,6vw,3.5rem);font-weight:800;letter-spacing:-1.5px;color:var(--white);margin-bottom:0.8rem;}
+    .help-hero h1 span{background:linear-gradient(135deg,#a855f7,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .help-hero p{color:var(--muted);font-size:0.95rem;max-width:480px;margin:0 auto;}
+
+    /* FULL CHAT */
+    .chat-card{background:var(--card);border:1px solid var(--border);border-radius:24px;overflow:hidden;margin-bottom:2.5rem;position:relative;}
+    .chat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--cyan));}
+    .chat-top{background:linear-gradient(135deg,rgba(124,58,237,0.2),rgba(168,85,247,0.1));padding:1.2rem 1.5rem;display:flex;align-items:center;gap:0.8rem;border-bottom:1px solid var(--border);}
+    .chat-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+    .chat-info-name{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1rem;color:var(--white);}
+    .chat-info-sub{font-size:0.75rem;color:var(--muted);display:flex;align-items:center;gap:0.3rem;margin-top:0.1rem;}
+    .chat-info-sub::before{content:'';width:6px;height:6px;background:var(--green);border-radius:50%;display:inline-block;animation:blink 1.5s infinite;}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+
+    #chatMessages{min-height:340px;max-height:440px;overflow-y:auto;padding:1.5rem;display:flex;flex-direction:column;gap:0.8rem;}
+    #chatMessages::-webkit-scrollbar{width:4px;}
+    #chatMessages::-webkit-scrollbar-thumb{background:#2a1f4e;border-radius:2px;}
+
+    .msg{display:flex;gap:0.6rem;align-items:flex-end;animation:msgIn 0.2s ease;}
+    @keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .msg.user{flex-direction:row-reverse;}
+    .msg-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0;}
+    .msg-bbl{max-width:70%;padding:0.7rem 1rem;border-radius:16px;font-size:0.88rem;line-height:1.6;}
+    .msg.bot .msg-bbl{background:#1e1e30;color:var(--text);border-bottom-left-radius:4px;}
+    .msg.user .msg-bbl{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-bottom-right-radius:4px;}
+    .typing{display:flex;gap:4px;padding:0.7rem 1rem;background:#1e1e30;border-radius:16px;border-bottom-left-radius:4px;width:fit-content;}
+    .typing span{width:7px;height:7px;background:#6b6b8a;border-radius:50%;animation:tDot 1.2s infinite;}
+    .typing span:nth-child(2){animation-delay:0.2s;}
+    .typing span:nth-child(3){animation-delay:0.4s;}
+    @keyframes tDot{0%,60%,100%{transform:translateY(0);background:#6b6b8a}30%{transform:translateY(-5px);background:#a855f7}}
+
+    .quick-row{padding:0.8rem 1.5rem;display:flex;flex-wrap:wrap;gap:0.5rem;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+    .qbtn{background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.25);color:var(--neon);border-radius:999px;padding:0.35rem 0.8rem;font-size:0.78rem;font-weight:500;cursor:pointer;transition:all 0.2s;font-family:'Space Grotesk',sans-serif;}
+    .qbtn:hover{background:rgba(124,58,237,0.2);}
+
+    .input-row{padding:1rem 1.5rem;display:flex;gap:0.6rem;}
+    .msg-input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:0.75rem 1rem;color:var(--white);font-family:'Space Grotesk',sans-serif;font-size:0.92rem;outline:none;transition:border-color 0.2s;}
+    .msg-input:focus{border-color:var(--accent2);}
+    .msg-input::placeholder{color:var(--muted);}
+    .send-btn{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:12px;padding:0.75rem 1.2rem;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:0.9rem;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+    .send-btn:hover{transform:translateY(-1px);}
+    .send-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+
+    /* FAQ */
+    .faq-title{font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:800;color:var(--white);margin-bottom:1.2rem;}
+    .faq-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:0.8rem;margin-bottom:2.5rem;}
+    .faq-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.2rem;cursor:pointer;transition:all 0.2s;}
+    .faq-card:hover{border-color:rgba(168,85,247,0.3);transform:translateY(-2px);}
+    .faq-q{font-weight:600;font-size:0.9rem;color:var(--white);margin-bottom:0.3rem;}
+    .faq-a{font-size:0.8rem;color:var(--muted);line-height:1.5;}
+
+    @media(max-width:600px){nav{padding:1rem;}.main{padding:5rem 1rem 2rem;}.input-row{flex-direction:column;}}
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="logo" href="index.html">QGo<sup>™</sup></a>
+    <a class="nbtn" href="queue.html">Join Queue →</a>
+  </nav>
+
+  <div class="main">
+    <div class="help-hero">
+      <h1>AI <span>Help Center</span></h1>
+      <p>Ask me anything about QGo — joining queues, wait times, nearby suggestions, or anything else.</p>
+    </div>
+
+    <!-- FULL CHAT -->
+    <div class="chat-card">
+      <div class="chat-top">
+        <div class="chat-avatar">🤖</div>
+        <div>
+          <div class="chat-info-name">QGo AI Assistant</div>
+          <div class="chat-info-sub">Powered by Claude AI — always here</div>
+        </div>
+      </div>
+      <div id="chatMessages"></div>
+      <div class="quick-row" id="quickRow">
+        <button class="qbtn" onclick="askQuick('How do I join a queue?')">How to join?</button>
+        <button class="qbtn" onclick="askQuick('What is the safe to leave indicator?')">Safe to leave?</button>
+        <button class="qbtn" onclick="askQuick('How do notifications work?')">Notifications?</button>
+        <button class="qbtn" onclick="askQuick('How do I register my business?')">Register business?</button>
+        <button class="qbtn" onclick="askQuick('What does my token number mean?')">Token meaning?</button>
+        <button class="qbtn" onclick="askQuick('How does the AI predict wait time?')">AI ETA?</button>
+      </div>
+      <div class="input-row">
+        <input class="msg-input" id="msgInput" placeholder="Type your question..." onkeydown="if(event.key==='Enter')sendMsg()"/>
+        <button class="send-btn" id="sendBtn" onclick="sendMsg()">Send →</button>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="faq-title">Common Questions</div>
+    <div class="faq-grid">
+      <div class="faq-card" onclick="askQuick('How do I join a queue?')">
+        <div class="faq-q">How do I join a queue?</div>
+        <div class="faq-a">Scan the QR at the entrance or open the business link → enter name → get token instantly.</div>
+      </div>
+      <div class="faq-card" onclick="askQuick('What does G001 token mean?')">
+        <div class="faq-q">What does my token like G001 mean?</div>
+        <div class="faq-a">G = General queue, E = Emergency, F = Follow-up. Number is your position when you joined.</div>
+      </div>
+      <div class="faq-card" onclick="askQuick('Is it safe to leave the waiting area?')">
+        <div class="faq-q">Can I leave and come back?</div>
+        <div class="faq-a">Check the Safe-to-Leave indicator — green means go, yellow means stay close, red means stay!</div>
+      </div>
+      <div class="faq-card" onclick="askQuick('How will I know when it is my turn?')">
+        <div class="faq-q">How will I know when it's my turn?</div>
+        <div class="faq-a">Your screen flashes, confetti fires, sound plays, and your phone vibrates. Impossible to miss!</div>
+      </div>
+      <div class="faq-card" onclick="askQuick('How do I register my business on QGo?')">
+        <div class="faq-q">How do I add my business?</div>
+        <div class="faq-a">Go to register.html → fill details → get your unique queue link and QR code instantly.</div>
+      </div>
+      <div class="faq-card" onclick="askQuick('How does the AI wait time prediction work?')">
+        <div class="faq-q">How does AI predict wait time?</div>
+        <div class="faq-a">It tracks how fast people are actually being served and calculates your real ETA — gets smarter over time.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var SYSTEM_PROMPT = "You are QGo's friendly AI assistant. QGo is a smart queue management app. Help customers with joining queues, understanding their position, safe-to-leave indicator, notifications, business registration, and general questions. Be concise, friendly, and helpful. Use the app URL pattern: queue.html?biz=SLUG for customer queues, admin.html?biz=SLUG for admin, register.html for business registration.";
+    var history = [];
+    var loading = false;
+
+    window.addEventListener('DOMContentLoaded', function(){
+      setTimeout(function(){
+        addBot("Hey! 👋 I'm QGo's AI assistant powered by Claude. Ask me anything about how QGo works, your queue, or anything else. I'm here to help!");
+      }, 400);
+    });
+
+    window.askQuick = function(q) {
+      document.getElementById('msgInput').value = q;
+      sendMsg();
+      document.getElementById('quickRow').style.display = 'none';
+    };
+
+    window.sendMsg = async function() {
+      if (loading) return;
+      var input = document.getElementById('msgInput');
+      var msg = input.value.trim();
+      if (!msg) return;
+      input.value = '';
+      addUser(msg);
+      history.push({role:'user',content:msg});
+      showTyping();
+      loading = true;
+      document.getElementById('sendBtn').disabled = true;
+      try {
+        var res = await fetch('https://api.anthropic.com/v1/messages', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({
+            model:'claude-sonnet-4-20250514',
+            max_tokens:1000,
+            system:SYSTEM_PROMPT,
+            messages:history
+          })
+        });
+        var data = await res.json();
+        var reply = data.content && data.content[0] ? data.content[0].text : "Sorry, couldn't get a response. Try again!";
+        hideTyping();
+        addBot(reply);
+        history.push({role:'assistant',content:reply});
+      } catch(e) {
+        hideTyping();
+        addBot("Oops! Something went wrong. Please try again 🙏");
+      }
+      loading = false;
+      document.getElementById('sendBtn').disabled = false;
+    };
+
+    function addBot(t) {
+      var el = document.createElement('div');
+      el.className = 'msg bot';
+      el.innerHTML = '<div class="msg-av">🤖</div><div class="msg-bbl">'+esc(t)+'</div>';
+      document.getElementById('chatMessages').appendChild(el);
+      scroll();
+    }
+    function addUser(t) {
+      var el = document.createElement('div');
+      el.className = 'msg user';
+      el.innerHTML = '<div class="msg-bbl">'+esc(t)+'</div>';
+      document.getElementById('chatMessages').appendChild(el);
+      scroll();
+    }
+    function showTyping() {
+      var el = document.createElement('div');
+      el.className = 'msg bot'; el.id = 'typing';
+      el.innerHTML = '<div class="msg-av">🤖</div><div class="typing"><span></span><span></span><span></span></div>';
+      document.getElementById('chatMessages').appendChild(el);
+      scroll();
+    }
+    function hideTyping() { var el=document.getElementById('typing'); if(el)el.remove(); }
+    function scroll() { var m=document.getElementById('chatMessages'); m.scrollTop=m.scrollHeight; }
+    function esc(t) { return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>'); }
+  </script>
+</body>
+</html>
