@@ -1,516 +1,441 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0a0a0a">
-<title>QGO Business Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<style>
-  :root { --ink:#0a0a0a; --paper:#f5f2eb; --accent:#00c896; --accent2:#ff5c35; --mid:#6b6b6b; --warn:#ff9500; }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'DM Sans',sans-serif;background:#f5f2eb;color:#0a0a0a;min-height:100vh;}
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QGo Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--bg:#080810;--surface:#0f0f1a;--card:#13131f;--border:#1e1e30;--accent:#7c3aed;--accent2:#a855f7;--neon:#c084fc;--cyan:#06b6d4;--green:#22c55e;--yellow:#fbbf24;--red:#ef4444;--white:#f0eeff;--muted:#6b6b8a;--text:#e2e2ff;}
+    body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;min-height:100vh;}
 
-  .sidebar {
-    position:fixed;top:0;left:0;bottom:0;width:220px;
-    background:var(--ink);color:#fff;padding:28px 20px;
-    display:flex;flex-direction:column;gap:8px;
-    z-index:100;
-  }
-  @media(max-width:768px){.sidebar{display:none}}
-  .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:#fff;margin-bottom:24px;}
-  .logo span{color:var(--accent);}
-  .nav-item{
-    display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;
-    color:rgba(255,255,255,0.4);font-size:14px;cursor:pointer;transition:all 0.15s;
-    text-decoration:none;border:none;background:none;font-family:'DM Sans',sans-serif;width:100%;text-align:left;
-  }
-  .nav-item:hover,.nav-item.active{background:rgba(255,255,255,0.08);color:#fff;}
-  .nav-item.active{color:var(--accent);}
-  .nav-icon{font-size:16px;width:20px;text-align:center;}
-  .sidebar-bottom{margin-top:auto;}
-  .biz-badge{background:rgba(0,200,150,0.1);border:0.5px solid rgba(0,200,150,0.2);border-radius:10px;padding:12px;margin-top:8px;}
-  .biz-name{font-size:13px;font-weight:500;color:#fff;}
-  .biz-plan{font-size:11px;color:var(--accent);}
+    /* ── LOGIN ── */
+    #loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;position:relative;overflow:hidden;}
+    .lo{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;}
+    .lo1{width:400px;height:400px;background:rgba(124,58,237,0.2);top:-100px;left:-100px;}
+    .lo2{width:350px;height:350px;background:rgba(6,182,212,0.12);bottom:-80px;right:-80px;}
+    .login-box{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:2.5rem;width:100%;max-width:380px;text-align:center;position:relative;z-index:1;overflow:hidden;}
+    .login-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--cyan));}
+    .login-logo{font-family:'Bricolage Grotesque',sans-serif;font-size:2rem;font-weight:800;background:linear-gradient(135deg,#a855f7,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:0.3rem;}
+    .login-biz{color:var(--neon);font-size:0.9rem;font-weight:600;margin-bottom:0.2rem;min-height:1.3rem;}
+    .login-sub{color:var(--muted);font-size:0.82rem;margin-bottom:1.8rem;}
+    .lock-icon{font-size:2.5rem;margin-bottom:1rem;}
+    #loginErr{display:none;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#f87171;border-radius:10px;padding:0.6rem;font-size:0.83rem;margin-bottom:1rem;}
+    .login-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:12px;color:var(--white);font-family:'Space Grotesk',sans-serif;font-size:1rem;padding:0.85rem 1rem;outline:none;margin-bottom:1rem;text-align:center;letter-spacing:0.1em;transition:border-color 0.2s;}
+    .login-input:focus{border-color:var(--accent2);}
+    .login-btn{width:100%;padding:0.95rem;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:12px;font-family:'Bricolage Grotesque',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;transition:all 0.2s;box-shadow:0 0 24px rgba(124,58,237,0.3);}
+    .login-btn:hover{transform:translateY(-1px);}
+    .no-biz-msg{color:#f87171;font-size:0.85rem;margin-top:1rem;}
 
-  .main{margin-left:220px;padding:32px;}
-  @media(max-width:768px){.main{margin-left:0;padding:16px;}}
+    /* ── DASHBOARD ── */
+    #dashboard{display:none;}
+    header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;border-bottom:1px solid var(--border);background:rgba(8,8,16,0.95);backdrop-filter:blur(20px);position:sticky;top:0;z-index:50;flex-wrap:wrap;gap:0.6rem;}
+    .h-left{display:flex;align-items:center;gap:0.7rem;}
+    .h-logo{font-family:'Bricolage Grotesque',sans-serif;font-size:1.3rem;font-weight:800;background:linear-gradient(135deg,#a855f7,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .h-biz{background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.25);color:var(--neon);font-size:0.75rem;font-weight:600;padding:0.28rem 0.7rem;border-radius:999px;}
+    .h-right{display:flex;gap:0.5rem;align-items:center;}
+    .live-badge{display:flex;align-items:center;gap:0.35rem;font-size:0.72rem;font-weight:600;color:var(--green);background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);padding:0.28rem 0.7rem;border-radius:999px;}
+    .live-badge::before{content:'';width:6px;height:6px;background:var(--green);border-radius:50%;animation:blink 1.5s infinite;}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+    .call-btn{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;padding:0.55rem 1.2rem;border-radius:999px;font-family:'Bricolage Grotesque',sans-serif;font-size:0.88rem;font-weight:800;cursor:pointer;transition:all 0.2s;box-shadow:0 0 16px rgba(124,58,237,0.3);}
+    .call-btn:hover{transform:scale(1.05);}
+    .qr-btn{background:transparent;color:var(--text);border:1px solid var(--border);padding:0.55rem 1rem;border-radius:999px;font-size:0.85rem;cursor:pointer;transition:all 0.2s;}
+    .qr-btn:hover{border-color:var(--accent2);color:var(--white);}
+    .logout-btn{background:transparent;color:var(--muted);border:1px solid var(--border);padding:0.55rem 0.9rem;border-radius:999px;font-size:0.82rem;cursor:pointer;transition:all 0.2s;}
+    .logout-btn:hover{border-color:var(--red);color:#f87171;}
 
-  .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px;}
-  .page-title{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;}
-  .page-sub{font-size:14px;color:var(--mid);margin-top:2px;}
-  .header-actions{display:flex;gap:10px;}
-  .btn{padding:10px 20px;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all 0.15s;}
-  .btn-primary{background:var(--ink);color:#fff;}
-  .btn-primary:hover{background:var(--accent);color:var(--ink);}
-  .btn-secondary{background:rgba(0,0,0,0.06);color:var(--ink);}
+    /* STATS */
+    .stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:0.8rem;padding:1.2rem 1.5rem;}
+    .stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1rem 1.2rem;position:relative;overflow:hidden;transition:border-color 0.2s;}
+    .stat:hover{border-color:rgba(168,85,247,0.25);}
+    .stat::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+    .sp::after{background:linear-gradient(90deg,var(--accent),var(--accent2));}
+    .sc::after{background:linear-gradient(90deg,var(--cyan),#06b6d4aa);}
+    .sg::after{background:linear-gradient(90deg,var(--green),#22c55eaa);}
+    .sy::after{background:linear-gradient(90deg,var(--yellow),#fbbf24aa);}
+    .stat-glow{position:absolute;inset:0;pointer-events:none;opacity:0.05;}
+    .sp .stat-glow{background:var(--accent2);}.sc .stat-glow{background:var(--cyan);}.sg .stat-glow{background:var(--green);}.sy .stat-glow{background:var(--yellow);}
+    .stat-lbl{font-size:0.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;}
+    .stat-val{font-family:'Bricolage Grotesque',sans-serif;font-size:2rem;font-weight:800;line-height:1;}
+    .sp .stat-val{color:var(--neon);}.sc .stat-val{color:var(--cyan);}.sg .stat-val{color:var(--green);}.sy .stat-val{color:var(--yellow);}
+    .stat-sub{font-size:0.68rem;color:var(--muted);margin-top:0.25rem;}
 
-  /* STAT CARDS */
-  .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:28px;}
-  .stat-card{background:#fff;border-radius:16px;padding:20px;border:0.5px solid rgba(0,0,0,0.06);}
-  .sc-label{font-size:12px;color:var(--mid);margin-bottom:6px;}
-  .sc-val{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--ink);}
-  .sc-change{font-size:12px;color:var(--accent);margin-top:4px;}
+    /* TABS */
+    .tabs-wrap{padding:0 1.5rem;margin-bottom:0.8rem;overflow-x:auto;}
+    .tabs{display:flex;gap:0.5rem;min-width:max-content;}
+    .tab{display:flex;align-items:center;gap:0.4rem;padding:0.48rem 1rem;border-radius:999px;background:var(--card);border:1px solid var(--border);color:var(--muted);font-size:0.83rem;font-weight:500;cursor:pointer;white-space:nowrap;transition:all 0.2s;}
+    .tab.active{background:linear-gradient(135deg,rgba(124,58,237,0.3),rgba(168,85,247,0.2));border-color:rgba(168,85,247,0.4);color:var(--neon);}
+    .tab-ct{font-size:0.68rem;font-weight:700;padding:0.1rem 0.45rem;border-radius:999px;min-width:18px;text-align:center;background:rgba(255,255,255,0.1);}
+    .tab.active .tab-ct{background:rgba(192,132,252,0.2);}
 
-  /* MAIN GRID */
-  .main-grid{display:grid;grid-template-columns:1fr 340px;gap:20px;}
-  @media(max-width:1100px){.main-grid{grid-template-columns:1fr;}}
+    /* LIST */
+    .list-hdr{display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;margin-bottom:0.8rem;}
+    .list-hdr h2{font-family:'Bricolage Grotesque',sans-serif;font-size:1rem;font-weight:700;color:var(--white);}
+    .clear-btn{background:none;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:0.75rem;padding:0.3rem 0.7rem;cursor:pointer;transition:all 0.2s;}
+    .clear-btn:hover{border-color:var(--red);color:var(--red);}
+    #queueList{padding:0 1.5rem;display:flex;flex-direction:column;gap:0.6rem;padding-bottom:5rem;}
+    .qi{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:0.9rem 1.1rem;display:flex;align-items:center;justify-content:space-between;gap:0.8rem;transition:all 0.2s;flex-wrap:wrap;animation:slideIn 0.25s ease;}
+    @keyframes slideIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+    .qi:hover{border-color:rgba(168,85,247,0.2);}
+    .qi.called{border-color:rgba(34,197,94,0.4);background:rgba(34,197,94,0.04);}
+    .qi-left{display:flex;align-items:center;gap:0.8rem;}
+    .pos-badge{width:36px;height:36px;border-radius:10px;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.2);color:var(--neon);font-family:'Bricolage Grotesque',sans-serif;font-size:0.95rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .qi-name{font-weight:600;font-size:0.92rem;color:var(--white);}
+    .qi-meta{font-size:0.74rem;color:var(--muted);margin-top:0.1rem;}
+    .qi-token{display:inline-block;font-size:0.7rem;font-weight:700;padding:0.14rem 0.5rem;border-radius:6px;background:linear-gradient(135deg,rgba(124,58,237,0.15),rgba(6,182,212,0.1));color:var(--neon);border:1px solid rgba(168,85,247,0.15);margin-top:0.2rem;}
+    .qi-actions{display:flex;gap:0.35rem;flex-wrap:wrap;}
+    .act{padding:0.38rem 0.8rem;border-radius:8px;border:none;font-size:0.78rem;font-weight:600;cursor:pointer;transition:all 0.2s;}
+    .act:hover{transform:scale(1.04);}
+    .act.call{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;}
+    .act.done{background:rgba(34,197,94,0.15);color:var(--green);border:1px solid rgba(34,197,94,0.3);}
+    .act.skip{background:var(--surface);color:var(--muted);border:1px solid var(--border);}
+    .act.top{background:rgba(251,191,36,0.12);color:var(--yellow);border:1px solid rgba(251,191,36,0.25);}
+    .act.remove{background:rgba(239,68,68,0.08);color:#f87171;border:1px solid rgba(239,68,68,0.2);}
+    #emptyState{display:none;flex-direction:column;align-items:center;justify-content:center;padding:4rem;color:var(--muted);text-align:center;gap:0.6rem;}
+    #emptyState .ei{font-size:3rem;}
 
-  .card{background:#fff;border-radius:20px;padding:24px;border:0.5px solid rgba(0,0,0,0.06);}
-  .card-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
-  .card-title .live-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite;}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+    /* QR MODAL */
+    #qrModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);z-index:200;align-items:center;justify-content:center;padding:2rem;}
+    #qrModal.open{display:flex;}
+    .qr-box{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:2rem;width:100%;max-width:360px;text-align:center;position:relative;overflow:hidden;}
+    .qr-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--cyan));}
+    .qr-title{font-family:'Bricolage Grotesque',sans-serif;font-size:1.2rem;font-weight:800;color:var(--white);margin-bottom:0.4rem;}
+    .qr-sub{color:var(--muted);font-size:0.82rem;margin-bottom:1.2rem;line-height:1.5;}
+    #qrCanvas{border-radius:10px;margin:0 auto 1rem;display:block;}
+    .qr-url{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0.5rem 0.8rem;font-size:0.72rem;color:var(--muted);word-break:break-all;margin-bottom:1rem;}
+    .qr-close{width:100%;padding:0.8rem;background:var(--surface);border:1px solid var(--border);color:var(--white);border-radius:10px;font-size:0.9rem;cursor:pointer;transition:all 0.2s;}
+    .qr-close:hover{border-color:var(--accent2);}
 
-  /* QUEUE LIST */
-  .queue-list{display:flex;flex-direction:column;gap:8px;}
-  .queue-person{
-    display:flex;align-items:center;gap:12px;padding:12px 14px;
-    border-radius:12px;background:#f9f8f5;transition:background 0.15s;
-  }
-  .queue-person:hover{background:#f0ede4;}
-  .queue-person.current{background:rgba(0,200,150,0.08);border:0.5px solid rgba(0,200,150,0.2);}
-  .qp-num{
-    width:32px;height:32px;border-radius:50%;
-    background:rgba(0,0,0,0.07);color:var(--ink);
-    display:flex;align-items:center;justify-content:center;
-    font-family:'Syne',sans-serif;font-size:13px;font-weight:700;flex-shrink:0;
-  }
-  .qp-num.first{background:var(--accent);color:var(--ink);}
-  .qp-info{flex:1;}
-  .qp-name{font-size:13px;font-weight:500;}
-  .qp-time{font-size:11px;color:var(--mid);}
-  .qp-wait{font-size:12px;color:var(--mid);white-space:nowrap;}
-  .qp-action{
-    padding:6px 14px;border-radius:100px;background:var(--ink);color:#fff;
-    font-size:12px;font-weight:500;border:none;cursor:pointer;transition:all 0.15s;
-  }
-  .qp-action:hover{background:var(--accent);color:var(--ink);}
-
-  /* CHART */
-  .chart-wrap{height:200px;position:relative;}
-
-  /* OFFER FORM */
-  .offer-form{display:flex;flex-direction:column;gap:12px;}
-  .field-label{font-size:12px;font-weight:500;color:var(--mid);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.04em;}
-  .field-input{
-    width:100%;background:#f9f8f5;border:1px solid rgba(0,0,0,0.1);
-    border-radius:10px;padding:10px 14px;font-family:'DM Sans',sans-serif;
-    font-size:14px;color:var(--ink);outline:none;transition:border-color 0.2s;
-  }
-  .field-input:focus{border-color:var(--accent);}
-
-  /* ACTIVE OFFERS */
-  .offer-item{
-    display:flex;align-items:center;gap:10px;padding:10px 14px;
-    background:#f9f8f5;border-radius:10px;margin-bottom:8px;
-  }
-  .offer-icon{font-size:18px;}
-  .offer-text-wrap{flex:1;}
-  .offer-deal{font-size:13px;font-weight:500;}
-  .offer-exp{font-size:11px;color:var(--mid);}
-  .offer-del{background:none;border:none;color:#ff3b30;cursor:pointer;font-size:16px;padding:4px;}
-
-  /* QR CODE */
-  .qr-section{text-align:center;padding:20px 0;}
-  .qr-box{
-    width:140px;height:140px;background:var(--ink);
-    border-radius:16px;margin:0 auto 12px;
-    display:flex;align-items:center;justify-content:center;
-    font-size:11px;color:rgba(255,255,255,0.3);
-  }
-  .qr-url{font-size:11px;color:var(--mid);word-break:break-all;}
-
-  /* MOBILE TOP BAR */
-  .mobile-topbar{
-    display:none;align-items:center;justify-content:space-between;
-    background:var(--ink);padding:16px 20px;position:sticky;top:0;z-index:50;
-  }
-  @media(max-width:768px){.mobile-topbar{display:flex;}}
-  .mobile-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:#fff;}
-  .mobile-logo span{color:var(--accent);}
-</style>
+    /* TOAST */
+    #toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(20px);background:var(--card);border:1px solid var(--border);color:var(--white);padding:0.7rem 1.4rem;border-radius:999px;font-size:0.85rem;opacity:0;transition:all 0.3s;pointer-events:none;z-index:300;box-shadow:0 0 24px rgba(124,58,237,0.2);}
+    #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  </style>
 </head>
 <body>
 
-<!-- MOBILE TOPBAR -->
-<div class="mobile-topbar">
-  <div class="mobile-logo">Q<span>G</span>O <span style="font-size:12px;color:rgba(255,255,255,0.4);font-family:'DM Sans'">Business</span></div>
-  <div style="display:flex;gap:10px;">
-    <button class="btn btn-primary" onclick="advanceQueue()" style="padding:8px 16px;font-size:12px;">Next →</button>
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="lo lo1"></div><div class="lo lo2"></div>
+  <div class="login-box">
+    <div class="lock-icon">🔐</div>
+    <div class="login-logo">QGo™ Admin</div>
+    <div class="login-biz" id="loginBizName"></div>
+    <div class="login-sub">Enter your business admin password</div>
+    <div id="loginErr">Wrong password. Try again.</div>
+    <input class="login-input" type="password" id="pwInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <button class="login-btn" onclick="doLogin()">Login to Dashboard →</button>
+    <div class="no-biz-msg" id="noBizMsg" style="display:none;">⚠️ No business found. Check your admin link.</div>
   </div>
 </div>
 
-<!-- SIDEBAR -->
-<div class="sidebar">
-  <div class="logo">Q<span>G</span>O</div>
-  <button class="nav-item active" onclick="showSection('dashboard')"><span class="nav-icon">📊</span>Dashboard</button>
-  <button class="nav-item" onclick="showSection('queue')"><span class="nav-icon">🎟</span>Live queue</button>
-  <button class="nav-item" onclick="showSection('offers')"><span class="nav-icon">🎯</span>Offers</button>
-  <button class="nav-item" onclick="showSection('analytics')"><span class="nav-icon">📈</span>Analytics</button>
-  <button class="nav-item" onclick="showSection('settings')"><span class="nav-icon">⚙️</span>Settings</button>
-  <div class="sidebar-bottom">
-    <div class="biz-badge">
-      <div class="biz-name" id="sidebar-biz-name">Loading...</div>
-      <div class="biz-plan">Free plan · QGO</div>
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <header>
+    <div class="h-left">
+      <div class="h-logo">QGo™</div>
+      <div class="h-biz" id="headerBizName">Loading...</div>
     </div>
-    <a href="/" class="nav-item" style="margin-top:8px;"><span class="nav-icon">←</span>Back to app</a>
+    <div class="h-right">
+      <div class="live-badge">Live</div>
+      <button class="qr-btn" onclick="showQR()">📲 QR</button>
+      <button class="call-btn" onclick="callNext()">📣 Call Next</button>
+      <button class="logout-btn" onclick="doLogout()">Logout</button>
+    </div>
+  </header>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat sp"><div class="stat-glow"></div><div class="stat-lbl">Waiting</div><div class="stat-val" id="sWaiting">0</div><div class="stat-sub">In queue now</div></div>
+    <div class="stat sc"><div class="stat-glow"></div><div class="stat-lbl">Called</div><div class="stat-val" id="sCalled">0</div><div class="stat-sub">Being served</div></div>
+    <div class="stat sg"><div class="stat-glow"></div><div class="stat-lbl">Done</div><div class="stat-val" id="sDone">0</div><div class="stat-sub">Completed today</div></div>
+    <div class="stat sy"><div class="stat-glow"></div><div class="stat-lbl">Avg Wait</div><div class="stat-val" id="sAvg">—</div><div class="stat-sub">Minutes</div></div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs-wrap">
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('general')">🟢 General <span class="tab-ct" id="tc-general">0</span></div>
+      <div class="tab" onclick="switchTab('emergency')">🔴 Emergency <span class="tab-ct" id="tc-emergency">0</span></div>
+      <div class="tab" onclick="switchTab('followup')">🔵 Follow-up <span class="tab-ct" id="tc-followup">0</span></div>
+    </div>
+  </div>
+
+  <!-- LIST -->
+  <div class="list-hdr">
+    <h2 id="listTitle">General Queue</h2>
+    <button class="clear-btn" onclick="clearDone()">Clear Done</button>
+  </div>
+  <div id="queueList"></div>
+  <div id="emptyState"><div class="ei">✅</div><p>Queue is empty — all clear!</p></div>
+</div>
+
+<!-- QR MODAL -->
+<div id="qrModal">
+  <div class="qr-box">
+    <div class="qr-title">📲 Customer QR Code</div>
+    <div class="qr-sub">Display this at your entrance. Customers scan to join your queue instantly.</div>
+    <canvas id="qrCanvas" width="200" height="200"></canvas>
+    <div class="qr-url" id="qrUrl"></div>
+    <button class="qr-close" onclick="closeQR()">Close</button>
   </div>
 </div>
 
-<!-- MAIN -->
-<div class="main">
+<div id="toast"></div>
 
-  <!-- PAGE HEADER -->
-  <div class="page-header">
-    <div>
-      <div class="page-title" id="page-title">Dashboard</div>
-      <div class="page-sub" id="today-date"></div>
-    </div>
-    <div class="header-actions">
-      <button class="btn btn-secondary" onclick="refreshData()">↻ Refresh</button>
-      <button class="btn btn-primary" onclick="advanceQueue()">Call next →</button>
-    </div>
-  </div>
-
-  <!-- STATS ROW -->
-  <div class="stats-row">
-    <div class="stat-card">
-      <div class="sc-label">Waiting now</div>
-      <div class="sc-val" id="stat-waiting">0</div>
-      <div class="sc-change" id="stat-wait-time">~0 min estimated wait</div>
-    </div>
-    <div class="stat-card">
-      <div class="sc-label">Served today</div>
-      <div class="sc-val" id="stat-served">0</div>
-      <div class="sc-change">customers</div>
-    </div>
-    <div class="stat-card">
-      <div class="sc-label">Total today</div>
-      <div class="sc-val" id="stat-total">0</div>
-      <div class="sc-change">queue joins</div>
-    </div>
-    <div class="stat-card">
-      <div class="sc-label">Avg wait time</div>
-      <div class="sc-val" id="stat-avg">5</div>
-      <div class="sc-change">minutes/person</div>
-    </div>
-  </div>
-
-  <!-- MAIN GRID -->
-  <div class="main-grid">
-
-    <!-- LEFT COLUMN -->
-    <div style="display:flex;flex-direction:column;gap:20px;">
-
-      <!-- LIVE QUEUE -->
-      <div class="card">
-        <div class="card-title">
-          Live queue <div class="live-dot"></div>
-        </div>
-        <div class="queue-list" id="queue-list">
-          <div style="color:var(--mid);font-size:14px;text-align:center;padding:20px;">No one in queue right now</div>
-        </div>
-      </div>
-
-      <!-- HOURLY CHART -->
-      <div class="card">
-        <div class="card-title">Queue volume today</div>
-        <div class="chart-wrap">
-          <canvas id="hourly-chart"></canvas>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- RIGHT COLUMN -->
-    <div style="display:flex;flex-direction:column;gap:20px;">
-
-      <!-- OFFERS -->
-      <div class="card">
-        <div class="card-title">Active offers</div>
-        <div id="active-offers">
-          <div style="color:var(--mid);font-size:13px;margin-bottom:16px;">No active offers. Add one to attract nearby QGO users.</div>
-        </div>
-        <div class="offer-form" id="offer-form">
-          <div>
-            <div class="field-label">Offer text</div>
-            <input class="field-input" id="offer-text" placeholder="e.g. Free coffee with any visit" maxlength="80">
-          </div>
-          <div>
-            <div class="field-label">Valid for (minutes)</div>
-            <input class="field-input" id="offer-duration" type="number" value="60" min="10" max="480">
-          </div>
-          <button class="btn btn-primary" onclick="postOffer()" style="border-radius:10px;">Post offer →</button>
-        </div>
-      </div>
-
-      <!-- QR CODE -->
-      <div class="card">
-        <div class="card-title">Queue QR code</div>
-        <div class="qr-section">
-          <div class="qr-box" id="qr-placeholder">
-            Generating...
-          </div>
-          <div class="qr-url" id="qr-url">Set up your business to generate QR</div>
-          <button class="btn btn-secondary" style="margin-top:12px;font-size:12px;" onclick="downloadQR()">Download QR</button>
-        </div>
-        <p style="font-size:12px;color:var(--mid);text-align:center;margin-top:8px;line-height:1.5;">
-          Place this at your entrance. Customers scan to join your queue instantly.
-        </p>
-      </div>
-
-    </div>
-  </div>
-</div>
-
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-  const API_BASE = window.location.origin;
-  const token = localStorage.getItem('qgo_token');
-  let bizId = localStorage.getItem('qgo_biz_id');
-  let hourlyChart;
+  // ── FIREBASE ──
+  firebase.initializeApp({
+    apiKey:"AIzaSyAtdD2Ppri0JAGIDR8aOOn_PLfjGc5q5j4",
+    authDomain:"queless-79a19.firebaseapp.com",
+    databaseURL:"https://queless-79a19-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId:"queless-79a19",
+    storageBucket:"queless-79a19.firebasestorage.app",
+    messagingSenderId:"661569229761",
+    appId:"1:661569229761:web:b7e05c6a22836c724e1540"
+  });
+  var db = firebase.database();
 
-  // ─── INIT ────────────────────────────────────────────────────────────────────
-  document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long' });
+  // ── GET BIZ SLUG FROM URL ──
+  var BIZ_SLUG = new URLSearchParams(window.location.search).get('biz') || '';
+  var BIZ_PASSWORD = '';
+  var BIZ_NAME = '';
+  var currentQueue = 'general';
+  var queueData = {general:{}, emergency:{}, followup:{}};
+  var noShowTimers = {};
+  var qrGenerated = false;
 
-  function showSection(sec) {
-    document.getElementById('page-title').textContent = sec.charAt(0).toUpperCase() + sec.slice(1);
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    event.target.closest('.nav-item').classList.add('active');
-  }
-
-  // ─── LOAD DATA ────────────────────────────────────────────────────────────────
-  function refreshData() {
-    if (!bizId) { loadDemoData(); return; }
-
-    fetch(`${API_BASE}/api/business/${bizId}/stats`, {
-      headers: { 'Authorization': 'Bearer ' + token }
-    })
-    .then(r => r.json())
-    .then(data => {
-      document.getElementById('stat-waiting').textContent = data.waiting_now;
-      document.getElementById('stat-wait-time').textContent = `~${data.estimated_wait} min estimated wait`;
-      document.getElementById('stat-served').textContent = data.served_today;
-      document.getElementById('stat-total').textContent = data.today_total;
-      document.getElementById('stat-avg').textContent = data.avg_service;
-      updateHourlyChart(data.hourly);
-    })
-    .catch(() => loadDemoData());
-
-    loadQueueList();
-    loadOffers();
-  }
-
-  function loadDemoData() {
-    document.getElementById('stat-waiting').textContent = 7;
-    document.getElementById('stat-wait-time').textContent = '~28 min estimated wait';
-    document.getElementById('stat-served').textContent = 23;
-    document.getElementById('stat-total').textContent = 31;
-    document.getElementById('stat-avg').textContent = 4;
-    document.getElementById('sidebar-biz-name').textContent = 'Apollo Clinic';
-
-    updateHourlyChart([0,0,0,0,0,0,2,5,8,12,9,7,4,6,8,10,7,5,3,2,1,0,0,0]);
-
-    const demoQueue = [
-      { position: 1, name: 'Priya S.', joined: '5 min ago', wait: 'Now', current: true },
-      { position: 2, name: 'Rahul M.', joined: '8 min ago', wait: '~4 min' },
-      { position: 3, name: 'Kavya R.', joined: '12 min ago', wait: '~8 min' },
-      { position: 4, name: 'Arun K.', joined: '15 min ago', wait: '~12 min' },
-      { position: 5, name: 'Sita D.', joined: '18 min ago', wait: '~16 min' },
-    ];
-    renderQueueList(demoQueue);
-
-    const joinUrl = `${window.location.origin}/register.html?biz=demo`;
-    document.getElementById('qr-url').textContent = joinUrl;
-    generateQRCode(joinUrl);
-  }
-
-  function loadQueueList() {
-    if (!bizId) return;
-    fetch(`${API_BASE}/api/business/${bizId}`, { headers: { 'Authorization': 'Bearer ' + token } })
-      .then(r => r.json())
-      .then(data => {
-        // In a full implementation you'd fetch the queue members list
-        // For now this shows the count
-        document.getElementById('stat-waiting').textContent = data.queue_count;
-      })
-      .catch(() => {});
-  }
-
-  function renderQueueList(items) {
-    const list = document.getElementById('queue-list');
-    if (!items.length) {
-      list.innerHTML = '<div style="color:var(--mid);font-size:14px;text-align:center;padding:20px;">Queue is empty</div>';
+  // ── LOAD BIZ INFO ON PAGE LOAD ──
+  window.addEventListener('DOMContentLoaded', function() {
+    if (!BIZ_SLUG) {
+      document.getElementById('noBizMsg').style.display = 'block';
+      document.getElementById('loginBizName').textContent = 'No business ID in URL';
       return;
     }
-    list.innerHTML = items.map(p => `
-      <div class="queue-person ${p.current ? 'current' : ''}">
-        <div class="qp-num ${p.position === 1 ? 'first' : ''}">${p.position}</div>
-        <div class="qp-info">
-          <div class="qp-name">${p.name}</div>
-          <div class="qp-time">Joined ${p.joined}</div>
-        </div>
-        <div class="qp-wait">${p.wait}</div>
-        ${p.current ? `<button class="qp-action" onclick="advanceQueue()">Serve →</button>` : ''}
-      </div>
-    `).join('');
-  }
-
-  // ─── CHART ────────────────────────────────────────────────────────────────────
-  function updateHourlyChart(hourly) {
-    const labels = hourly.map((_, i) => i < 10 ? `0${i}:00` : `${i}:00`);
-    if (hourlyChart) {
-      hourlyChart.data.datasets[0].data = hourly;
-      hourlyChart.update();
-      return;
-    }
-    const ctx = document.getElementById('hourly-chart').getContext('2d');
-    hourlyChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels,
-        datasets: [{
-          data: hourly,
-          backgroundColor: '#00c896',
-          borderRadius: 6,
-          barPercentage: 0.7,
-        }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: {
-            grid: { display: false },
-            ticks: { font: { size: 10 }, maxTicksLimit: 8, color: '#6b6b6b' }
-          },
-          y: {
-            grid: { color: 'rgba(0,0,0,0.05)' },
-            ticks: { font: { size: 10 }, color: '#6b6b6b' }
-          }
-        }
+    db.ref('businesses/' + BIZ_SLUG).once('value').then(function(snap) {
+      if (!snap.exists()) {
+        document.getElementById('noBizMsg').style.display = 'block';
+        document.getElementById('loginBizName').textContent = 'Business not found';
+        return;
       }
+      var biz = snap.val();
+      BIZ_PASSWORD = biz.password;
+      BIZ_NAME = biz.name;
+      var em = {hospital:'🏥',restaurant:'🍽',temple:'🛕',bank:'🏦',salon:'💈',office:'🏢',govt:'🏛',shop:'🏪',other:'📍'};
+      var emoji = em[biz.type] || '📍';
+      document.getElementById('loginBizName').textContent = emoji + ' ' + biz.name;
+      document.getElementById('headerBizName').textContent = emoji + ' ' + biz.name;
+      document.title = 'QGo Admin — ' + biz.name;
+
+      // Auto-login if session saved
+      var savedSlug = sessionStorage.getItem('qgo_admin_slug');
+      if (savedSlug === BIZ_SLUG) {
+        showDashboard();
+      }
+    }).catch(function() {
+      document.getElementById('noBizMsg').style.display = 'block';
+    });
+  });
+
+  // ── LOGIN ──
+  function doLogin() {
+    if (!BIZ_SLUG) { showToast('No business ID in URL!'); return; }
+    var pw = document.getElementById('pwInput').value;
+    if (!pw) { document.getElementById('loginErr').style.display = 'block'; return; }
+    if (pw === BIZ_PASSWORD) {
+      sessionStorage.setItem('qgo_admin_slug', BIZ_SLUG);
+      showDashboard();
+    } else {
+      document.getElementById('loginErr').style.display = 'block';
+      setTimeout(function() { document.getElementById('loginErr').style.display = 'none'; }, 2500);
+    }
+  }
+
+  function showDashboard() {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    startListening();
+  }
+
+  function doLogout() {
+    sessionStorage.removeItem('qgo_admin_slug');
+    location.reload();
+  }
+
+  // ── LISTEN TO QUEUES ──
+  function startListening() {
+    ['general','emergency','followup'].forEach(function(qt) {
+      db.ref('bizQueues/' + BIZ_SLUG + '/' + qt).on('value', function(snap) {
+        queueData[qt] = snap.exists() ? snap.val() : {};
+        if (qt === currentQueue) renderQueue();
+        updateStats();
+      });
     });
   }
 
-  // ─── ADVANCE QUEUE ────────────────────────────────────────────────────────────
-  function advanceQueue() {
-    if (!bizId) {
-      showToast('Demo mode — connect your business to advance queue');
-      return;
-    }
-    fetch(`${API_BASE}/api/business/${bizId}/advance`, {
-      method: 'POST',
-      headers: { 'Authorization': 'Bearer ' + token }
-    })
-    .then(r => r.json())
-    .then(data => {
-      showToast('Next customer called!');
-      refreshData();
-    })
-    .catch(() => showToast('Error calling next customer'));
+  // ── SWITCH TAB ──
+  function switchTab(qt) {
+    currentQueue = qt;
+    document.querySelectorAll('.tab').forEach(function(t, i) {
+      t.classList.toggle('active', ['general','emergency','followup'][i] === qt);
+    });
+    var titles = {general:'General Queue', emergency:'Emergency Queue', followup:'Follow-up Queue'};
+    document.getElementById('listTitle').textContent = titles[qt];
+    renderQueue();
   }
 
-  // ─── OFFERS ───────────────────────────────────────────────────────────────────
-  function postOffer() {
-    const text = document.getElementById('offer-text').value.trim();
-    const duration = parseInt(document.getElementById('offer-duration').value);
-    if (!text) { showToast('Enter an offer description'); return; }
-
-    if (!bizId) {
-      // Demo: show it locally
-      addOfferToUI({ deal: text, valid_mins: duration });
-      document.getElementById('offer-text').value = '';
-      showToast('Offer posted! (demo mode)');
-      return;
-    }
-
-    fetch(`${API_BASE}/api/offers`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-      body: JSON.stringify({ business_id: bizId, deal_text: text, valid_mins: duration })
-    })
-    .then(r => r.json())
-    .then(() => { showToast('Offer live! Nearby QGO users will see it.'); loadOffers(); document.getElementById('offer-text').value = ''; })
-    .catch(() => showToast('Error posting offer'));
+  // ── RENDER QUEUE ──
+  function renderQueue() {
+    var data = queueData[currentQueue] || {};
+    var container = document.getElementById('queueList');
+    var empty = document.getElementById('emptyState');
+    var active = Object.entries(data)
+      .filter(function(e) { return e[1].status === 'waiting' || e[1].status === 'called'; })
+      .sort(function(a, b) { return a[1].joinedAt - b[1].joinedAt; });
+    if (active.length === 0) { container.innerHTML = ''; empty.style.display = 'flex'; return; }
+    empty.style.display = 'none';
+    container.innerHTML = active.map(function(entry, i) {
+      var key = entry[0], e = entry[1];
+      var waited = Math.round((Date.now() - e.joinedAt) / 60000);
+      var isCalled = e.status === 'called';
+      return '<div class="qi' + (isCalled ? ' called' : '') + '">' +
+        '<div class="qi-left">' +
+          '<div class="pos-badge">' + (isCalled ? '📣' : i+1) + '</div>' +
+          '<div><div class="qi-name">' + escHtml(e.name) + '</div>' +
+          '<div class="qi-meta">Waited ' + waited + ' min</div>' +
+          '<div class="qi-token">' + (e.token||'—') + '</div></div>' +
+        '</div>' +
+        '<div class="qi-actions">' +
+          (isCalled
+            ? '<button class="act done" onclick="markDone(\'' + key + '\')">✓ Done</button>' +
+              '<button class="act skip" onclick="skipPerson(\'' + key + '\')">Skip</button>'
+            : '<button class="act call" onclick="callPerson(\'' + key + '\')">Call</button>' +
+              '<button class="act top" onclick="prioritize(\'' + key + '\')">↑ Top</button>'
+          ) +
+          '<button class="act remove" onclick="removePerson(\'' + key + '\')">✕</button>' +
+        '</div></div>';
+    }).join('');
   }
 
-  function loadOffers() {
-    fetch(`${API_BASE}/api/offers`)
-      .then(r => r.json())
-      .then(offers => {
-        if (offers.length) {
-          document.getElementById('active-offers').innerHTML = offers.map(o => `
-            <div class="offer-item">
-              <div class="offer-icon">🎯</div>
-              <div class="offer-text-wrap">
-                <div class="offer-deal">${o.deal}</div>
-                <div class="offer-exp">Valid ${o.valid_mins} more min · ${o.business}</div>
-              </div>
-              <button class="offer-del" title="Remove">✕</button>
-            </div>
-          `).join('');
+  // ── UPDATE STATS ──
+  function updateStats() {
+    var waiting=0, called=0, done=0, totalWait=0, wCount=0;
+    Object.values(queueData).forEach(function(qt) {
+      Object.values(qt).forEach(function(e) {
+        if (e.status==='waiting') waiting++;
+        if (e.status==='called') called++;
+        if (e.status==='done') done++;
+        if ((e.status==='waiting'||e.status==='called') && e.joinedAt) {
+          totalWait += Math.round((Date.now()-e.joinedAt)/60000); wCount++;
         }
-      })
-      .catch(() => {});
+      });
+    });
+    document.getElementById('sWaiting').textContent = waiting;
+    document.getElementById('sCalled').textContent = called;
+    document.getElementById('sDone').textContent = done;
+    document.getElementById('sAvg').textContent = wCount > 0 ? Math.round(totalWait/wCount)+'m' : '—';
+    ['general','emergency','followup'].forEach(function(qt) {
+      var count = Object.values(queueData[qt]||{}).filter(function(e){return e.status==='waiting'||e.status==='called';}).length;
+      var el = document.getElementById('tc-' + qt);
+      if (el) el.textContent = count;
+    });
   }
 
-  function addOfferToUI(o) {
-    document.getElementById('active-offers').innerHTML = `
-      <div class="offer-item">
-        <div class="offer-icon">🎯</div>
-        <div class="offer-text-wrap">
-          <div class="offer-deal">${o.deal}</div>
-          <div class="offer-exp">Valid ${o.valid_mins} more min</div>
-        </div>
-        <button class="offer-del" title="Remove">✕</button>
-      </div>
-    ` + document.getElementById('active-offers').innerHTML;
+  // ── QUEUE ACTIONS ──
+  function callNext() {
+    var data = queueData[currentQueue] || {};
+    var waiting = Object.entries(data)
+      .filter(function(e){return e[1].status==='waiting';})
+      .sort(function(a,b){return a[1].joinedAt-b[1].joinedAt;});
+    if (waiting.length===0) { showToast('Queue is empty!'); return; }
+    callPerson(waiting[0][0]);
   }
 
-  // ─── QR CODE ─────────────────────────────────────────────────────────────────
-  function generateQRCode(url) {
-    // Uses Google Charts QR API (free)
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(url)}`;
-    const img = document.createElement('img');
-    img.src = qrUrl;
-    img.style.width = '120px'; img.style.height = '120px'; img.style.borderRadius = '8px';
-    const box = document.getElementById('qr-placeholder');
-    box.innerHTML = '';
-    box.appendChild(img);
+  function callPerson(key) {
+    db.ref('bizQueues/'+BIZ_SLUG+'/'+currentQueue+'/'+key).update({status:'called',calledAt:Date.now()});
+    if (noShowTimers[key]) clearTimeout(noShowTimers[key]);
+    noShowTimers[key] = setTimeout(function() {
+      db.ref('bizQueues/'+BIZ_SLUG+'/'+currentQueue+'/'+key).once('value').then(function(snap){
+        if (snap.exists() && snap.val().status==='called') {
+          db.ref('bizQueues/'+BIZ_SLUG+'/'+currentQueue+'/'+key).update({status:'waiting',joinedAt:Date.now()+999999});
+          showToast('No-show — moved to end');
+        }
+      });
+    }, 90000);
+    showToast('📣 Called next person!');
   }
 
-  function downloadQR() {
-    const url = document.getElementById('qr-url').textContent;
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=${encodeURIComponent(url)}`;
-    const a = document.createElement('a'); a.href = qrUrl; a.download = 'qgo-qr.png'; a.click();
+  function markDone(key) {
+    if (noShowTimers[key]) clearTimeout(noShowTimers[key]);
+    db.ref('bizQueues/'+BIZ_SLUG+'/'+currentQueue+'/'+key).update({status:'done'});
+    setTimeout(function(){ db.ref('bizQueues/'+BIZ_SLUG+'/'+currentQueue+'/'+key).remove(); }, 3000);
+    showToast('✓ Done!');
   }
 
-  // ─── TOAST ────────────────────────────────────────────────────────────────────
-  function showToast(msg) {
-    let t = document.getElementById('toast');
-    if (!t) {
-      t = document.createElement('div');
-      t.id = 'toast';
-      t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0a0a0a;color:#fff;padding:10px 20px;border-radius:100px;font-size:13px;font-weight:500;z-index:9999;transition:opacity 0.3s;opacity:0;white-space:nowrap;';
-      document.body.appendChild(t);
+  function skipPerson(key) {
+    if (noShowTimers[key]) clearTimeout(noShowTimers[key]);
+    db.ref('bizQueues/'+BIZ_SLUG+'/'+currentQueue+'/'+key).update({status:'waiting',joinedAt:Date.now()+999999});
+    showToast('Moved to end of queue');
+  }
+
+  function prioritize(key) {
+    var data = queueData[currentQueue] || {};
+    var waiting = Object.entries(data)
+      .filter(function(e){return e[1].status==='waiting';})
+      .sort(function(a,b){return a[1].joinedAt-b[1].joinedAt;});
+    var earliest = waiting.length > 0 ? waiting[0][1].joinedAt : Date.now();
+    db.ref('bizQueues/'+BIZ_SLUG+'/'+currentQueue+'/'+key).update({joinedAt:earliest-1000});
+    showToast('↑ Moved to top!');
+  }
+
+  function removePerson(key) {
+    if (confirm('Remove this person from the queue?')) {
+      if (noShowTimers[key]) clearTimeout(noShowTimers[key]);
+      db.ref('bizQueues/'+BIZ_SLUG+'/'+currentQueue+'/'+key).remove();
+      showToast('Removed');
     }
-    t.textContent = msg; t.style.opacity = '1';
-    setTimeout(() => t.style.opacity = '0', 2500);
   }
 
-  // ─── SOCKET FOR LIVE UPDATES ──────────────────────────────────────────────────
-  const socket = io(API_BASE, { transports: ['websocket', 'polling'] });
-  socket.on('connect', () => {
-    if (bizId) socket.emit('join_business_room', { business_id: bizId, token });
-  });
-  socket.on('queue_update', () => refreshData());
+  function clearDone() {
+    var data = queueData[currentQueue] || {};
+    var done = Object.entries(data).filter(function(e){return e[1].status==='done';});
+    if (done.length===0) { showToast('Nothing to clear'); return; }
+    done.forEach(function(e){ db.ref('bizQueues/'+BIZ_SLUG+'/'+currentQueue+'/'+e[0]).remove(); });
+    showToast('Cleared ' + done.length + ' entries');
+  }
 
-  // ─── AUTO-REFRESH ─────────────────────────────────────────────────────────────
-  refreshData();
-  setInterval(refreshData, 30000);
+  // ── QR CODE ──
+  function showQR() {
+    var baseUrl = window.location.origin + window.location.pathname.replace('admin.html','');
+    var url = baseUrl + 'queue.html?biz=' + BIZ_SLUG;
+    document.getElementById('qrUrl').textContent = url;
+    document.getElementById('qrModal').classList.add('open');
+    if (!qrGenerated) {
+      var canvas = document.getElementById('qrCanvas');
+      var ctx = canvas.getContext('2d');
+      ctx.clearRect(0,0,200,200);
+      var tmp = document.createElement('div');
+      new QRCode(tmp, {text:url, width:180, height:180, colorDark:'#000', colorLight:'#fff', correctLevel:QRCode.CorrectLevel.H});
+      setTimeout(function(){
+        var img = tmp.querySelector('img');
+        if (img) { ctx.fillStyle='#fff'; ctx.fillRect(0,0,200,200); ctx.drawImage(img,10,10,180,180); qrGenerated=true; }
+      }, 200);
+    }
+  }
+  function closeQR() { document.getElementById('qrModal').classList.remove('open'); }
+
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(function(){ t.classList.remove('show'); }, 3000);
+  }
+
+  function escHtml(t) {
+    return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
 </script>
-  <script src="chatbot.js"></script>
 </body>
 </html>
