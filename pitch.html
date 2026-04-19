@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>QGo — Investor Pitch</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&family=DM+Mono&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --ink:#0a0a08;--paper:#f5f2eb;--accent:#c8a96e;--accent2:#e8c98a;
+  --dim:#6b6860;--faint:#e8e4da;--line:#d8d4ca;
+  --red:#c0392b;--green:#27ae60;
+}
+html{scroll-behavior:smooth;font-size:16px;}
+body{background:var(--ink);color:var(--paper);font-family:'DM Sans',sans-serif;overflow-x:hidden;}
+
+/* CURSOR */
+body{cursor:none;}
+#cursor{position:fixed;width:8px;height:8px;background:var(--accent);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width 0.2s,height 0.2s,background 0.2s;}
+#cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(200,169,110,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.12s ease;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1.5rem 3rem;mix-blend-mode:difference;}
+.nav-logo{font-family:'Instrument Serif',serif;font-size:1.4rem;color:var(--paper);letter-spacing:0.02em;}
+.nav-logo span{font-style:italic;color:var(--accent2);}
+.nav-links{display:flex;gap:2rem;align-items:center;}
+.nav-link{color:rgba(245,242,235,0.6);font-size:0.82rem;text-decoration:none;letter-spacing:0.08em;text-transform:uppercase;transition:color 0.2s;}
+.nav-link:hover{color:var(--paper);}
+.nav-cta{background:var(--accent);color:var(--ink);padding:0.45rem 1.2rem;border-radius:2px;font-size:0.8rem;font-weight:500;text-decoration:none;letter-spacing:0.06em;transition:all 0.2s;}
+.nav-cta:hover{background:var(--accent2);}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 3rem 5rem;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;z-index:0;}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(200,169,110,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(200,169,110,0.04) 1px,transparent 1px);background-size:80px 80px;}
+.hero-circle{position:absolute;width:600px;height:600px;border-radius:50%;border:1px solid rgba(200,169,110,0.08);top:50%;left:50%;transform:translate(-50%,-50%);}
+.hero-circle2{position:absolute;width:900px;height:900px;border-radius:50%;border:1px solid rgba(200,169,110,0.04);top:50%;left:50%;transform:translate(-50%,-50%);}
+.hero-number{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Instrument Serif',serif;font-size:28vw;font-weight:400;color:rgba(200,169,110,0.04);letter-spacing:-0.05em;user-select:none;white-space:nowrap;}
+.hero-content{position:relative;z-index:1;max-width:900px;}
+.hero-tag{font-size:0.75rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent);margin-bottom:2rem;display:flex;align-items:center;gap:0.8rem;}
+.hero-tag::before{content:'';width:40px;height:1px;background:var(--accent);}
+.hero h1{font-family:'Instrument Serif',serif;font-size:clamp(3.5rem,7vw,7rem);font-weight:400;line-height:1.0;letter-spacing:-0.02em;margin-bottom:2rem;}
+.hero h1 em{font-style:italic;color:var(--accent2);}
+.hero-sub{font-size:1.1rem;color:var(--dim);max-width:520px;line-height:1.7;margin-bottom:3rem;font-weight:300;}
+.hero-stats{display:flex;gap:3rem;flex-wrap:wrap;}
+.hstat{border-top:1px solid rgba(200,169,110,0.3);padding-top:1rem;}
+.hstat-num{font-family:'Instrument Serif',serif;font-size:2.2rem;color:var(--paper);}
+.hstat-num span{font-size:1rem;color:var(--accent);font-family:'DM Sans',sans-serif;}
+.hstat-lbl{font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--dim);margin-top:0.3rem;}
+.scroll-hint{position:absolute;bottom:2rem;right:3rem;display:flex;align-items:center;gap:0.8rem;color:var(--dim);font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;}
+.scroll-line{width:40px;height:1px;background:var(--dim);}
+
+/* SECTIONS */
+section{padding:8rem 3rem;}
+.section-num{font-family:'DM Mono',monospace;font-size:0.7rem;color:var(--accent);letter-spacing:0.15em;margin-bottom:0.8rem;}
+.section-title{font-family:'Instrument Serif',serif;font-size:clamp(2.5rem,5vw,4.5rem);font-weight:400;line-height:1.05;letter-spacing:-0.02em;margin-bottom:1.5rem;}
+.section-title em{font-style:italic;color:var(--accent2);}
+
+/* PROBLEM */
+.problem{background:var(--ink);border-top:1px solid rgba(200,169,110,0.1);}
+.problem-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;margin-top:4rem;}
+.problem-left{}
+.problem-quote{font-family:'Instrument Serif',serif;font-size:2.2rem;font-style:italic;color:var(--paper);line-height:1.3;margin-bottom:2rem;}
+.problem-body{color:var(--dim);line-height:1.8;font-weight:300;font-size:0.95rem;}
+.problem-right{display:flex;flex-direction:column;gap:1.5rem;padding-top:0.5rem;}
+.pain-card{border:1px solid rgba(200,169,110,0.15);border-radius:2px;padding:1.5rem;}
+.pain-num{font-family:'Instrument Serif',serif;font-size:3rem;color:var(--accent2);line-height:1;}
+.pain-unit{font-size:0.75rem;color:var(--accent);letter-spacing:0.1em;text-transform:uppercase;margin-top:0.2rem;}
+.pain-desc{font-size:0.85rem;color:var(--dim);margin-top:0.8rem;line-height:1.6;}
+
+/* SOLUTION */
+.solution{background:#0d0d0a;border-top:1px solid rgba(200,169,110,0.1);}
+.solution-intro{max-width:640px;margin-bottom:4rem;}
+.solution-intro p{color:var(--dim);font-size:1rem;line-height:1.8;font-weight:300;}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(200,169,110,0.1);border:1px solid rgba(200,169,110,0.1);}
+.feat{background:#0d0d0a;padding:2rem;position:relative;overflow:hidden;transition:background 0.3s;}
+.feat:hover{background:#141410;}
+.feat-num{font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--accent);letter-spacing:0.15em;margin-bottom:1.5rem;}
+.feat-title{font-family:'Instrument Serif',serif;font-size:1.3rem;margin-bottom:0.8rem;color:var(--paper);}
+.feat-desc{font-size:0.82rem;color:var(--dim);line-height:1.7;}
+.feat-badge{display:inline-block;margin-top:1rem;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.25rem 0.6rem;border:1px solid rgba(200,169,110,0.3);color:var(--accent);}
+
+/* MARKET */
+.market{background:var(--ink);border-top:1px solid rgba(200,169,110,0.1);}
+.market-numbers{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:rgba(200,169,110,0.1);margin:4rem 0;border:1px solid rgba(200,169,110,0.1);}
+.mnum{background:var(--ink);padding:2.5rem 2rem;text-align:center;}
+.mnum-val{font-family:'Instrument Serif',serif;font-size:3.5rem;color:var(--paper);line-height:1;}
+.mnum-unit{font-size:0.8rem;color:var(--accent);letter-spacing:0.1em;text-transform:uppercase;margin-top:0.3rem;}
+.mnum-desc{font-size:0.75rem;color:var(--dim);margin-top:0.8rem;line-height:1.5;}
+.market-body{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;}
+.market-text p{color:var(--dim);line-height:1.8;font-weight:300;font-size:0.95rem;margin-bottom:1rem;}
+.market-text strong{color:var(--paper);font-weight:500;}
+.tam-visual{display:flex;flex-direction:column;gap:1rem;}
+.tam-bar{display:flex;align-items:center;gap:1rem;}
+.tam-label{font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--dim);width:40px;}
+.tam-track{flex:1;height:2px;background:rgba(200,169,110,0.15);position:relative;}
+.tam-fill{height:100%;background:var(--accent);transition:width 2s ease;}
+.tam-value{font-family:'DM Mono',monospace;font-size:0.78rem;color:var(--accent2);width:60px;text-align:right;}
+
+/* REVENUE */
+.revenue{background:#0d0d0a;border-top:1px solid rgba(200,169,110,0.1);}
+.rev-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-top:4rem;}
+.rev-card{border:1px solid rgba(200,169,110,0.12);padding:2rem;position:relative;}
+.rev-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;}
+.rev-1::before{background:var(--accent);}
+.rev-2::before{background:#7c3aed;}
+.rev-3::before{background:var(--green);}
+.rev-4::before{background:var(--red);}
+.rev-5::before{background:#06b6d4;}
+.rev-6::before{background:#f97316;}
+.rev-title{font-family:'Instrument Serif',serif;font-size:1.1rem;margin-bottom:0.5rem;color:var(--paper);}
+.rev-amount{font-family:'DM Mono',monospace;font-size:1.4rem;color:var(--accent2);margin-bottom:0.5rem;}
+.rev-desc{font-size:0.8rem;color:var(--dim);line-height:1.6;}
+.rev-timeline{font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-top:0.8rem;}
+
+/* TRACTION */
+.traction{background:var(--ink);border-top:1px solid rgba(200,169,110,0.1);}
+.traction-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;margin-top:4rem;align-items:start;}
+.milestone-list{display:flex;flex-direction:column;gap:0;}
+.milestone{display:flex;gap:1.5rem;padding:1.5rem 0;border-bottom:1px solid rgba(200,169,110,0.1);position:relative;}
+.milestone:last-child{border-bottom:none;}
+.milestone-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:0.4rem;}
+.milestone-date{font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--accent);letter-spacing:0.1em;min-width:60px;}
+.milestone-text{font-size:0.88rem;color:var(--dim);line-height:1.6;}
+.milestone-text strong{color:var(--paper);font-weight:500;}
+.traction-right{}
+.traction-quote{font-family:'Instrument Serif',serif;font-size:1.8rem;font-style:italic;color:var(--paper);line-height:1.4;margin-bottom:2rem;border-left:2px solid var(--accent);padding-left:1.5rem;}
+.traction-metrics{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(200,169,110,0.1);border:1px solid rgba(200,169,110,0.1);}
+.tm{background:var(--ink);padding:1.5rem;}
+.tm-val{font-family:'Instrument Serif',serif;font-size:2.2rem;color:var(--paper);}
+.tm-lbl{font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--dim);margin-top:0.3rem;}
+
+/* MOAT */
+.moat-section{background:#0d0d0a;border-top:1px solid rgba(200,169,110,0.1);}
+.moat-intro{max-width:600px;margin-bottom:4rem;}
+.moat-intro p{color:var(--dim);font-size:1rem;line-height:1.8;font-weight:300;}
+.moat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px;background:rgba(200,169,110,0.1);border:1px solid rgba(200,169,110,0.1);}
+.moat-card{background:#0d0d0a;padding:2.5rem;transition:background 0.3s;}
+.moat-card:hover{background:#131310;}
+.moat-icon{font-size:2rem;margin-bottom:1.2rem;}
+.moat-title{font-family:'Instrument Serif',serif;font-size:1.4rem;color:var(--paper);margin-bottom:0.8rem;}
+.moat-desc{font-size:0.85rem;color:var(--dim);line-height:1.7;}
+
+/* ROADMAP */
+.roadmap{background:var(--ink);border-top:1px solid rgba(200,169,110,0.1);}
+.road-track{margin-top:4rem;position:relative;}
+.road-track::before{content:'';position:absolute;left:0;top:12px;width:100%;height:1px;background:rgba(200,169,110,0.15);}
+.road-phases{display:grid;grid-template-columns:repeat(5,1fr);gap:0;position:relative;}
+.road-phase{padding-top:2.5rem;padding-right:1.5rem;}
+.road-dot{width:12px;height:12px;border-radius:50%;background:var(--accent);position:absolute;top:7px;margin-left:-1px;}
+.road-dot.future{background:transparent;border:1px solid rgba(200,169,110,0.3);}
+.road-period{font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--accent);letter-spacing:0.1em;margin-bottom:0.8rem;}
+.road-title{font-size:0.88rem;font-weight:500;color:var(--paper);margin-bottom:0.5rem;}
+.road-items{display:flex;flex-direction:column;gap:0.3rem;}
+.road-item{font-size:0.78rem;color:var(--dim);line-height:1.4;}
+
+/* TEAM */
+.team-section{background:#0d0d0a;border-top:1px solid rgba(200,169,110,0.1);}
+.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:rgba(200,169,110,0.1);border:1px solid rgba(200,169,110,0.1);margin-top:4rem;}
+.team-card{background:#0d0d0a;padding:2rem;}
+.team-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,rgba(200,169,110,0.2),rgba(200,169,110,0.05));border:1px solid rgba(200,169,110,0.2);display:flex;align-items:center;justify-content:center;font-family:'Instrument Serif',serif;font-size:1.4rem;color:var(--accent2);margin-bottom:1.2rem;}
+.team-name{font-family:'Instrument Serif',serif;font-size:1.1rem;color:var(--paper);margin-bottom:0.2rem;}
+.team-role{font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:0.8rem;}
+.team-bio{font-size:0.82rem;color:var(--dim);line-height:1.6;}
+
+/* ASK */
+.ask{background:var(--ink);border-top:1px solid rgba(200,169,110,0.1);}
+.ask-inner{max-width:800px;margin:0 auto;text-align:center;}
+.ask-amount{font-family:'Instrument Serif',serif;font-size:clamp(5rem,12vw,10rem);color:var(--paper);line-height:0.9;letter-spacing:-0.03em;margin:3rem 0;}
+.ask-amount span{font-style:italic;color:var(--accent2);}
+.ask-use{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin:3rem 0;text-align:left;}
+.ask-item{border-top:1px solid rgba(200,169,110,0.2);padding-top:1rem;}
+.ask-pct{font-family:'Instrument Serif',serif;font-size:2rem;color:var(--accent2);}
+.ask-desc{font-size:0.78rem;color:var(--dim);margin-top:0.4rem;line-height:1.5;}
+.ask-cta{display:inline-flex;align-items:center;gap:0.8rem;background:var(--accent);color:var(--ink);padding:1rem 2.5rem;font-size:0.85rem;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;transition:all 0.2s;margin-top:2rem;}
+.ask-cta:hover{background:var(--accent2);}
+.ask-cta::after{content:'→';}
+.ask-note{font-size:0.78rem;color:var(--dim);margin-top:1.5rem;line-height:1.6;}
+
+/* CLOSING */
+.closing{background:#0d0d0a;border-top:1px solid rgba(200,169,110,0.1);padding:10rem 3rem;text-align:center;}
+.closing-text{font-family:'Instrument Serif',serif;font-size:clamp(2rem,5vw,4rem);font-style:italic;color:var(--paper);line-height:1.2;max-width:700px;margin:0 auto 3rem;}
+.closing-sub{color:var(--dim);font-size:0.9rem;margin-bottom:2rem;}
+.closing-links{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;}
+.closing-link{color:var(--accent);font-size:0.82rem;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;border-bottom:1px solid rgba(200,169,110,0.3);padding-bottom:0.2rem;transition:border-color 0.2s;}
+.closing-link:hover{border-color:var(--accent);}
+
+/* SCROLL ANIMATIONS */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity 0.8s ease,transform 0.8s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.reveal-delay-1{transition-delay:0.1s;}
+.reveal-delay-2{transition-delay:0.2s;}
+.reveal-delay-3{transition-delay:0.3s;}
+.reveal-delay-4{transition-delay:0.4s;}
+
+/* COUNTER ANIMATION */
+.count-up{display:inline-block;}
+
+@media(max-width:768px){
+  nav{padding:1rem 1.5rem;}.hero{padding:0 1.5rem 4rem;}section{padding:5rem 1.5rem;}
+  .hero h1{font-size:clamp(2.5rem,10vw,4rem);}
+  .problem-grid,.market-body,.traction-grid{grid-template-columns:1fr;gap:3rem;}
+  .features-grid{grid-template-columns:1fr;}
+  .market-numbers{grid-template-columns:repeat(2,1fr);}
+  .rev-grid{grid-template-columns:1fr;}
+  .moat-grid{grid-template-columns:1fr;}
+  .road-phases{grid-template-columns:1fr;}.road-track::before{display:none;}
+  .team-grid{grid-template-columns:1fr;}
+  .ask-use{grid-template-columns:repeat(2,1fr);}
+  .nav-links{display:none;}
+}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Q<span>Go</span>™</div>
+  <div class="nav-links">
+    <a class="nav-link" href="#problem">Problem</a>
+    <a class="nav-link" href="#solution">Solution</a>
+    <a class="nav-link" href="#market">Market</a>
+    <a class="nav-link" href="#traction">Traction</a>
+    <a class="nav-link" href="#ask">The Ask</a>
+    <a class="nav-cta" href="https://remma16shivanand-lang.github.io/Queless" target="_blank">Live Demo</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg">
+    <div class="hero-grid"></div>
+    <div class="hero-circle"></div>
+    <div class="hero-circle2"></div>
+    <div class="hero-number">Q</div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-tag">Seed Round 2025 — Confidential</div>
+    <h1>We don't manage<br>queues. We give<br>people <em>their time</em><br>back.</h1>
+    <p class="hero-sub">4.3 billion people stand in physical lines every day. QGo replaces every single one with a smart, AI-powered digital experience — starting now.</p>
+    <div class="hero-stats">
+      <div class="hstat">
+        <div class="hstat-num"><span class="count-up" data-target="4.3">0</span><span>B+</span></div>
+        <div class="hstat-lbl">People wait daily</div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-num">$<span class="count-up" data-target="12">0</span><span>B</span></div>
+        <div class="hstat-lbl">Market opportunity</div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-num"><span class="count-up" data-target="100">0</span><span>%</span></div>
+        <div class="hstat-lbl">Live & working today</div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-num"><span class="count-up" data-target="0">0</span><span> → ∞</span></div>
+        <div class="hstat-lbl">Scalable users</div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-hint"><div class="scroll-line"></div>Scroll to explore</div>
+</section>
+
+<!-- PROBLEM -->
+<section class="problem" id="problem">
+  <div class="section-num reveal">01 — The Problem</div>
+  <h2 class="section-title reveal reveal-delay-1">The world is still<br>standing in <em>line.</em></h2>
+  <div class="problem-grid">
+    <div class="problem-left reveal reveal-delay-2">
+      <p class="problem-quote">"I waited 3 hours at the hospital. Nobody told me when my turn was."</p>
+      <p class="problem-body">This is the daily reality for billions of people. Hospitals. Temples. Restaurants. Banks. Government offices. Physical queues haven't changed in 200 years.<br><br>Existing solutions are either broken token machines, expensive hardware systems, or enterprise software nobody actually uses. The problem remains unsolved at scale.<br><br>QGo solves it with nothing but a phone and a QR code.</p>
+    </div>
+    <div class="problem-right">
+      <div class="pain-card reveal reveal-delay-2">
+        <div class="pain-num">2.3<span style="font-size:1.5rem;">hrs</span></div>
+        <div class="pain-unit">Average daily wait time</div>
+        <div class="pain-desc">The average person in India spends 2.3 hours per day waiting in queues. That's 840 hours per year — 35 full days of their life.</div>
+      </div>
+      <div class="pain-card reveal reveal-delay-3">
+        <div class="pain-num">₹1.8<span style="font-size:1.5rem;">L Cr</span></div>
+        <div class="pain-unit">Economic loss annually</div>
+        <div class="pain-desc">India alone loses ₹1.8 lakh crore annually in productivity due to time wasted in queues. This is a solvable crisis.</div>
+      </div>
+      <div class="pain-card reveal reveal-delay-4">
+        <div class="pain-num">67<span style="font-size:1.5rem;">%</span></div>
+        <div class="pain-unit">Leave due to long waits</div>
+        <div class="pain-desc">67% of customers have abandoned a business permanently due to long queues. Businesses are losing revenue daily to a fixable problem.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOLUTION -->
+<section class="solution" id="solution">
+  <div class="section-num reveal">02 — The Solution</div>
+  <h2 class="section-title reveal reveal-delay-1">QGo is not a queue app.<br>It's a <em>time platform.</em></h2>
+  <div class="solution-intro reveal reveal-delay-2">
+    <p>Scan a QR code. Get your position. Walk away freely. Our AI tells you exactly what to do with your wait time — nearby coffee, errands, shopping — and calls you back with sound, flash, and confetti when it's your turn. No hardware. No app download. Just a phone browser.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feat reveal">
+      <div class="feat-num">F — 01</div>
+      <div class="feat-title">Smart Wait Engine</div>
+      <div class="feat-desc">AI-powered ETA based on real queue speed. Learns from every person served. Gets smarter with every business, every day.</div>
+      <div class="feat-badge">Live</div>
+    </div>
+    <div class="feat reveal reveal-delay-1">
+      <div class="feat-num">F — 02</div>
+      <div class="feat-title">Safe-to-Leave Indicator</div>
+      <div class="feat-desc">Real-time green/yellow/red indicator. Customers walk away confidently. Businesses see fewer walk-outs. Both win.</div>
+      <div class="feat-badge">Live</div>
+    </div>
+    <div class="feat reveal reveal-delay-2">
+      <div class="feat-num">F — 03</div>
+      <div class="feat-title">Nearby Discovery</div>
+      <div class="feat-desc">Context-aware suggestions matched to your exact wait time. "You have 12 minutes — here's a coffee shop 200m away." Dead time becomes valuable time.</div>
+      <div class="feat-badge">Live</div>
+    </div>
+    <div class="feat reveal">
+      <div class="feat-num">F — 04</div>
+      <div class="feat-title">Business Isolation</div>
+      <div class="feat-desc">Every business gets a unique, isolated queue. Hospital queues never mix with restaurant queues. Infinitely scalable.</div>
+      <div class="feat-badge">Live</div>
+    </div>
+    <div class="feat reveal reveal-delay-1">
+      <div class="feat-num">F — 05</div>
+      <div class="feat-title">AI Assistant</div>
+      <div class="feat-desc">Claude-powered chatbot answers customer queries live. "Is it safe to leave?" "How long will I wait?" Answered instantly, intelligently.</div>
+      <div class="feat-badge">Live</div>
+    </div>
+    <div class="feat reveal reveal-delay-2">
+      <div class="feat-num">F — 06</div>
+      <div class="feat-title">Zero Hardware</div>
+      <div class="feat-desc">No token machines. No tablets. No installation. A QR code on paper and a phone browser. Any business is live in 2 minutes.</div>
+      <div class="feat-badge">Live</div>
+    </div>
+  </div>
+</section>
+
+<!-- MARKET -->
+<section class="market" id="market">
+  <div class="section-num reveal">03 — Market Opportunity</div>
+  <h2 class="section-title reveal reveal-delay-1">A $12 billion market<br>with <em>zero</em> dominant player.</h2>
+  <div class="market-numbers">
+    <div class="mnum reveal">
+      <div class="mnum-val">$12B</div>
+      <div class="mnum-unit">TAM Global</div>
+      <div class="mnum-desc">Total addressable queue management market worldwide</div>
+    </div>
+    <div class="mnum reveal reveal-delay-1">
+      <div class="mnum-val">$2.4B</div>
+      <div class="mnum-unit">SAM — Asia</div>
+      <div class="mnum-desc">India + Southeast Asia + Middle East serviceable market</div>
+    </div>
+    <div class="mnum reveal reveal-delay-2">
+      <div class="mnum-val">$340M</div>
+      <div class="mnum-unit">SOM — Year 3</div>
+      <div class="mnum-desc">Realistic obtainable market within 3 years of operation</div>
+    </div>
+    <div class="mnum reveal reveal-delay-3">
+      <div class="mnum-val">4.3B</div>
+      <div class="mnum-unit">People waiting</div>
+      <div class="mnum-desc">Daily queue participants globally — our total potential users</div>
+    </div>
+  </div>
+  <div class="market-body">
+    <div class="market-text reveal">
+      <p>The queue management market is <strong>fragmented, outdated, and expensive.</strong> Existing players charge ₹5–20 lakh for hardware installations that require maintenance teams. Small businesses — which represent 94% of our target market — simply cannot afford them.</p>
+      <p>QGo enters with <strong>zero hardware cost, 2-minute setup, and a free tier</strong> that converts to paid plans. We're not competing with enterprise software — we're creating a new category that didn't exist before.</p>
+      <p>The shift from physical to digital queues is as inevitable as the shift from paper to digital tickets. <strong>QGo is the Ticketmaster moment for queues.</strong></p>
+    </div>
+    <div class="tam-visual reveal reveal-delay-1">
+      <div class="tam-bar"><div class="tam-label">TAM</div><div class="tam-track"><div class="tam-fill" style="width:0%" data-width="100%"></div></div><div class="tam-value">$12B</div></div>
+      <div class="tam-bar"><div class="tam-label">SAM</div><div class="tam-track"><div class="tam-fill" style="width:0%" data-width="80%"></div></div><div class="tam-value">$2.4B</div></div>
+      <div class="tam-bar"><div class="tam-label">SOM</div><div class="tam-track"><div class="tam-fill" style="width:0%" data-width="45%"></div></div><div class="tam-value">$340M</div></div>
+      <div style="margin-top:2rem;font-size:0.8rem;color:var(--dim);line-height:1.7;">India alone has 63 million SMEs. If 1% adopt QGo at ₹999/month, that's <strong style="color:var(--accent2);">₹630 crore ARR</strong> from subscriptions alone — before advertising, priority passes, or enterprise contracts.</div>
+    </div>
+  </div>
+</section>
+
+<!-- REVENUE -->
+<section class="revenue" id="revenue">
+  <div class="section-num reveal">04 — Business Model</div>
+  <h2 class="section-title reveal reveal-delay-1">Six revenue streams.<br>All <em>compounding.</em></h2>
+  <div class="rev-grid">
+    <div class="rev-card rev-1 reveal">
+      <div class="rev-title">Business SaaS</div>
+      <div class="rev-amount">₹999–₹4,999/mo</div>
+      <div class="rev-desc">Per business subscription. Basic free, Pro with analytics, Enterprise custom. Recurring, predictable revenue.</div>
+      <div class="rev-timeline">Active from Month 1</div>
+    </div>
+    <div class="rev-card rev-2 reveal reveal-delay-1">
+      <div class="rev-title">Priority Pass</div>
+      <div class="rev-amount">15% commission</div>
+      <div class="rev-desc">Users pay to skip the line at temples, events, restaurants. QGo takes 15%. High-margin, zero marginal cost.</div>
+      <div class="rev-timeline">Active from Month 3</div>
+    </div>
+    <div class="rev-card rev-3 reveal reveal-delay-2">
+      <div class="rev-title">Nearby Advertising</div>
+      <div class="rev-amount">₹5–₹50 per click</div>
+      <div class="rev-desc">Businesses bid to appear in the "What to do nearby" suggestions. Hyper-targeted — user is literally 200m away, right now.</div>
+      <div class="rev-timeline">Active from Month 4</div>
+    </div>
+    <div class="rev-card rev-4 reveal">
+      <div class="rev-title">Enterprise Contracts</div>
+      <div class="rev-amount">₹2L–₹20L/yr</div>
+      <div class="rev-desc">Hospital chains, government offices, airport authorities, railway stations. White-label deployments at scale.</div>
+      <div class="rev-timeline">Active from Month 6</div>
+    </div>
+    <div class="rev-card rev-5 reveal reveal-delay-1">
+      <div class="rev-title">Data Intelligence</div>
+      <div class="rev-amount">₹5L–₹50L/yr</div>
+      <div class="rev-desc">Anonymised queue density, foot traffic, peak hour data sold to city planners, retail chains, real estate developers.</div>
+      <div class="rev-timeline">Active from Year 2</div>
+    </div>
+    <div class="rev-card rev-6 reveal reveal-delay-2">
+      <div class="rev-title">White-Label Licensing</div>
+      <div class="rev-amount">Revenue share</div>
+      <div class="rev-desc">Country-level partners license QGo technology for their markets. Zero operational cost for QGo. Pure margin expansion.</div>
+      <div class="rev-timeline">Active from Year 2</div>
+    </div>
+  </div>
+</section>
+
+<!-- TRACTION -->
+<section class="traction" id="traction">
+  <div class="section-num reveal">05 — Traction</div>
+  <h2 class="section-title reveal reveal-delay-1">Built in weeks.<br><em>Ready to scale.</em></h2>
+  <div class="traction-grid">
+    <div class="milestone-list">
+      <div class="milestone reveal">
+        <div class="milestone-dot"></div>
+        <div>
+          <div class="milestone-date">2025 Q1</div>
+          <div class="milestone-text"><strong>Concept validated.</strong> Identified gap in queue management for SMEs across India, temples, hospitals.</div>
+        </div>
+      </div>
+      <div class="milestone reveal reveal-delay-1">
+        <div class="milestone-dot"></div>
+        <div>
+          <div class="milestone-date">2025 Q2</div>
+          <div class="milestone-text"><strong>MVP built and live.</strong> Full-stack web app with Firebase real-time database, deployed on GitHub Pages.</div>
+        </div>
+      </div>
+      <div class="milestone reveal reveal-delay-2">
+        <div class="milestone-dot"></div>
+        <div>
+          <div class="milestone-date">2025 Q2</div>
+          <div class="milestone-text"><strong>Core features complete.</strong> Smart Wait Engine, Safe-to-Leave indicator, Business isolation, QR generation, Admin panel.</div>
+        </div>
+      </div>
+      <div class="milestone reveal reveal-delay-3">
+        <div class="milestone-dot"></div>
+        <div>
+          <div class="milestone-date">2025 Q2</div>
+          <div class="milestone-text"><strong>AI integration shipped.</strong> Claude-powered chatbot, AI-suggested wait activities, smart ETA from real data.</div>
+        </div>
+      </div>
+      <div class="milestone reveal">
+        <div class="milestone-dot future"></div>
+        <div>
+          <div class="milestone-date">2025 Q3</div>
+          <div class="milestone-text"><strong>First 10 paying businesses.</strong> Hyderabad pilot launch. Target: hospitals + restaurants + temples.</div>
+        </div>
+      </div>
+      <div class="milestone reveal reveal-delay-1">
+        <div class="milestone-dot future"></div>
+        <div>
+          <div class="milestone-date">2025 Q4</div>
+          <div class="milestone-text"><strong>Seed raise closes.</strong> 10,000 users. Pan-India expansion begins. Enterprise pipeline opens.</div>
+        </div>
+      </div>
+    </div>
+    <div class="traction-right reveal reveal-delay-2">
+      <p class="traction-quote">"We built a working product, live on the internet, with AI, real-time data, and zero infrastructure cost — in weeks. Now we scale."</p>
+      <div class="traction-metrics">
+        <div class="tm"><div class="tm-val">Live</div><div class="tm-lbl">Product status</div></div>
+        <div class="tm"><div class="tm-val">₹0</div><div class="tm-lbl">Infrastructure cost</div></div>
+        <div class="tm"><div class="tm-val">2 min</div><div class="tm-lbl">Business onboarding</div></div>
+        <div class="tm"><div class="tm-val">∞</div><div class="tm-lbl">Queue capacity</div></div>
+      </div>
+      <div style="margin-top:2rem;background:rgba(200,169,110,0.05);border:1px solid rgba(200,169,110,0.15);padding:1.5rem;">
+        <div style="font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:0.8rem;">Live Product</div>
+        <div style="font-family:'DM Mono',monospace;font-size:0.8rem;color:var(--dim);word-break:break-all;">remma16shivanand-lang.github.io/Queless</div>
+        <a href="https://remma16shivanand-lang.github.io/Queless" target="_blank" style="display:inline-block;margin-top:1rem;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(200,169,110,0.3);">Visit live product →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MOAT -->
+<section class="moat-section" id="moat">
+  <div class="section-num reveal">06 — Competitive Moat</div>
+  <h2 class="section-title reveal reveal-delay-1">Why no competitor<br>can <em>catch us.</em></h2>
+  <div class="moat-intro reveal reveal-delay-2">
+    <p>Every day QGo operates, we build an advantage that compounds. Data, habits, network effects, and switching costs all deepen simultaneously. This is the flywheel that makes QGo defensible at global scale.</p>
+  </div>
+  <div class="moat-grid">
+    <div class="moat-card reveal">
+      <div class="moat-icon">📊</div>
+      <div class="moat-title">Data monopoly</div>
+      <div class="moat-desc">Every queue processed adds to a dataset of wait patterns, business performance, and foot traffic. After 10 million queues, this dataset is impossible to replicate. It powers increasingly accurate AI predictions and becomes a separate revenue stream sold to city planners and researchers.</div>
+    </div>
+    <div class="moat-card reveal reveal-delay-1">
+      <div class="moat-icon">🔗</div>
+      <div class="moat-title">Two-sided network lock-in</div>
+      <div class="moat-desc">Businesses bring customers. Customers discover new businesses through QGo's nearby suggestions. Both sides become dependent. A business switching away from QGo loses their customer data history and their discovery channel. Switching cost grows every month.</div>
+    </div>
+    <div class="moat-card reveal">
+      <div class="moat-icon">🧠</div>
+      <div class="moat-title">Habit formation at scale</div>
+      <div class="moat-desc">Users who scan a QR code and walk away freely three times never go back to standing in line. The behaviour change is permanent. QGo doesn't just solve a problem — it replaces a 200-year-old human behaviour pattern with a new one that our platform owns.</div>
+    </div>
+    <div class="moat-card reveal reveal-delay-1">
+      <div class="moat-icon">🌍</div>
+      <div class="moat-title">First-mover in emerging markets</div>
+      <div class="moat-desc">Developed market competitors are focused on enterprise hardware. India, Southeast Asia, and the Middle East — 3.5 billion people — have no dominant digital queue solution. QGo arrives before anyone else with a mobile-first, zero-hardware approach built specifically for these markets.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ROADMAP -->
+<section class="roadmap" id="roadmap">
+  <div class="section-num reveal">07 — Roadmap</div>
+  <h2 class="section-title reveal reveal-delay-1">From Hyderabad<br>to the <em>world.</em></h2>
+  <div class="road-track reveal reveal-delay-2">
+    <div class="road-phases">
+      <div class="road-phase">
+        <div class="road-dot"></div>
+        <div class="road-period">Now</div>
+        <div class="road-title">Product Live</div>
+        <div class="road-items">
+          <div class="road-item">Full stack MVP</div>
+          <div class="road-item">AI features</div>
+          <div class="road-item">Business portal</div>
+          <div class="road-item">Real-time queues</div>
+        </div>
+      </div>
+      <div class="road-phase">
+        <div class="road-dot"></div>
+        <div class="road-period">Q3 2025</div>
+        <div class="road-title">Hyderabad Pilot</div>
+        <div class="road-items">
+          <div class="road-item">10 businesses live</div>
+          <div class="road-item">First revenue</div>
+          <div class="road-item">10,000 users</div>
+          <div class="road-item">Wait & Earn launch</div>
+        </div>
+      </div>
+      <div class="road-phase">
+        <div class="road-dot future"></div>
+        <div class="road-period">Q4 2025</div>
+        <div class="road-title">Seed + India</div>
+        <div class="road-items">
+          <div class="road-item">Seed round closes</div>
+          <div class="road-item">Mumbai + Delhi</div>
+          <div class="road-item">100K users</div>
+          <div class="road-item">Priority passes</div>
+        </div>
+      </div>
+      <div class="road-phase">
+        <div class="road-dot future"></div>
+        <div class="road-period">2026</div>
+        <div class="road-title">SE Asia + ME</div>
+        <div class="road-items">
+          <div class="road-item">Indonesia, UAE</div>
+          <div class="road-item">Enterprise deals</div>
+          <div class="road-item">1M users</div>
+          <div class="road-item">Series A</div>
+        </div>
+      </div>
+      <div class="road-phase">
+        <div class="road-dot future"></div>
+        <div class="road-period">2027+</div>
+        <div class="road-title">Global Default</div>
+        <div class="road-items">
+          <div class="road-item">US, UK, Europe</div>
+          <div class="road-item">10M users</div>
+          <div class="road-item">Data platform</div>
+          <div class="road-item">IPO story</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section class="team-section" id="team">
+  <div class="section-num reveal">08 — Team</div>
+  <h2 class="section-title reveal reveal-delay-1">Built by someone who<br><em>lived</em> the problem.</h2>
+  <div class="team-grid">
+    <div class="team-card reveal">
+      <div class="team-avatar">S</div>
+      <div class="team-name">Shivanand</div>
+      <div class="team-role">Founder & CEO</div>
+      <div class="team-bio">Built QGo from zero — product, design, strategy, and vision. Identified the queue problem firsthand in Hyderabad. Ships fast and thinks globally. Looking for co-founders and early team.</div>
+    </div>
+    <div class="team-card reveal reveal-delay-1">
+      <div class="team-avatar">+</div>
+      <div class="team-name">CTO — Hiring</div>
+      <div class="team-role">Technical Co-Founder</div>
+      <div class="team-bio">Seeking a technical co-founder to own the engineering roadmap — React Native mobile app, Firebase scaling, AI/ML integration, and enterprise infrastructure.</div>
+    </div>
+    <div class="team-card reveal reveal-delay-2">
+      <div class="team-avatar">+</div>
+      <div class="team-name">Head of Growth — Hiring</div>
+      <div class="team-role">GTM & Partnerships</div>
+      <div class="team-bio">Seeking a growth lead with deep India market experience to own business development, hospital and restaurant partnerships, and viral growth loops.</div>
+    </div>
+  </div>
+  <div style="margin-top:2rem;padding:1.5rem;border:1px solid rgba(200,169,110,0.15);max-width:600px;background:rgba(200,169,110,0.03);" class="reveal">
+    <div style="font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:0.8rem;">Advisory interest welcome</div>
+    <div style="font-size:0.85rem;color:var(--dim);line-height:1.7;">We are actively seeking advisors with experience in SaaS scaling, India market distribution, healthcare tech, and hospitality. Equity available for the right partners.</div>
+  </div>
+</section>
+
+<!-- THE ASK -->
+<section class="ask" id="ask">
+  <div class="ask-inner">
+    <div class="section-num reveal" style="text-align:center;">09 — The Ask</div>
+    <h2 class="section-title reveal reveal-delay-1" style="text-align:center;">We are raising our<br><em>seed round.</em></h2>
+    <div class="ask-amount reveal reveal-delay-2">$<span>500K</span></div>
+    <p style="color:var(--dim);font-size:0.9rem;max-width:500px;margin:0 auto;" class="reveal reveal-delay-2">Seed round to reach 10,000 businesses, 1 million users, and Series A readiness within 18 months.</p>
+    <div class="ask-use">
+      <div class="ask-item reveal">
+        <div class="ask-pct">40%</div>
+        <div class="ask-desc">Product & Engineering — Mobile app, AI features, enterprise infrastructure</div>
+      </div>
+      <div class="ask-item reveal reveal-delay-1">
+        <div class="ask-pct">30%</div>
+        <div class="ask-desc">Sales & Growth — Hyderabad to pan-India expansion, BD team</div>
+      </div>
+      <div class="ask-item reveal reveal-delay-2">
+        <div class="ask-pct">20%</div>
+        <div class="ask-desc">Marketing — Viral campaigns, influencer network, brand building</div>
+      </div>
+      <div class="ask-item reveal reveal-delay-3">
+        <div class="ask-pct">10%</div>
+        <div class="ask-desc">Operations — Legal, compliance, office, early team hiring</div>
+      </div>
+    </div>
+    <div class="reveal">
+      <a class="ask-cta" href="mailto:invest@qgo.app">Connect with us</a>
+    </div>
+    <p class="ask-note reveal">Deck available under NDA. Live product demo available anytime.<br>We are also open to strategic angels with India market expertise.</p>
+  </div>
+</section>
+
+<!-- CLOSING -->
+<div class="closing">
+  <p class="closing-text reveal">"Every minute someone spends in a line is a minute QGo hasn't reached them yet."</p>
+  <p class="closing-sub reveal reveal-delay-1">We're just getting started.</p>
+  <div class="closing-links reveal reveal-delay-2">
+    <a class="closing-link" href="https://remma16shivanand-lang.github.io/Queless" target="_blank">Live Product</a>
+    <a class="closing-link" href="https://remma16shivanand-lang.github.io/Queless/register.html" target="_blank">Register a Business</a>
+    <a class="closing-link" href="mailto:invest@qgo.app">Contact Founder</a>
+  </div>
+  <div style="margin-top:4rem;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(107,104,96,0.4);">QGo™ 2025 — Confidential. For qualified investors only.</div>
+</div>
+
+<script>
+  // Custom cursor
+  var cursor = document.getElementById('cursor');
+  var ring = document.getElementById('cursor-ring');
+  var mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove', function(e){
+    mx=e.clientX; my=e.clientY;
+    cursor.style.left=mx+'px'; cursor.style.top=my+'px';
+  });
+  function animRing(){
+    rx+=(mx-rx)*0.12; ry+=(my-ry)*0.12;
+    ring.style.left=rx+'px'; ring.style.top=ry+'px';
+    requestAnimationFrame(animRing);
+  }
+  animRing();
+  document.querySelectorAll('a,button').forEach(function(el){
+    el.addEventListener('mouseenter',function(){cursor.style.width='20px';cursor.style.height='20px';cursor.style.background='rgba(200,169,110,0.3)';});
+    el.addEventListener('mouseleave',function(){cursor.style.width='8px';cursor.style.height='8px';cursor.style.background='var(--accent)';});
+  });
+
+  // Scroll reveal
+  var reveals = document.querySelectorAll('.reveal');
+  var observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){ entry.target.classList.add('visible'); }
+    });
+  }, {threshold:0.1});
+  reveals.forEach(function(el){ observer.observe(el); });
+
+  // Count up animation
+  function animateCount(el, target, duration) {
+    var start = 0;
+    var step = target / (duration / 16);
+    var timer = setInterval(function(){
+      start += step;
+      if(start >= target){ start = target; clearInterval(timer); }
+      el.textContent = Number.isInteger(target) ? Math.floor(start) : start.toFixed(1);
+    }, 16);
+  }
+  var countObserver = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        var el = entry.target;
+        var target = parseFloat(el.getAttribute('data-target'));
+        animateCount(el, target, 1500);
+        countObserver.unobserve(el);
+      }
+    });
+  }, {threshold:0.5});
+  document.querySelectorAll('.count-up').forEach(function(el){ countObserver.observe(el); });
+
+  // TAM bars animation
+  var barObserver = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        entry.target.querySelectorAll('.tam-fill').forEach(function(bar){
+          var w = bar.getAttribute('data-width');
+          setTimeout(function(){ bar.style.width = w; }, 300);
+        });
+        barObserver.unobserve(entry.target);
+      }
+    });
+  }, {threshold:0.3});
+  var tamVis = document.querySelector('.tam-visual');
+  if(tamVis) barObserver.observe(tamVis);
+</script>
+</body>
+</html>
