@@ -4,6 +4,11 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>QGo — Join Queue</title>
+  <meta name="description" content="Join the queue, walk away freely. QGo gives your time back."/>
+  <!-- Open Graph for sharing -->
+  <meta property="og:title" content="Join me in this queue! — QGo"/>
+  <meta property="og:description" content="I'm waiting in a queue using QGo. Join me or track my position live!"/>
+  <meta property="og:type" content="website"/>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet"/>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -14,11 +19,15 @@
     #flashOverlay.flash{animation:flashAnim 0.8s ease;}
     @keyframes flashAnim{0%{opacity:0}15%{opacity:1}100%{opacity:0}}
     #confettiCanvas{position:fixed;inset:0;z-index:9998;pointer-events:none;}
+
+    /* NAV */
     nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;background:rgba(8,8,16,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
     .logo{font-family:'Bricolage Grotesque',sans-serif;font-size:1.4rem;font-weight:800;background:linear-gradient(135deg,#a855f7,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;letter-spacing:-1px;}
     .logo sup{font-size:0.45rem;-webkit-text-fill-color:var(--neon);vertical-align:super;}
     .nbtn{background:transparent;color:var(--muted);padding:0.4rem 0.8rem;border-radius:999px;text-decoration:none;font-size:0.82rem;font-weight:500;border:1px solid var(--border);transition:all 0.2s;}
     .nbtn:hover{color:var(--white);border-color:var(--accent2);}
+
+    /* HERO */
     .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:7rem 1.5rem 3rem;position:relative;overflow:hidden;}
     .orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;}
     .o1{width:400px;height:400px;background:rgba(124,58,237,0.18);top:-80px;left:-80px;}
@@ -32,6 +41,8 @@
     .hero-sub{font-size:0.95rem;color:var(--muted);max-width:380px;line-height:1.7;margin-top:1rem;position:relative;z-index:1;}
     .scroll-btn{display:inline-block;margin-top:1.8rem;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;padding:0.85rem 2rem;border-radius:999px;font-weight:700;font-size:1rem;box-shadow:0 0 36px rgba(124,58,237,0.4);transition:all 0.2s;border:none;cursor:pointer;text-decoration:none;position:relative;z-index:1;}
     .scroll-btn:hover{transform:translateY(-2px);}
+
+    /* ANIME SCENE */
     .scene-wrap{margin-top:2rem;position:relative;z-index:1;}
     .queue-scene{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.2rem 1.5rem;display:inline-flex;align-items:flex-end;gap:0;position:relative;overflow:hidden;min-width:300px;}
     .scene-tag{position:absolute;top:0.6rem;left:1rem;font-size:0.58rem;font-weight:700;letter-spacing:0.12em;color:var(--green);}
@@ -43,6 +54,8 @@
     .anime-person.calling{animation:abounce 0.7s ease;}
     @keyframes abounce{0%{transform:translateY(0)}20%{transform:translateY(-14px) rotate(-5deg)}50%{transform:translateY(-6px) rotate(3deg)}80%{transform:translateY(-2px)}100%{transform:translateY(0)}}
     .a-label{font-size:0.54rem;font-weight:700;margin-top:3px;padding:0.1rem 0.35rem;border-radius:4px;white-space:nowrap;}
+
+    /* HOW IT WORKS */
     .section{padding:3rem 1.5rem;max-width:860px;margin:0 auto;position:relative;z-index:1;}
     .sec-tag{font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--neon);margin-bottom:0.6rem;display:block;}
     .sec-title{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;letter-spacing:-1px;color:var(--white);margin-bottom:1.5rem;line-height:1.1;}
@@ -52,7 +65,9 @@
     .step-n{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-family:'Bricolage Grotesque',sans-serif;font-size:1.1rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 0.8rem;box-shadow:0 0 14px rgba(124,58,237,0.4);}
     .step h4{font-size:0.88rem;font-weight:700;color:var(--white);margin-bottom:0.3rem;}
     .step p{font-size:0.78rem;color:var(--muted);line-height:1.5;}
-    .join-section{padding:1.5rem 1.5rem 5rem;max-width:460px;margin:0 auto;position:relative;z-index:1;}
+
+    /* JOIN FORM */
+    .join-section{padding:1.5rem 1.5rem 2rem;max-width:480px;margin:0 auto;position:relative;z-index:1;}
     .join-card{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:2rem;position:relative;overflow:hidden;}
     .join-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--cyan));}
     .j-title{font-family:'Bricolage Grotesque',sans-serif;font-size:1.6rem;font-weight:800;color:var(--white);letter-spacing:-0.5px;margin-bottom:0.3rem;}
@@ -66,6 +81,8 @@
     .join-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
     #errorMsg{display:none;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#f87171;border-radius:10px;padding:0.7rem 1rem;font-size:0.85rem;margin-bottom:1rem;}
     #noBizState{display:none;}
+
+    /* TICKET */
     #ticketView{display:none;}
     .t-top{text-align:center;margin-bottom:1.2rem;}
     .t-top h2{font-family:'Bricolage Grotesque',sans-serif;font-size:1.3rem;font-weight:800;color:var(--white);}
@@ -82,6 +99,8 @@
     .tok-show{background:linear-gradient(135deg,rgba(124,58,237,0.15),rgba(6,182,212,0.1));border:1px solid rgba(168,85,247,0.2);border-radius:12px;padding:0.8rem;text-align:center;margin-bottom:0.9rem;}
     .tok-show .tl{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;}
     .tok-show .tv{font-family:'Bricolage Grotesque',sans-serif;font-size:1.8rem;font-weight:800;background:linear-gradient(135deg,var(--neon),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+
+    /* SMART WAIT */
     .smart-wait{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1rem;margin-bottom:0.9rem;position:relative;overflow:hidden;}
     .smart-wait::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--cyan));}
     .sw-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.7rem;}
@@ -105,6 +124,8 @@
     .safe-ind.safe .si-title{color:var(--green);}.safe-ind.safe .si-sub{color:rgba(34,197,94,0.7);}
     .safe-ind.risky .si-title{color:var(--yellow);}.safe-ind.risky .si-sub{color:rgba(251,191,36,0.7);}
     .safe-ind.danger .si-title{color:#f87171;}.safe-ind.danger .si-sub{color:rgba(239,68,68,0.7);}
+
+    /* NEARBY */
     .nearby{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1rem;margin-bottom:0.9rem;display:none;position:relative;overflow:hidden;}
     .nearby::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--green));}
     .nb-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.7rem;}
@@ -117,15 +138,76 @@
     .nb-name{font-weight:600;font-size:0.83rem;color:var(--white);}
     .nb-desc{font-size:0.7rem;color:var(--muted);margin-top:0.1rem;}
     .nb-tag{font-size:0.62rem;font-weight:700;padding:0.14rem 0.45rem;border-radius:999px;white-space:nowrap;background:rgba(6,182,212,0.12);color:var(--cyan);}
+
+    /* ── SOCIAL LAYER ── */
+    .social-section{background:var(--surface);border:1px solid rgba(168,85,247,0.2);border-radius:16px;padding:1.2rem;margin-bottom:0.9rem;position:relative;overflow:hidden;}
+    .social-section::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#a855f7,#ec4899,#06b6d4);}
+    .social-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+    .social-title{font-size:0.75rem;font-weight:700;color:var(--accent2);text-transform:uppercase;letter-spacing:0.08em;}
+    .social-live{font-size:0.62rem;color:var(--green);background:rgba(34,197,94,0.1);padding:0.18rem 0.5rem;border-radius:999px;border:1px solid rgba(34,197,94,0.2);display:flex;align-items:center;gap:0.3rem;}
+    .social-live::before{content:'';width:4px;height:4px;background:var(--green);border-radius:50%;animation:blink 1.5s infinite;}
+
+    /* SHARE STATUS */
+    .share-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:0.8rem;}
+    .share-preview{background:linear-gradient(135deg,rgba(124,58,237,0.15),rgba(6,182,212,0.08));border:1px solid rgba(168,85,247,0.15);border-radius:10px;padding:0.9rem;margin-bottom:0.8rem;text-align:center;}
+    .share-preview-name{font-family:'Bricolage Grotesque',sans-serif;font-size:1rem;font-weight:800;color:var(--white);margin-bottom:0.2rem;}
+    .share-preview-info{font-size:0.78rem;color:var(--muted);}
+    .share-preview-token{font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:800;background:linear-gradient(135deg,var(--neon),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:0.3rem 0;}
+    .share-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem;}
+    .share-btn{padding:0.6rem 0.4rem;border-radius:9px;border:1px solid var(--border);background:var(--surface);cursor:pointer;transition:all 0.2s;text-align:center;font-size:0.72rem;font-weight:600;color:var(--text);display:flex;flex-direction:column;align-items:center;gap:0.3rem;}
+    .share-btn:hover{border-color:var(--accent2);background:rgba(124,58,237,0.08);}
+    .share-btn .sb-icon{font-size:1.2rem;}
+    .share-btn.whatsapp:hover{border-color:#25D366;background:rgba(37,211,102,0.08);color:#25D366;}
+    .share-btn.copy:hover{border-color:var(--cyan);background:rgba(6,182,212,0.08);color:var(--cyan);}
+    .share-btn.story:hover{border-color:#E1306C;background:rgba(225,48,108,0.08);color:#E1306C;}
+
+    /* SQUAD QUEUE */
+    .squad-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:0.8rem;}
+    .squad-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.8rem;}
+    .squad-label{font-size:0.78rem;font-weight:700;color:var(--white);}
+    .squad-count{font-size:0.68rem;color:var(--muted);background:var(--surface);padding:0.2rem 0.5rem;border-radius:999px;border:1px solid var(--border);}
+    .squad-members{display:flex;flex-direction:column;gap:0.5rem;margin-bottom:0.8rem;}
+    .squad-member{display:flex;align-items:center;gap:0.7rem;padding:0.5rem 0.7rem;background:var(--surface);border-radius:8px;border:1px solid var(--border);}
+    .squad-member.me{border-color:rgba(124,58,237,0.3);background:rgba(124,58,237,0.06);}
+    .squad-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:700;flex-shrink:0;font-family:'Bricolage Grotesque',sans-serif;}
+    .squad-name{flex:1;font-size:0.83rem;font-weight:600;color:var(--white);}
+    .squad-pos{font-size:0.7rem;color:var(--muted);}
+    .squad-status{font-size:0.65rem;font-weight:700;padding:0.15rem 0.45rem;border-radius:999px;}
+    .squad-status.waiting{background:rgba(124,58,237,0.15);color:var(--neon);}
+    .squad-status.called{background:rgba(34,197,94,0.15);color:var(--green);}
+    .invite-btn{width:100%;padding:0.7rem;background:linear-gradient(135deg,rgba(124,58,237,0.2),rgba(168,85,247,0.15));border:1px solid rgba(168,85,247,0.3);border-radius:9px;color:var(--neon);font-family:'Space Grotesk',sans-serif;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:0.5rem;}
+    .invite-btn:hover{background:linear-gradient(135deg,rgba(124,58,237,0.3),rgba(168,85,247,0.25));border-color:var(--accent2);}
+
+    /* REACTIONS */
+    .reactions-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem;}
+    .reactions-title{font-size:0.78rem;font-weight:700;color:var(--white);margin-bottom:0.7rem;}
+    .reactions-feed{display:flex;flex-direction:column;gap:0.4rem;margin-bottom:0.7rem;min-height:50px;}
+    .reaction-item{display:flex;align-items:center;gap:0.5rem;animation:reactionIn 0.3s ease;}
+    @keyframes reactionIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+    .reaction-emoji{font-size:1.1rem;}
+    .reaction-text{font-size:0.78rem;color:var(--muted);}
+    .reaction-time{font-size:0.65rem;color:rgba(107,107,138,0.5);margin-left:auto;}
+    .empty-reactions{font-size:0.78rem;color:var(--muted);font-style:italic;text-align:center;padding:0.5rem 0;}
+    .reaction-btns{display:flex;gap:0.4rem;flex-wrap:wrap;}
+    .reaction-btn{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0.4rem 0.7rem;font-size:1rem;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:0.3rem;}
+    .reaction-btn:hover{border-color:var(--accent2);transform:scale(1.1);}
+    .reaction-btn span{font-size:0.68rem;color:var(--muted);}
+
+    /* COPY SUCCESS */
+    .copy-toast{position:fixed;bottom:6rem;left:50%;transform:translateX(-50%) translateY(10px);background:var(--card);border:1px solid var(--green);color:var(--green);padding:0.6rem 1.2rem;border-radius:999px;font-size:0.82rem;font-weight:600;opacity:0;transition:all 0.3s;pointer-events:none;z-index:500;}
+    .copy-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
     .genz-msg{font-size:0.76rem;color:var(--neon);font-style:italic;text-align:center;margin-bottom:0.8rem;}
     .notif-btn{background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:9px;padding:0.55rem 0.8rem;font-size:0.76rem;color:var(--green);text-align:center;margin-bottom:0.8rem;cursor:pointer;width:100%;}
-    .leave-btn{width:100%;padding:0.7rem;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:10px;font-size:0.85rem;cursor:pointer;transition:all 0.2s;margin-top:0.3rem;}
+    .leave-btn{width:100%;padding:0.7rem;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:10px;font-size:0.85rem;cursor:pointer;transition:all 0.2s;margin-top:0.3rem;margin-bottom:2rem;}
     .leave-btn:hover{border-color:var(--red);color:#f87171;}
   </style>
 </head>
 <body>
 <div id="flashOverlay"></div>
 <canvas id="confettiCanvas"></canvas>
+<div class="copy-toast" id="copyToast">✓ Copied to clipboard!</div>
+
 <nav>
   <a class="logo" href="index.html">QGo<sup>™</sup></a>
   <a class="nbtn" href="register.html">Businesses</a>
@@ -135,7 +217,7 @@
   <div class="orb o1"></div><div class="orb o2"></div>
   <div class="biz-pill" id="bizBadge" style="display:none;"><div class="ldot"></div><span id="bizBadgeName"></span></div>
   <h1><span class="g1">Your time.</span><span class="g2">Don't waste it.</span></h1>
-  <p class="hero-sub">Join the queue, walk away freely. QGo tells you exactly what to do while you wait. 🔥</p>
+  <p class="hero-sub">Join the queue, walk away freely. Share with friends. React. Explore nearby. 🔥</p>
   <a class="scroll-btn" href="#joinForm">Get My Token →</a>
   <div class="scene-wrap">
     <div class="queue-scene">
@@ -148,30 +230,29 @@
 
 <div class="section">
   <span class="sec-tag">How it works</span>
-  <h2 class="sec-title">Smart queue.<br>Free time.</h2>
+  <h2 class="sec-title">Queue together.<br>Wait smarter.</h2>
   <div class="steps">
-    <div class="step"><div class="step-n">1</div><h4>Scan & Join</h4><p>QR at entrance or open the link. Enter name — done.</p></div>
-    <div class="step"><div class="step-n">2</div><h4>AI predicts wait</h4><p>Real ETA based on actual queue speed.</p></div>
-    <div class="step"><div class="step-n">3</div><h4>Explore nearby</h4><p>Smart suggestions for your wait time.</p></div>
-    <div class="step"><div class="step-n">4</div><h4>Get called 🎉</h4><p>Flash, confetti, sound, vibration.</p></div>
+    <div class="step"><div class="step-n">1</div><h4>Join & Share</h4><p>Get your token, share with friends to join the same queue.</p></div>
+    <div class="step"><div class="step-n">2</div><h4>Squad up</h4><p>See your friends' positions live. React, cheer, tease them.</p></div>
+    <div class="step"><div class="step-n">3</div><h4>Explore nearby</h4><p>AI suggests what fits your wait. Everyone goes together.</p></div>
+    <div class="step"><div class="step-n">4</div><h4>All called 🎉</h4><p>Confetti, sound, flash. The whole squad gets in.</p></div>
   </div>
 </div>
 
 <div class="join-section" id="joinForm">
   <div class="join-card">
-
     <div id="noBizState">
       <div style="text-align:center;padding:2rem 0;">
         <div style="font-size:2.5rem;margin-bottom:1rem;">🏢</div>
         <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.1rem;font-weight:800;color:var(--white);margin-bottom:0.5rem;">No business selected</div>
-        <div style="color:var(--muted);font-size:0.85rem;margin-bottom:1.5rem;line-height:1.6;">Scan the QR at a registered business<br>or browse all businesses.</div>
+        <div style="color:var(--muted);font-size:0.85rem;margin-bottom:1.5rem;line-height:1.6;">Scan the QR at a registered business<br>or browse businesses below.</div>
         <a href="register.html" style="display:inline-block;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;padding:0.75rem 1.4rem;border-radius:10px;text-decoration:none;font-weight:700;font-size:0.9rem;">Browse Businesses →</a>
       </div>
     </div>
 
     <div id="formView" style="display:none;">
       <div class="j-title">Join Queue ✦</div>
-      <div class="j-sub">Takes 10 seconds. No app needed.</div>
+      <div class="j-sub">Takes 10 seconds. Bring your squad.</div>
       <div id="errorMsg"></div>
       <label>Your Name</label>
       <input type="text" id="nameInput" placeholder="e.g. Ravi Kumar" autocomplete="off"/>
@@ -181,6 +262,11 @@
         <option value="emergency">🔴 Emergency</option>
         <option value="followup">🔵 Follow-up / Appointment</option>
       </select>
+      <!-- SQUAD JOIN if invited -->
+      <div id="squadJoinBanner" style="display:none;background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.25);border-radius:10px;padding:0.8rem;margin-bottom:1rem;text-align:center;">
+        <div style="font-size:0.78rem;color:var(--neon);font-weight:600;margin-bottom:0.2rem;">👥 You've been invited to join a squad!</div>
+        <div style="font-size:0.72rem;color:var(--muted);" id="squadInviterName">Your friend is waiting in this queue</div>
+      </div>
       <button class="join-btn" id="joinBtn" onclick="joinQueue()">Get My Token →</button>
     </div>
 
@@ -197,6 +283,8 @@
         <div class="ichip"><div class="val" id="ticketQueue" style="font-size:0.8rem;">—</div><div class="lbl">Queue</div></div>
         <div class="ichip"><div class="val" id="servedCount">—</div><div class="lbl">Served</div></div>
       </div>
+
+      <!-- SMART WAIT ENGINE -->
       <div class="smart-wait">
         <div class="sw-row"><div class="sw-title">⚡ AI Wait Engine</div><div class="sw-badge" id="aiConf">Calculating...</div></div>
         <div class="eta-row">
@@ -212,10 +300,72 @@
           <div class="si-body"><div class="si-title" id="siTitle">Safe to leave</div><div class="si-sub" id="siSub">You have time — explore nearby!</div></div>
         </div>
       </div>
+
+      <!-- NEARBY -->
       <div class="nearby" id="nearbyPanel">
         <div class="nb-row"><div class="nb-title">🗺 What to do nearby</div><div class="nb-time" id="nearbyTime"></div></div>
         <div class="nb-list" id="nearbyList"></div>
       </div>
+
+      <!-- ── SOCIAL LAYER ── -->
+      <div class="social-section">
+        <div class="social-header">
+          <div class="social-title">👥 Squad & Share</div>
+          <div class="social-live">Live</div>
+        </div>
+
+        <!-- SHARE STATUS -->
+        <div class="share-card">
+          <div style="font-size:0.75rem;font-weight:600;color:var(--white);margin-bottom:0.6rem;">📤 Share your status</div>
+          <div class="share-preview">
+            <div class="share-preview-name" id="sharePreviewName">Your Name</div>
+            <div class="share-preview-token" id="sharePreviewToken">G001</div>
+            <div class="share-preview-info" id="sharePreviewInfo">Position — in queue at QGo</div>
+          </div>
+          <div class="share-btns">
+            <button class="share-btn whatsapp" onclick="shareWhatsApp()">
+              <div class="sb-icon">💬</div>
+              <span>WhatsApp</span>
+            </button>
+            <button class="share-btn copy" onclick="copyShareLink()">
+              <div class="sb-icon">🔗</div>
+              <span>Copy Link</span>
+            </button>
+            <button class="share-btn story" onclick="shareNative()">
+              <div class="sb-icon">📲</div>
+              <span>Share</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- SQUAD QUEUE -->
+        <div class="squad-card">
+          <div class="squad-title-row">
+            <div class="squad-label">👥 Your Squad</div>
+            <div class="squad-count" id="squadCountLabel">Just you</div>
+          </div>
+          <div class="squad-members" id="squadMembers"></div>
+          <button class="invite-btn" onclick="inviteSquad()">
+            ➕ Invite friends to join this queue
+          </button>
+        </div>
+
+        <!-- REACTIONS -->
+        <div class="reactions-card">
+          <div class="reactions-title">💬 Reactions from friends</div>
+          <div class="reactions-feed" id="reactionsFeed">
+            <div class="empty-reactions">No reactions yet — share your status to get some! 👆</div>
+          </div>
+          <div class="reaction-btns">
+            <button class="reaction-btn" onclick="sendReaction('🔥')">🔥 <span>Fire</span></button>
+            <button class="reaction-btn" onclick="sendReaction('😂')">😂 <span>Lol</span></button>
+            <button class="reaction-btn" onclick="sendReaction('💪')">💪 <span>Go</span></button>
+            <button class="reaction-btn" onclick="sendReaction('😭')">😭 <span>Rip</span></button>
+            <button class="reaction-btn" onclick="sendReaction('🎉')">🎉 <span>Yay</span></button>
+          </div>
+        </div>
+      </div>
+
       <div class="genz-msg" id="genzMsg">"hang tight, your time is coming ⏳"</div>
       <button class="notif-btn" id="notifBtn" onclick="requestNotifs()">🔔 Enable alerts — don't miss your turn!</button>
       <p style="color:var(--muted);font-size:0.75rem;text-align:center;margin-bottom:0.8rem;">Keep this page open. Updates live.</p>
@@ -236,148 +386,318 @@
     messagingSenderId:"661569229761",
     appId:"1:661569229761:web:b7e05c6a22836c724e1540"
   });
-  var db=firebase.database();
-  var BIZ_SLUG=new URLSearchParams(window.location.search).get('biz')||'';
-  var myTokenKey=null,myQueueType=null,alreadyCalledAlert=false,bizType='default';
+  var db = firebase.database();
 
-  var nearby={
-    hospital:[{e:'☕',n:'Quick coffee',d:'Back in time',t:'Fits'},{e:'💊',n:'Pharmacy',d:'Pick up prescriptions',t:'Useful'},{e:'🥗',n:'Light meal',d:'Eat before appointment',t:'Recommended'}],
-    restaurant:[{e:'🛒',n:'Quick grocery',d:'Grab essentials',t:'Fits'},{e:'☕',n:'Coffee nearby',d:'Chill while you wait',t:'Nearby'},{e:'🏧',n:'ATM',d:'Get cash for dining',t:'Quick'}],
-    temple:[{e:'🌿',n:'Gardens nearby',d:'Peaceful walk',t:'Serene'},{e:'🍵',n:'Prasad shop',d:'Get offerings ready',t:'Nearby'},{e:'📿',n:'Pooja items',d:'Pick up worship items',t:'Quick'}],
-    salon:[{e:'☕',n:'Cafe nearby',d:'Relax with coffee',t:'5 min'},{e:'📱',n:'Browse here',d:'Shop online, we\'ll call',t:'Here'},{e:'🛍',n:'Window shop',d:'Walk the street',t:'5 min'}],
-    bank:[{e:'☕',n:'Coffee nearby',d:'Back in 8 min',t:'Fits'},{e:'🖨',n:'Print shop',d:'Print needed docs',t:'Useful'},{e:'🥪',n:'Quick snack',d:'Fuel up',t:'Nearby'}],
-    default:[{e:'☕',n:'Grab coffee',d:'You have time',t:'Fits'},{e:'🚶',n:'Short walk',d:'Stretch your legs',t:'Fresh'},{e:'🛒',n:'Quick errand',d:'Get something done',t:'Smart'}]
+  var urlParams = new URLSearchParams(window.location.search);
+  var BIZ_SLUG = urlParams.get('biz') || '';
+  var SQUAD_ID = urlParams.get('squad') || '';
+  var myTokenKey = null, myQueueType = null, alreadyCalledAlert = false, bizType = 'default';
+  var myName = '', myToken = '', myPosition = 1, myEta = 5;
+
+  var nearbyData = {
+    hospital:[{e:'☕',n:'Quick coffee',d:'Back in time'},{e:'💊',n:'Pharmacy',d:'Pick up prescriptions'},{e:'🥗',n:'Light meal',d:'Eat before appointment'}],
+    restaurant:[{e:'🛒',n:'Quick grocery',d:'Grab essentials'},{e:'☕',n:'Coffee nearby',d:'Chill while you wait'},{e:'🏧',n:'ATM',d:'Get cash for dining'}],
+    temple:[{e:'🌿',n:'Gardens nearby',d:'Peaceful walk'},{e:'🍵',n:'Prasad shop',d:'Get offerings ready'},{e:'📿',n:'Pooja items',d:'Pick up worship items'}],
+    salon:[{e:'☕',n:'Cafe nearby',d:'Relax with coffee'},{e:'📱',n:'Browse here',d:'Shop online, we\'ll call'},{e:'🛍',n:'Window shop',d:'Walk the street'}],
+    bank:[{e:'☕',n:'Coffee nearby',d:'Back in 8 min'},{e:'🖨',n:'Print shop',d:'Print needed docs'},{e:'🥪',n:'Quick snack',d:'Fuel up'}],
+    default:[{e:'☕',n:'Grab coffee',d:'You have time'},{e:'🚶',n:'Short walk',d:'Stretch your legs'},{e:'🛒',n:'Quick errand',d:'Get something done'}]
   };
 
-  window.addEventListener('DOMContentLoaded',function(){
-    if(!BIZ_SLUG){document.getElementById('noBizState').style.display='block';return;}
-    db.ref('businesses/'+BIZ_SLUG).once('value').then(function(snap){
-      if(!snap.exists()){document.getElementById('noBizState').style.display='block';return;}
-      var biz=snap.val(); bizType=biz.type||'default';
-      var em={hospital:'🏥',restaurant:'🍽',temple:'🛕',bank:'🏦',salon:'💈',office:'🏢',govt:'🏛',shop:'🏪',other:'📍'};
-      document.getElementById('bizBadgeName').textContent=(em[biz.type]||'📍')+' '+biz.name;
-      document.getElementById('bizBadge').style.display='inline-flex';
-      document.title='QGo — '+biz.name;
-      document.getElementById('formView').style.display='block';
-      var sk=localStorage.getItem('ql_t_'+BIZ_SLUG),sq=localStorage.getItem('ql_q_'+BIZ_SLUG);
-      if(sk&&sq){
-        myTokenKey=sk;myQueueType=sq;
-        db.ref('bizQueues/'+BIZ_SLUG+'/'+sq+'/'+sk).once('value').then(function(s){
-          if(s.exists()&&s.val().status!=='done'){
-            document.getElementById('ticketName').textContent=s.val().name;
-            var labs={general:'General',emergency:'Emergency',followup:'Follow-up'};
-            document.getElementById('ticketQueue').textContent=labs[sq];
-            document.getElementById('formView').style.display='none';
-            document.getElementById('ticketView').style.display='block';
-            listenToPosition();
-          } else{localStorage.removeItem('ql_t_'+BIZ_SLUG);localStorage.removeItem('ql_q_'+BIZ_SLUG);}
+  // SQUAD AVATARS COLORS
+  var avatarColors = ['#7c3aed','#06b6d4','#22c55e','#f97316','#ec4899','#fbbf24'];
+
+  window.addEventListener('DOMContentLoaded', function() {
+    if (!BIZ_SLUG) { document.getElementById('noBizState').style.display='block'; return; }
+
+    // Check if invited to squad
+    if (SQUAD_ID) {
+      db.ref('squads/'+BIZ_SLUG+'/'+SQUAD_ID).once('value').then(function(snap) {
+        if (snap.exists()) {
+          var squad = snap.val();
+          var inviter = Object.values(squad)[0];
+          if (inviter) {
+            document.getElementById('squadJoinBanner').style.display = 'block';
+            document.getElementById('squadInviterName').textContent = inviter.name + ' invited you — join now!';
+          }
+        }
+      });
+    }
+
+    db.ref('businesses/'+BIZ_SLUG).once('value').then(function(snap) {
+      if (!snap.exists()) { document.getElementById('noBizState').style.display='block'; return; }
+      var biz = snap.val(); bizType = biz.type || 'default';
+      var em = {hospital:'🏥',restaurant:'🍽',temple:'🛕',bank:'🏦',salon:'💈',office:'🏢',govt:'🏛',shop:'🏪',other:'📍'};
+      document.getElementById('bizBadgeName').textContent = (em[biz.type]||'📍')+' '+biz.name;
+      document.getElementById('bizBadge').style.display = 'inline-flex';
+      document.title = 'QGo — '+biz.name;
+      document.getElementById('formView').style.display = 'block';
+
+      var sk = localStorage.getItem('ql_t_'+BIZ_SLUG), sq = localStorage.getItem('ql_q_'+BIZ_SLUG);
+      if (sk && sq) {
+        myTokenKey = sk; myQueueType = sq;
+        db.ref('bizQueues/'+BIZ_SLUG+'/'+sq+'/'+sk).once('value').then(function(s) {
+          if (s.exists() && s.val().status !== 'done') {
+            myName = s.val().name || '';
+            document.getElementById('ticketName').textContent = myName;
+            var labs = {general:'General',emergency:'Emergency',followup:'Follow-up'};
+            document.getElementById('ticketQueue').textContent = labs[sq];
+            document.getElementById('formView').style.display = 'none';
+            document.getElementById('ticketView').style.display = 'block';
+            listenToPosition(); listenToSquad(); listenToReactions();
+          } else { localStorage.removeItem('ql_t_'+BIZ_SLUG); localStorage.removeItem('ql_q_'+BIZ_SLUG); }
         });
       }
     });
-    renderAnimeQ();setInterval(animCallNext,3200);
+    renderAnimeQ(); setInterval(animCallNext, 3200);
   });
 
-  function joinQueue(){
-    var name=document.getElementById('nameInput').value.trim();
-    var qtype=document.getElementById('queueType').value;
-    if(!name){showErr('Please enter your name');return;}
-    var btn=document.getElementById('joinBtn');
-    btn.disabled=true;btn.textContent='Joining...';
-    var joinedAt=Date.now()+Math.random();
-    var newRef=db.ref('bizQueues/'+BIZ_SLUG+'/'+qtype).push();
-    db.ref('bizQueues/'+BIZ_SLUG+'/'+qtype).once('value').then(function(snap){
-      var num=1;
-      if(snap.exists()){var a=Object.values(snap.val()).filter(function(e){return e.status==='waiting'||e.status==='called';});num=a.length+1;}
-      var tok=qtype.charAt(0).toUpperCase()+String(num).padStart(3,'0');
-      return newRef.set({name:name,token:tok,status:'waiting',joinedAt:joinedAt,queueType:qtype,bizSlug:BIZ_SLUG});
-    }).then(function(){
-      myTokenKey=newRef.key;myQueueType=qtype;
-      localStorage.setItem('ql_t_'+BIZ_SLUG,myTokenKey);localStorage.setItem('ql_q_'+BIZ_SLUG,myQueueType);
-      document.getElementById('ticketName').textContent=name;
-      var labs={general:'General',emergency:'Emergency',followup:'Follow-up'};
-      document.getElementById('ticketQueue').textContent=labs[qtype];
-      document.getElementById('formView').style.display='none';
-      document.getElementById('ticketView').style.display='block';
-      listenToPosition();requestNotifs();
-    }).catch(function(e){showErr('Error: '+e.message);btn.disabled=false;btn.textContent='Get My Token →';});
+  function joinQueue() {
+    var name = document.getElementById('nameInput').value.trim();
+    var qtype = document.getElementById('queueType').value;
+    if (!name) { showErr('Please enter your name'); return; }
+    myName = name;
+    var btn = document.getElementById('joinBtn');
+    btn.disabled = true; btn.textContent = 'Joining...';
+    var joinedAt = Date.now() + Math.random();
+    var newRef = db.ref('bizQueues/'+BIZ_SLUG+'/'+qtype).push();
+    db.ref('bizQueues/'+BIZ_SLUG+'/'+qtype).once('value').then(function(snap) {
+      var num = 1;
+      if (snap.exists()) { var a = Object.values(snap.val()).filter(function(e){return e.status==='waiting'||e.status==='called';}); num = a.length+1; }
+      var tok = qtype.charAt(0).toUpperCase()+String(num).padStart(3,'0');
+      myToken = tok;
+      return newRef.set({name:name, token:tok, status:'waiting', joinedAt:joinedAt, queueType:qtype, bizSlug:BIZ_SLUG});
+    }).then(function() {
+      myTokenKey = newRef.key; myQueueType = qtype;
+      localStorage.setItem('ql_t_'+BIZ_SLUG, myTokenKey); localStorage.setItem('ql_q_'+BIZ_SLUG, myQueueType);
+      // If joining a squad, register in squad
+      if (SQUAD_ID) { db.ref('squads/'+BIZ_SLUG+'/'+SQUAD_ID+'/'+myTokenKey).set({name:name, token:myToken, joinedAt:Date.now()}); }
+      document.getElementById('ticketName').textContent = name;
+      var labs = {general:'General',emergency:'Emergency',followup:'Follow-up'};
+      document.getElementById('ticketQueue').textContent = labs[qtype];
+      document.getElementById('formView').style.display = 'none';
+      document.getElementById('ticketView').style.display = 'block';
+      listenToPosition(); listenToSquad(); listenToReactions(); requestNotifs();
+    }).catch(function(e) { showErr('Error: '+e.message); btn.disabled = false; btn.textContent = 'Get My Token →'; });
   }
 
-  function listenToPosition(){
-    db.ref('bizQueues/'+BIZ_SLUG+'/'+myQueueType).on('value',function(snap){
-      if(!snap.exists())return;
-      var all=snap.val(),myData=all[myTokenKey];
-      if(!myData)return;
-      document.getElementById('myToken').textContent=myData.token||'—';
-      var waiting=Object.entries(all).filter(function(e){return e[1].status==='waiting';}).sort(function(a,b){return a[1].joinedAt-b[1].joinedAt;});
-      var active=Object.entries(all).filter(function(e){return e[1].status==='waiting'||e[1].status==='called';});
-      var done=Object.entries(all).filter(function(e){return e[1].status==='done';});
-      document.getElementById('totalWaiting').textContent=active.length;
-      document.getElementById('servedCount').textContent=done.length;
-      if(myData.status==='called'){
-        document.getElementById('positionNum').textContent='🎉';
-        document.getElementById('positionLabel').textContent="IT'S YOUR TURN!";
-        document.getElementById('etaNum').textContent='0';
-        document.getElementById('statusBadge').textContent="YOU'RE UP!";
-        document.getElementById('statusBadge').style.cssText='background:rgba(34,197,94,0.15);color:#22c55e;border-color:rgba(34,197,94,0.3);';
-        document.getElementById('genzMsg').textContent='"GO NOW! 🚀"';
-        updateSafe('danger',0);
-        document.getElementById('nearbyPanel').style.display='none';
-        if(!alreadyCalledAlert){alreadyCalledAlert=true;triggerCalledEffects();}
-      } else if(myData.status==='done'){
-        document.getElementById('positionNum').textContent='✓';
-        document.getElementById('positionLabel').textContent='All done!';
-        document.getElementById('genzMsg').textContent='"Thanks for using QGo! 💜"';
+  function listenToPosition() {
+    db.ref('bizQueues/'+BIZ_SLUG+'/'+myQueueType).on('value', function(snap) {
+      if (!snap.exists()) return;
+      var all = snap.val(), myData = all[myTokenKey];
+      if (!myData) return;
+      myToken = myData.token || '—';
+      document.getElementById('myToken').textContent = myToken;
+      updateSharePreview();
+      var waiting = Object.entries(all).filter(function(e){return e[1].status==='waiting';}).sort(function(a,b){return a[1].joinedAt-b[1].joinedAt;});
+      var active = Object.entries(all).filter(function(e){return e[1].status==='waiting'||e[1].status==='called';});
+      var done = Object.entries(all).filter(function(e){return e[1].status==='done';});
+      document.getElementById('totalWaiting').textContent = active.length;
+      document.getElementById('servedCount').textContent = done.length;
+
+      if (myData.status === 'called') {
+        document.getElementById('positionNum').textContent = '🎉';
+        document.getElementById('positionLabel').textContent = "IT'S YOUR TURN!";
+        document.getElementById('etaNum').textContent = '0';
+        document.getElementById('statusBadge').textContent = "YOU'RE UP!";
+        document.getElementById('statusBadge').style.cssText = 'background:rgba(34,197,94,0.15);color:#22c55e;border-color:rgba(34,197,94,0.3);';
+        document.getElementById('genzMsg').textContent = '"GO NOW! 🚀"';
+        updateSafe('danger', 0);
+        document.getElementById('nearbyPanel').style.display = 'none';
+        if (!alreadyCalledAlert) { alreadyCalledAlert = true; triggerCalledEffects(); }
+      } else if (myData.status === 'done') {
+        document.getElementById('positionNum').textContent = '✓';
+        document.getElementById('positionLabel').textContent = 'All done!';
       } else {
-        var idx=waiting.findIndex(function(e){return e[0]===myTokenKey;});
-        var pos=idx+1;
-        document.getElementById('positionNum').textContent=pos;
-        document.getElementById('positionLabel').textContent=pos===1?'You are Next!':'Position '+pos;
-        updateSmartWait(pos,done);
-        var msgs=['"almost there ✨"','"queue is moving 🍳"','"won\'t be long now 💅"','"you\'ve got this 🔥"'];
-        document.getElementById('genzMsg').textContent=msgs[Math.min(pos-1,msgs.length-1)];
-        if(pos===2&&!alreadyCalledAlert)sendNotif('Almost your turn!','One person ahead — get ready! 🎯');
+        var idx = waiting.findIndex(function(e){return e[0]===myTokenKey;});
+        myPosition = idx + 1;
+        document.getElementById('positionNum').textContent = myPosition;
+        document.getElementById('positionLabel').textContent = myPosition===1?'You are Next!':'Position '+myPosition;
+        updateSmartWait(myPosition, done);
+        updateSharePreview();
+        var msgs = ['"almost there ✨"','"queue is moving 🍳"','"won\'t be long now 💅"','"you\'ve got this 🔥"'];
+        document.getElementById('genzMsg').textContent = msgs[Math.min(myPosition-1, msgs.length-1)];
+        if (myPosition===2 && !alreadyCalledAlert) sendNotif('Almost your turn!','One person ahead — get ready! 🎯');
       }
     });
   }
 
-  function updateSmartWait(pos,done){
-    var avg=5;
-    if(done.length>=2){
-      var de=done.map(function(e){return e[1];}).filter(function(e){return e.joinedAt;}).sort(function(a,b){return a.joinedAt-b.joinedAt;});
-      if(de.length>=2){var tt=(de[de.length-1].joinedAt-de[0].joinedAt)/60000;avg=Math.max(1,Math.min(15,tt/de.length));}
+  // ── SQUAD SYSTEM ──
+  var currentSquadId = SQUAD_ID || null;
+
+  function listenToSquad() {
+    if (!currentSquadId) { renderSquad([]); return; }
+    db.ref('squads/'+BIZ_SLUG+'/'+currentSquadId).on('value', function(snap) {
+      if (!snap.exists()) { renderSquad([]); return; }
+      var members = Object.entries(snap.val()).map(function(e) { return Object.assign({id:e[0]}, e[1]); });
+      // Get positions from queue
+      db.ref('bizQueues/'+BIZ_SLUG+'/'+myQueueType).once('value').then(function(qSnap) {
+        var qData = qSnap.exists() ? qSnap.val() : {};
+        var waiting = Object.entries(qData).filter(function(e){return e[1].status==='waiting';}).sort(function(a,b){return a[1].joinedAt-b[1].joinedAt;});
+        members.forEach(function(m) {
+          var idx = waiting.findIndex(function(e){return e[0]===m.id;});
+          m.position = idx >= 0 ? idx+1 : '?';
+          var qEntry = qData[m.id];
+          m.status = qEntry ? qEntry.status : 'waiting';
+        });
+        renderSquad(members);
+      });
+    });
+  }
+
+  function renderSquad(members) {
+    var container = document.getElementById('squadMembers');
+    var countLabel = document.getElementById('squadCountLabel');
+    if (members.length === 0) {
+      container.innerHTML = '<div style="text-align:center;padding:0.5rem 0;font-size:0.78rem;color:var(--muted);">Just you — invite friends to squad up! 👥</div>';
+      countLabel.textContent = 'Just you';
+      return;
     }
-    var eta=Math.max(1,Math.round((pos-1)*avg));
-    var spd=Math.max(10,Math.min(100,Math.round(100/avg*3)));
-    document.getElementById('etaNum').textContent=eta;
-    document.getElementById('aiConf').textContent=done.length>=3?'High accuracy':done.length>=1?'Good estimate':'Early estimate';
-    document.getElementById('speedBar').style.width=spd+'%';
-    document.getElementById('speedLabel').textContent=avg<3?'Fast queue ⚡':avg<6?'Steady pace 👍':'Slow today 🐢';
-    updateSafe(eta>8?'safe':eta>3?'risky':'danger',eta);
-    if(eta>=5)showNearby(eta);
-    else document.getElementById('nearbyPanel').style.display='none';
-  }
-
-  function updateSafe(state,eta){
-    var ind=document.getElementById('safeInd');
-    ind.className='safe-ind '+state;
-    if(state==='safe'){document.getElementById('siTitle').textContent='✅ Safe to leave';document.getElementById('siSub').textContent='~'+eta+' mins — go explore nearby!';}
-    else if(state==='risky'){document.getElementById('siTitle').textContent='⚠️ Getting close';document.getElementById('siSub').textContent='Stay nearby — ~'+eta+' mins left';}
-    else{document.getElementById('siTitle').textContent='🔴 Stay here now';document.getElementById('siSub').textContent='Your turn is very soon!';}
-  }
-
-  function showNearby(eta){
-    var sug=nearby[bizType]||nearby.default;
-    var n=eta>=12?3:eta>=7?2:1;
-    document.getElementById('nearbyTime').textContent='~'+eta+' min available';
-    document.getElementById('nearbyList').innerHTML=sug.slice(0,n).map(function(s){
-      return '<div class="nb-item"><div class="nb-emoji">'+s.e+'</div><div class="nb-info"><div class="nb-name">'+s.n+'</div><div class="nb-desc">'+s.d+'</div></div><span class="nb-tag">'+s.t+'</span></div>';
+    countLabel.textContent = members.length + ' member' + (members.length>1?'s':'');
+    container.innerHTML = members.map(function(m, i) {
+      var isMe = m.id === myTokenKey;
+      var col = avatarColors[i % avatarColors.length];
+      var initials = m.name ? m.name.charAt(0).toUpperCase() : '?';
+      return '<div class="squad-member'+(isMe?' me':'')+'">' +
+        '<div class="squad-avatar" style="background:'+col+'22;border:1px solid '+col+'44;color:'+col+';">'+initials+'</div>' +
+        '<div class="squad-name">'+(isMe?m.name+' (you)':m.name)+'</div>' +
+        '<div class="squad-pos">#'+m.position+'</div>' +
+        '<div class="squad-status '+(m.status==='called'?'called':'waiting')+'">'+(m.status==='called'?'Called!':'Waiting')+'</div>' +
+      '</div>';
     }).join('');
-    document.getElementById('nearbyPanel').style.display='block';
   }
 
-  function triggerCalledEffects(){
-    var fl=document.getElementById('flashOverlay');fl.classList.remove('flash');void fl.offsetWidth;fl.classList.add('flash');
-    playSound();if(navigator.vibrate)navigator.vibrate([300,100,300,100,500]);launchConfetti();
+  function inviteSquad() {
+    // Create or use existing squad
+    if (!currentSquadId) {
+      currentSquadId = 'squad-'+Date.now()+'-'+Math.random().toString(36).substr(2,5);
+      // Register myself in squad
+      db.ref('squads/'+BIZ_SLUG+'/'+currentSquadId+'/'+myTokenKey).set({name:myName, token:myToken, joinedAt:Date.now()});
+      listenToSquad();
+    }
+    var inviteUrl = window.location.origin + window.location.pathname + '?biz='+BIZ_SLUG+'&squad='+currentSquadId+'&qtype='+(myQueueType||'general');
+    var msg = '👥 Join me in the queue at this place!\n\n🎫 My token: '+myToken+'\n📍 Position: #'+myPosition+'\n\nJoin the squad: '+inviteUrl;
+    if (navigator.share) {
+      navigator.share({ title:'Join my QGo squad!', text:msg, url:inviteUrl });
+    } else if (navigator.clipboard) {
+      navigator.clipboard.writeText(inviteUrl).then(function(){ showCopyToast('Squad invite link copied!'); });
+    } else {
+      var ta = document.createElement('textarea'); ta.value = inviteUrl; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+      showCopyToast('Squad invite link copied!');
+    }
+  }
+
+  // ── REACTIONS SYSTEM ──
+  var reactionsRef = null;
+  function listenToReactions() {
+    if (!myTokenKey || !BIZ_SLUG) return;
+    reactionsRef = db.ref('reactions/'+BIZ_SLUG+'/'+myTokenKey);
+    reactionsRef.limitToLast(10).on('value', function(snap) {
+      var feed = document.getElementById('reactionsFeed');
+      if (!snap.exists()) {
+        feed.innerHTML = '<div class="empty-reactions">No reactions yet — share your status to get some! 👆</div>';
+        return;
+      }
+      var reactions = [];
+      snap.forEach(function(child) { reactions.unshift(child.val()); });
+      feed.innerHTML = reactions.map(function(r) {
+        var ago = Math.round((Date.now()-r.time)/60000);
+        var timeStr = ago < 1 ? 'just now' : ago+'m ago';
+        return '<div class="reaction-item"><div class="reaction-emoji">'+r.emoji+'</div><div class="reaction-text">'+escHtml(r.from)+' reacted '+r.emoji+'</div><div class="reaction-time">'+timeStr+'</div></div>';
+      }).join('');
+    });
+  }
+
+  function sendReaction(emoji) {
+    if (!myTokenKey) return;
+    // Self-react for demo (in production friends would react to each other's tokens)
+    var reactionRef = db.ref('reactions/'+BIZ_SLUG+'/'+myTokenKey).push();
+    reactionRef.set({emoji:emoji, from:'You', time:Date.now()});
+  }
+
+  // ── SHARE FUNCTIONS ──
+  function updateSharePreview() {
+    document.getElementById('sharePreviewName').textContent = myName || 'You';
+    document.getElementById('sharePreviewToken').textContent = myToken || '—';
+    document.getElementById('sharePreviewInfo').textContent = 'Position #'+myPosition+' — waiting at QGo';
+  }
+
+  function getShareText() {
+    var bizName = document.getElementById('bizBadgeName').textContent || 'a business';
+    return '🎫 I\'m in the queue at '+bizName+'!\n\n📍 Token: '+myToken+'\n⏱ Position #'+myPosition+' ('+myEta+' min wait)\n\nJoin me or track me live on QGo 👇\n'+window.location.href;
+  }
+
+  function shareWhatsApp() {
+    var text = encodeURIComponent(getShareText());
+    window.open('https://wa.me/?text='+text, '_blank');
+  }
+
+  function copyShareLink() {
+    var link = window.location.href;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(link).then(function(){ showCopyToast('Link copied to clipboard!'); });
+    } else {
+      var ta = document.createElement('textarea'); ta.value = link; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+      showCopyToast('Link copied!');
+    }
+  }
+
+  function shareNative() {
+    var bizName = document.getElementById('bizBadgeName').textContent || 'a queue';
+    if (navigator.share) {
+      navigator.share({
+        title: 'I\'m in the queue at '+bizName+' — QGo',
+        text: 'Track my position live! Token: '+myToken+', Position: #'+myPosition,
+        url: window.location.href
+      });
+    } else { copyShareLink(); }
+  }
+
+  function showCopyToast(msg) {
+    var t = document.getElementById('copyToast');
+    t.textContent = '✓ '+msg; t.classList.add('show');
+    setTimeout(function(){ t.classList.remove('show'); }, 2500);
+  }
+
+  // ── SMART WAIT ENGINE ──
+  function updateSmartWait(pos, done) {
+    var avg = 5;
+    if (done.length >= 2) {
+      var de = done.map(function(e){return e[1];}).filter(function(e){return e.joinedAt;}).sort(function(a,b){return a.joinedAt-b.joinedAt;});
+      if (de.length >= 2) { var tt = (de[de.length-1].joinedAt-de[0].joinedAt)/60000; avg = Math.max(1,Math.min(15,tt/de.length)); }
+    }
+    var eta = Math.max(1, Math.round((pos-1)*avg));
+    myEta = eta;
+    var spd = Math.max(10, Math.min(100, Math.round(100/avg*3)));
+    document.getElementById('etaNum').textContent = eta;
+    document.getElementById('aiConf').textContent = done.length>=3?'High accuracy':done.length>=1?'Good estimate':'Early estimate';
+    document.getElementById('speedBar').style.width = spd+'%';
+    document.getElementById('speedLabel').textContent = avg<3?'Fast queue ⚡':avg<6?'Steady pace 👍':'Slow today 🐢';
+    updateSafe(eta>8?'safe':eta>3?'risky':'danger', eta);
+    if (eta >= 5) showNearby(eta);
+    else document.getElementById('nearbyPanel').style.display = 'none';
+  }
+
+  function updateSafe(state, eta) {
+    var ind = document.getElementById('safeInd');
+    ind.className = 'safe-ind '+state;
+    if (state==='safe') { document.getElementById('siTitle').textContent='✅ Safe to leave'; document.getElementById('siSub').textContent='~'+eta+' mins — go explore nearby!'; }
+    else if (state==='risky') { document.getElementById('siTitle').textContent='⚠️ Getting close'; document.getElementById('siSub').textContent='Stay nearby — ~'+eta+' mins left'; }
+    else { document.getElementById('siTitle').textContent='🔴 Stay here now'; document.getElementById('siSub').textContent='Your turn is very soon!'; }
+  }
+
+  function showNearby(eta) {
+    var sug = nearbyData[bizType] || nearbyData.default;
+    var n = eta>=12?3:eta>=7?2:1;
+    document.getElementById('nearbyTime').textContent = '~'+eta+' min available';
+    document.getElementById('nearbyList').innerHTML = sug.slice(0,n).map(function(s){
+      return '<div class="nb-item"><div class="nb-emoji">'+s.e+'</div><div class="nb-info"><div class="nb-name">'+s.n+'</div><div class="nb-desc">'+s.d+'</div></div><span class="nb-tag">Fits</span></div>';
+    }).join('');
+    document.getElementById('nearbyPanel').style.display = 'block';
+  }
+
+  function triggerCalledEffects() {
+    var fl = document.getElementById('flashOverlay'); fl.classList.remove('flash'); void fl.offsetWidth; fl.classList.add('flash');
+    playSound(); if (navigator.vibrate) navigator.vibrate([300,100,300,100,500]); launchConfetti();
     sendNotif("It's your turn! 🎉","Head back — QGo is calling you!");
   }
   function playSound(){try{var ctx=new(window.AudioContext||window.webkitAudioContext)();[523,659,784,1047].forEach(function(f,i){var o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=f;o.type='sine';var t=ctx.currentTime+i*0.15;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.3,t+0.05);g.gain.exponentialRampToValueAtTime(0.001,t+0.4);o.start(t);o.stop(t+0.4);});}catch(e){}}
@@ -385,8 +705,10 @@
   function requestNotifs(){if(!('Notification' in window))return;if(Notification.permission==='granted'){document.getElementById('notifBtn').textContent='✅ Alerts enabled!';}else if(Notification.permission==='default'){Notification.requestPermission().then(function(p){if(p==='granted')document.getElementById('notifBtn').textContent='✅ Alerts enabled!';});}else{document.getElementById('notifBtn').textContent='⚠️ Enable in browser settings';}}
   function sendNotif(t,b){if('Notification' in window&&Notification.permission==='granted')new Notification(t,{body:b});}
   function showErr(msg){var el=document.getElementById('errorMsg');el.textContent=msg;el.style.display='block';setTimeout(function(){el.style.display='none';},4000);}
-  function leaveQueue(){if(confirm('Leave the queue? You will lose your spot.')){if(myTokenKey&&myQueueType)db.ref('bizQueues/'+BIZ_SLUG+'/'+myQueueType+'/'+myTokenKey).remove();localStorage.removeItem('ql_t_'+BIZ_SLUG);localStorage.removeItem('ql_q_'+BIZ_SLUG);location.reload();}}
+  function leaveQueue(){if(confirm('Leave the queue? You will lose your spot.')){if(myTokenKey&&myQueueType)db.ref('bizQueues/'+BIZ_SLUG+'/'+myQueueType+'/'+myTokenKey).remove();if(currentSquadId)db.ref('squads/'+BIZ_SLUG+'/'+currentSquadId+'/'+myTokenKey).remove();localStorage.removeItem('ql_t_'+BIZ_SLUG);localStorage.removeItem('ql_q_'+BIZ_SLUG);location.reload();}}
+  function escHtml(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
+  // ANIME
   var aC=[{id:'c1',hair:'#f59e0b',skin:'#fcd34d',outfit:'#7c3aed',b:'rgba(34,197,94,0.15)',bc:'#22c55e'},{id:'c2',hair:'#1e1e30',skin:'#f87171',outfit:'#06b6d4',b:'rgba(124,58,237,0.15)',bc:'#c084fc'},{id:'c3',hair:'#a855f7',skin:'#86efac',outfit:'#ec4899',b:'rgba(6,182,212,0.15)',bc:'#06b6d4'},{id:'c4',hair:'#fcd34d',skin:'#fbbf24',outfit:'#10b981',b:'rgba(251,191,36,0.15)',bc:'#fbbf24'},{id:'c5',hair:'#c4b5fd',skin:'#ddd6fe',outfit:'#f97316',b:'rgba(249,115,22,0.15)',bc:'#fb923c'}];
   var animQ=aC.map(function(c,i){return Object.assign({},c,{token:'G'+String(i+1).padStart(2,'0')});}),aCt=6;
   function mkP(p,pos){return '<div class="anime-person" id="ap-'+p.id+'" style="display:flex;flex-direction:column;align-items:center;transition:all 0.5s;"><svg width="28" height="52" viewBox="0 0 28 52" xmlns="http://www.w3.org/2000/svg"><ellipse cx="14" cy="7" rx="7" ry="6" fill="'+p.hair+'"/><ellipse cx="14" cy="11" rx="6" ry="7" fill="'+p.skin+'"/><circle cx="10" cy="10" r="1.2" fill="#080810"/><circle cx="18" cy="10" r="1.2" fill="#080810"/><path d="M10 15 Q14 18 18 15" stroke="#080810" stroke-width="1" fill="none" stroke-linecap="round"/><rect x="5" y="18" width="18" height="15" rx="5" fill="'+p.outfit+'"/><rect x="0" y="18" width="5" height="11" rx="3" fill="'+p.outfit+'"/><rect x="23" y="18" width="5" height="11" rx="3" fill="'+p.outfit+'"/><rect x="6" y="32" width="6" height="13" rx="3" fill="'+p.hair+'"/><rect x="16" y="32" width="6" height="13" rx="3" fill="'+p.hair+'"/><ellipse cx="9" cy="48" rx="4" ry="3" fill="#080810"/><ellipse cx="19" cy="48" rx="4" ry="3" fill="#080810"/></svg><div class="a-label" style="background:'+p.b+';color:'+p.bc+';">'+(pos===1?'📣':'#'+pos)+'</div></div>';}
