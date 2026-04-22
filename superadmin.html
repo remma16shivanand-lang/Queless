@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>QGo — Super Admin</title>
+<meta name="robots" content="noindex, nofollow"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#080810;--surface:#0f0f1a;--card:#13131f;--border:#1e1e30;--accent:#7c3aed;--accent2:#a855f7;--neon:#c084fc;--cyan:#06b6d4;--green:#22c55e;--yellow:#fbbf24;--red:#ef4444;--orange:#f97316;--white:#f0eeff;--muted:#6b6b8a;--text:#e2e2ff;}
+body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;min-height:100vh;}
+#loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;position:relative;overflow:hidden;}
+.lo{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;}
+.lo1{width:400px;height:400px;background:rgba(239,68,68,0.15);top:-100px;right:-100px;}
+.lo2{width:300px;height:300px;background:rgba(124,58,237,0.12);bottom:-80px;left:-80px;}
+.login-box{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:2.5rem;width:100%;max-width:380px;text-align:center;position:relative;z-index:1;overflow:hidden;}
+.login-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--red),var(--accent),var(--cyan));}
+.login-logo{font-family:'Bricolage Grotesque',sans-serif;font-size:1.8rem;font-weight:800;background:linear-gradient(135deg,#ef4444,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:0.3rem;}
+.login-sub{color:var(--muted);font-size:0.82rem;margin-bottom:1.8rem;}
+.shield{font-size:3rem;margin-bottom:1rem;}
+#loginErr{display:none;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#f87171;border-radius:10px;padding:0.6rem;font-size:0.83rem;margin-bottom:1rem;}
+.attempts-warn{font-size:0.75rem;color:var(--yellow);margin-bottom:0.8rem;display:none;}
+.login-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:12px;color:var(--white);font-family:'Space Grotesk',sans-serif;font-size:1rem;padding:0.85rem 1rem;outline:none;margin-bottom:1rem;text-align:center;letter-spacing:0.15em;transition:border-color 0.2s;}
+.login-input:focus{border-color:var(--red);}
+.login-btn{width:100%;padding:0.95rem;background:linear-gradient(135deg,var(--red),#c0392b);color:#fff;border:none;border-radius:12px;font-family:'Bricolage Grotesque',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;transition:all 0.2s;}
+.login-btn:hover{transform:translateY(-1px);}
+.login-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+.secret-note{font-size:0.72rem;color:rgba(107,107,138,0.4);margin-top:1rem;}
+#dashboard{display:none;}
+header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;border-bottom:1px solid var(--border);background:rgba(8,8,16,0.95);backdrop-filter:blur(20px);position:sticky;top:0;z-index:50;flex-wrap:wrap;gap:0.6rem;}
+.h-logo{font-family:'Bricolage Grotesque',sans-serif;font-size:1.2rem;font-weight:800;background:linear-gradient(135deg,#ef4444,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.h-badge{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#f87171;font-size:0.72rem;font-weight:700;padding:0.28rem 0.7rem;border-radius:999px;}
+.logout-btn{background:transparent;color:var(--muted);border:1px solid var(--border);padding:0.45rem 0.9rem;border-radius:999px;font-size:0.8rem;cursor:pointer;transition:all 0.2s;}
+.logout-btn:hover{border-color:var(--red);color:#f87171;}
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:0.8rem;padding:1.2rem 1.5rem;}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.1rem;position:relative;overflow:hidden;}
+.stat::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.sr::after{background:var(--red);}.sg::after{background:var(--green);}.sp::after{background:var(--accent2);}.sy::after{background:var(--yellow);}.so::after{background:var(--orange);}
+.stat-lbl{font-size:0.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;}
+.stat-val{font-family:'Bricolage Grotesque',sans-serif;font-size:2rem;font-weight:800;line-height:1;}
+.sr .stat-val{color:#f87171;}.sg .stat-val{color:var(--green);}.sp .stat-val{color:var(--neon);}.sy .stat-val{color:var(--yellow);}.so .stat-val{color:var(--orange);}
+.tabs-wrap{padding:0 1.5rem;margin-bottom:1rem;}
+.tabs{display:flex;gap:0.5rem;border-bottom:1px solid var(--border);overflow-x:auto;}
+.tab{padding:0.7rem 1.2rem;border-radius:10px 10px 0 0;background:transparent;border:1px solid transparent;border-bottom:none;color:var(--muted);font-size:0.83rem;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;display:flex;align-items:center;gap:0.4rem;}
+.tab.active{background:var(--card);border-color:var(--border);color:var(--white);}
+.tab-ct{font-size:0.65rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:999px;background:rgba(255,255,255,0.08);min-width:18px;text-align:center;}
+.tab.active .tab-ct{background:rgba(239,68,68,0.15);color:#f87171;}
+.panel{display:none;padding:0 1.5rem 5rem;}
+.panel.active{display:block;}
+.search-row{display:flex;gap:0.8rem;margin-bottom:1rem;}
+.search-input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--white);font-family:'Space Grotesk',sans-serif;font-size:0.88rem;padding:0.65rem 1rem;outline:none;transition:border-color 0.2s;}
+.search-input:focus{border-color:var(--accent2);}
+.filter-sel{background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--white);font-family:'Space Grotesk',sans-serif;font-size:0.85rem;padding:0.65rem 0.8rem;outline:none;cursor:pointer;}
+.pending-banner{background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:14px;padding:1rem 1.2rem;margin:0 1.5rem 1rem;display:none;align-items:center;gap:0.8rem;}
+.pending-banner.show{display:flex;}
+.pb-text{flex:1;font-size:0.85rem;color:var(--yellow);}
+.pb-count{font-family:'Bricolage Grotesque',sans-serif;font-size:1.3rem;font-weight:800;color:var(--yellow);}
+.biz-list,.user-list,.log-list{display:flex;flex-direction:column;gap:0.7rem;}
+.biz-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1rem 1.2rem;display:flex;align-items:center;gap:0.8rem;flex-wrap:wrap;animation:si 0.25s ease;}
+@keyframes si{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.biz-card.pending{border-color:rgba(251,191,36,0.3);}
+.biz-card.suspended{opacity:0.65;border-color:rgba(239,68,68,0.2);}
+.biz-icon{width:40px;height:40px;border-radius:10px;background:rgba(124,58,237,0.15);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+.biz-info{flex:1;min-width:0;}
+.biz-name{font-weight:700;font-size:0.9rem;color:var(--white);}
+.biz-meta{font-size:0.73rem;color:var(--muted);margin-top:0.1rem;}
+.biz-slug{font-size:0.67rem;color:rgba(107,107,138,0.45);margin-top:0.15rem;}
+.pill{font-size:0.64rem;font-weight:700;padding:0.2rem 0.55rem;border-radius:999px;white-space:nowrap;flex-shrink:0;}
+.pill-ok{background:rgba(34,197,94,0.12);color:var(--green);border:1px solid rgba(34,197,94,0.25);}
+.pill-pend{background:rgba(251,191,36,0.12);color:var(--yellow);border:1px solid rgba(251,191,36,0.25);}
+.pill-sus{background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.25);}
+.biz-acts{display:flex;gap:0.35rem;flex-wrap:wrap;flex-shrink:0;}
+.act{padding:0.34rem 0.72rem;border-radius:8px;border:none;font-size:0.75rem;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.act:hover{transform:scale(1.04);}
+.act.approve{background:rgba(34,197,94,0.15);color:var(--green);border:1px solid rgba(34,197,94,0.3);}
+.act.reject,.act.delete{background:rgba(239,68,68,0.1);color:#f87171;border:1px solid rgba(239,68,68,0.2);}
+.act.suspend{background:rgba(251,191,36,0.1);color:var(--yellow);border:1px solid rgba(251,191,36,0.2);}
+.act.restore{background:rgba(34,197,94,0.1);color:var(--green);border:1px solid rgba(34,197,94,0.2);}
+.act.view{background:rgba(124,58,237,0.1);color:var(--neon);border:1px solid rgba(124,58,237,0.2);}
+.user-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:0.9rem 1.1rem;display:flex;align-items:center;gap:0.7rem;flex-wrap:wrap;}
+.u-av{width:34px;height:34px;border-radius:50%;background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.2);display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-size:0.9rem;font-weight:800;color:var(--neon);flex-shrink:0;}
+.u-info{flex:1;min-width:0;}
+.u-name{font-weight:600;font-size:0.88rem;color:var(--white);}
+.u-meta{font-size:0.72rem;color:var(--muted);margin-top:0.1rem;}
+.log-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:0.8rem 1rem;display:flex;align-items:center;gap:0.8rem;}
+.log-icon{font-size:1rem;width:28px;height:28px;background:var(--surface);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.log-text{flex:1;font-size:0.82rem;}
+.log-time{font-size:0.67rem;color:var(--muted);}
+.empty{text-align:center;padding:3rem;color:var(--muted);}
+.empty .ei{font-size:2.5rem;margin-bottom:0.7rem;}
+#confirmModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);z-index:200;align-items:center;justify-content:center;padding:2rem;}
+#confirmModal.open{display:flex;}
+.cbox{background:var(--card);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:2rem;width:100%;max-width:360px;text-align:center;}
+.c-icon{font-size:2.5rem;margin-bottom:1rem;}
+.c-title{font-family:'Bricolage Grotesque',sans-serif;font-size:1.2rem;font-weight:800;color:var(--white);margin-bottom:0.5rem;}
+.c-desc{color:var(--muted);font-size:0.85rem;margin-bottom:1.5rem;line-height:1.6;}
+.c-btns{display:flex;gap:0.7rem;}
+.c-cancel{flex:1;padding:0.8rem;background:var(--surface);border:1px solid var(--border);color:var(--white);border-radius:10px;font-size:0.88rem;cursor:pointer;}
+.c-ok{flex:1;padding:0.8rem;background:linear-gradient(135deg,var(--red),#c0392b);color:#fff;border:none;border-radius:10px;font-family:'Bricolage Grotesque',sans-serif;font-size:0.88rem;font-weight:800;cursor:pointer;}
+.c-ok:hover{transform:translateY(-1px);}
+#toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(20px);background:var(--card);border:1px solid var(--border);color:var(--white);padding:0.7rem 1.4rem;border-radius:999px;font-size:0.85rem;opacity:0;transition:all 0.3s;pointer-events:none;z-index:300;}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div id="loginScreen">
+  <div class="lo lo1"></div><div class="lo lo2"></div>
+  <div class="login-box">
+    <div class="shield">🛡️</div>
+    <div class="login-logo">QGo Super Admin</div>
+    <div class="login-sub">Restricted. Authorised personnel only.</div>
+    <div id="loginErr">Wrong password. Access denied.</div>
+    <div class="attempts-warn" id="attWarn"></div>
+    <input class="login-input" type="password" id="pwInput" placeholder="Master password" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <button class="login-btn" id="loginBtn" onclick="doLogin()">Access Control Panel</button>
+    <div class="secret-note">Keep this URL private. Not indexed by search engines.</div>
+  </div>
+</div>
+
+<div id="dashboard">
+  <header>
+    <div style="display:flex;align-items:center;gap:0.7rem;">
+      <div class="h-logo">QGo™ Super Admin</div>
+      <div class="h-badge">MASTER ACCESS</div>
+    </div>
+    <button class="logout-btn" onclick="doLogout()">Logout</button>
+  </header>
+  <div class="stats">
+    <div class="stat sg"><div class="stat-lbl">Total Businesses</div><div class="stat-val" id="sTotalBiz">0</div></div>
+    <div class="stat sy"><div class="stat-lbl">Pending Approval</div><div class="stat-val" id="sPending">0</div></div>
+    <div class="stat sp"><div class="stat-lbl">Approved Live</div><div class="stat-val" id="sApproved">0</div></div>
+    <div class="stat sr"><div class="stat-lbl">Suspended</div><div class="stat-val" id="sSuspended">0</div></div>
+    <div class="stat so"><div class="stat-lbl">Active Users</div><div class="stat-val" id="sUsers">0</div></div>
+  </div>
+  <div class="pending-banner" id="pendBanner">
+    <span style="font-size:1.4rem;">⏳</span>
+    <div class="pb-text">businesses waiting for your approval</div>
+    <div class="pb-count" id="pendCount">0</div>
+  </div>
+  <div class="tabs-wrap">
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('businesses')">Businesses <span class="tab-ct" id="tc-b">0</span></div>
+      <div class="tab" onclick="switchTab('pending')">Pending <span class="tab-ct" id="tc-p">0</span></div>
+      <div class="tab" onclick="switchTab('users')">Active Users <span class="tab-ct" id="tc-u">0</span></div>
+      <div class="tab" onclick="switchTab('log')">Activity Log <span class="tab-ct" id="tc-l">0</span></div>
+    </div>
+  </div>
+
+  <div class="panel active" id="panel-businesses">
+    <div class="search-row">
+      <input class="search-input" id="bizSearch" placeholder="Search by name or city..." oninput="renderBiz()"/>
+      <select class="filter-sel" id="bizFilter" onchange="renderBiz()">
+        <option value="all">All</option>
+        <option value="approved">Approved</option>
+        <option value="suspended">Suspended</option>
+      </select>
+    </div>
+    <div class="biz-list" id="bizList"></div>
+  </div>
+
+  <div class="panel" id="panel-pending">
+    <div style="margin-bottom:1rem;font-size:0.85rem;color:var(--muted);">Approve to make businesses live. Reject to remove them permanently.</div>
+    <div class="biz-list" id="pendList"></div>
+  </div>
+
+  <div class="panel" id="panel-users">
+    <div class="search-row">
+      <input class="search-input" id="uSearch" placeholder="Search users..." oninput="renderUsers()"/>
+    </div>
+    <div class="user-list" id="userList"></div>
+  </div>
+
+  <div class="panel" id="panel-log">
+    <div style="margin-bottom:1rem;font-size:0.85rem;color:var(--muted);">Audit trail of all admin actions.</div>
+    <div class="log-list" id="logList"></div>
+  </div>
+</div>
+
+<div id="confirmModal">
+  <div class="cbox">
+    <div class="c-icon" id="cIcon">⚠️</div>
+    <div class="c-title" id="cTitle">Are you sure?</div>
+    <div class="c-desc" id="cDesc">This cannot be undone.</div>
+    <div class="c-btns">
+      <button class="c-cancel" onclick="closeConfirm()">Cancel</button>
+      <button class="c-ok" id="cOk">Confirm</button>
+    </div>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script>
+firebase.initializeApp({apiKey:"AIzaSyAtdD2Ppri0JAGIDR8aOOn_PLfjGc5q5j4",authDomain:"queless-79a19.firebaseapp.com",databaseURL:"https://queless-79a19-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"queless-79a19",storageBucket:"queless-79a19.firebasestorage.app",messagingSenderId:"661569229761",appId:"1:661569229761:web:b7e05c6a22836c724e1540"});
+var db=firebase.database();
+var MASTER_HASH='5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8';
+// Default password: "password" - CHANGE THIS IMMEDIATELY after uploading!
+// To generate your own hash: open browser console, run:
+// crypto.subtle.digest('SHA-256',new TextEncoder().encode('YourPassword')).then(b=>console.log([...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')))
+var attempts=0,lockUntil=0;
+async function hashPw(pw){var b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pw));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');}
+async function doLogin(){
+  var now=Date.now();
+  if(now<lockUntil){showToast('Locked. Wait '+(Math.ceil((lockUntil-now)/1000))+'s');return;}
+  var pw=document.getElementById('pwInput').value;
+  if(!pw)return;
+  var h=await hashPw(pw);
+  if(h===MASTER_HASH){
+    attempts=0;
+    sessionStorage.setItem('qsa','1');sessionStorage.setItem('qsat',String(Date.now()));
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('dashboard').style.display='block';
+    loadAll();logAct('🔑','Super admin logged in');
+  }else{
+    attempts++;
+    document.getElementById('loginErr').style.display='block';
+    setTimeout(function(){document.getElementById('loginErr').style.display='none';},2500);
+    if(attempts>=3){
+      lockUntil=Date.now()+30000;
+      document.getElementById('loginBtn').disabled=true;
+      document.getElementById('attWarn').style.display='block';
+      document.getElementById('attWarn').textContent='Too many attempts. Locked 30s.';
+      setTimeout(function(){document.getElementById('loginBtn').disabled=false;document.getElementById('attWarn').style.display='none';attempts=0;},30000);
+    }else{document.getElementById('attWarn').style.display='block';document.getElementById('attWarn').textContent=(3-attempts)+' attempts left.';}
+  }
+}
+window.addEventListener('DOMContentLoaded',function(){
+  if(sessionStorage.getItem('qsa')==='1'&&(Date.now()-parseInt(sessionStorage.getItem('qsat')||'0'))<7200000){
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('dashboard').style.display='block';
+    loadAll();
+  }
+});
+function doLogout(){sessionStorage.removeItem('qsa');sessionStorage.removeItem('qsat');logAct('🚪','Logged out');location.reload();}
+var bizData={},qData={},logData=[];
+function loadAll(){
+  db.ref('businesses').on('value',function(s){bizData=s.exists()?s.val():{};updateStats();renderBiz();renderPend();});
+  db.ref('bizQueues').on('value',function(s){qData=s.exists()?s.val():{};updateStats();renderUsers();});
+  db.ref('adminLog').limitToLast(100).on('value',function(s){logData=[];if(s.exists())s.forEach(function(c){logData.unshift(c.val());});renderLog();});
+}
+var em={hospital:'🏥',restaurant:'🍽',temple:'🛕',bank:'🏦',salon:'💈',office:'🏢',govt:'🏛',shop:'🏪',other:'📍'};
+function updateStats(){
+  var total=Object.keys(bizData).length;
+  var pend=Object.values(bizData).filter(function(b){return !b.status||b.status==='pending';}).length;
+  var susp=Object.values(bizData).filter(function(b){return b.status==='suspended';}).length;
+  var appr=Object.values(bizData).filter(function(b){return b.status==='approved';}).length;
+  var users=0;Object.values(qData).forEach(function(bq){Object.values(bq).forEach(function(qt){Object.values(qt).forEach(function(u){if(u.status==='waiting'||u.status==='called')users++;});});});
+  document.getElementById('sTotalBiz').textContent=total;document.getElementById('sPending').textContent=pend;document.getElementById('sApproved').textContent=appr;document.getElementById('sSuspended').textContent=susp;document.getElementById('sUsers').textContent=users;
+  document.getElementById('tc-b').textContent=total;document.getElementById('tc-p').textContent=pend;document.getElementById('tc-u').textContent=users;
+  var pb=document.getElementById('pendBanner');if(pend>0){pb.classList.add('show');document.getElementById('pendCount').textContent=pend;}else pb.classList.remove('show');
+}
+function renderBiz(){
+  var q=(document.getElementById('bizSearch').value||'').toLowerCase();
+  var f=document.getElementById('bizFilter').value;
+  var el=document.getElementById('bizList');
+  var entries=Object.entries(bizData).filter(function(e){
+    var b=e[1],st=b.status||'pending';
+    if(st==='pending')return false;
+    if(f!=='all'&&st!==f)return false;
+    return !q||(b.name||'').toLowerCase().includes(q)||(b.city||'').toLowerCase().includes(q);
+  }).sort(function(a,b){return(b[1].createdAt||0)-(a[1].createdAt||0);});
+  if(!entries.length){el.innerHTML='<div class="empty"><div class="ei">🏢</div><p>No businesses match</p></div>';return;}
+  el.innerHTML=entries.map(function(e){
+    var slug=e[0],b=e[1],st=b.status||'approved';
+    var d=b.createdAt?new Date(b.createdAt).toLocaleDateString():'?';
+    return '<div class="biz-card'+(st==='suspended'?' suspended':'')+'">'+
+      '<div class="biz-icon">'+(em[b.type]||'📍')+'</div>'+
+      '<div class="biz-info"><div class="biz-name">'+esc(b.name)+'</div><div class="biz-meta">'+esc(b.city||'?')+' · '+b.type+' · '+d+'</div><div class="biz-slug">'+slug+'</div></div>'+
+      '<span class="pill '+(st==='suspended'?'pill-sus':'pill-ok')+'">'+(st==='suspended'?'Suspended':'Live')+'</span>'+
+      '<div class="biz-acts">'+
+        '<button class="act view" onclick="viewBiz(\''+slug+'\')">View</button>'+
+        (st==='suspended'?'<button class="act restore" onclick="restoreBiz(\''+slug+'\',\''+esc(b.name)+'\')">Restore</button>':'<button class="act suspend" onclick="suspBiz(\''+slug+'\',\''+esc(b.name)+'\')">Suspend</button>')+
+        '<button class="act delete" onclick="delBiz(\''+slug+'\',\''+esc(b.name)+'\')">Delete</button>'+
+      '</div></div>';
+  }).join('');
+}
+function renderPend(){
+  var el=document.getElementById('pendList');
+  var entries=Object.entries(bizData).filter(function(e){return !e[1].status||e[1].status==='pending';}).sort(function(a,b){return(a[1].createdAt||0)-(b[1].createdAt||0);});
+  if(!entries.length){el.innerHTML='<div class="empty"><div class="ei">✅</div><p>No pending approvals!</p></div>';return;}
+  el.innerHTML=entries.map(function(e){
+    var slug=e[0],b=e[1];
+    var d=b.createdAt?new Date(b.createdAt).toLocaleDateString():'?';
+    return '<div class="biz-card pending">'+
+      '<div class="biz-icon">'+(em[b.type]||'📍')+'</div>'+
+      '<div class="biz-info"><div class="biz-name">'+esc(b.name)+'</div><div class="biz-meta">'+esc(b.city||'?')+' · '+b.type+(b.phone?' · '+b.phone:'')+' · '+d+'</div><div class="biz-slug">'+slug+'</div></div>'+
+      '<span class="pill pill-pend">Pending</span>'+
+      '<div class="biz-acts">'+
+        '<button class="act approve" onclick="approveBiz(\''+slug+'\',\''+esc(b.name)+'\')">Approve</button>'+
+        '<button class="act reject" onclick="rejectBiz(\''+slug+'\',\''+esc(b.name)+'\')">Reject</button>'+
+      '</div></div>';
+  }).join('');
+}
+function renderUsers(){
+  var q=(document.getElementById('uSearch').value||'').toLowerCase();
+  var el=document.getElementById('userList');
+  var users=[];
+  Object.entries(qData).forEach(function(be){
+    var bn=(bizData[be[0]]||{}).name||be[0];
+    Object.entries(be[1]).forEach(function(qe){
+      Object.entries(qe[1]).forEach(function(ue){
+        var u=ue[1];
+        if(u.status==='waiting'||u.status==='called'){
+          users.push({name:u.name||'?',token:u.token||'?',status:u.status,biz:bn,qt:qe[0],joinedAt:u.joinedAt||Date.now()});
+        }
+      });
+    });
+  });
+  if(q)users=users.filter(function(u){return u.name.toLowerCase().includes(q)||u.biz.toLowerCase().includes(q);});
+  document.getElementById('tc-u').textContent=users.length;
+  if(!users.length){el.innerHTML='<div class="empty"><div class="ei">👤</div><p>No active users right now</p></div>';return;}
+  el.innerHTML=users.map(function(u){
+    var waited=Math.round((Date.now()-u.joinedAt)/60000);
+    return '<div class="user-card">'+
+      '<div class="u-av">'+u.name.charAt(0).toUpperCase()+'</div>'+
+      '<div class="u-info"><div class="u-name">'+esc(u.name)+'</div><div class="u-meta">'+esc(u.biz)+' · '+u.qt+' · Token '+u.token+' · Waited '+waited+'m</div></div>'+
+      '<span class="pill '+(u.status==='called'?'pill-ok':'pill-pend')+'">'+(u.status==='called'?'Called':'Waiting')+'</span>'+
+    '</div>';
+  }).join('');
+}
+function renderLog(){
+  var el=document.getElementById('logList');
+  document.getElementById('tc-l').textContent=logData.length;
+  if(!logData.length){el.innerHTML='<div class="empty"><div class="ei">📋</div><p>No activity yet</p></div>';return;}
+  el.innerHTML=logData.map(function(a){
+    return '<div class="log-item"><div class="log-icon">'+a.icon+'</div><div class="log-text">'+esc(a.text)+'</div><div class="log-time">'+(a.time?new Date(a.time).toLocaleString():'')+'</div></div>';
+  }).join('');
+}
+function approveBiz(slug,name){confirm2('✅','Approve "'+name+'"?','Business goes live and can accept customers.',function(){db.ref('businesses/'+slug).update({status:'approved',approvedAt:Date.now()}).then(function(){showToast('Approved: '+name);logAct('✅','Approved: '+name);});}, 'Approve');}
+function rejectBiz(slug,name){confirm2('✗','Reject "'+name+'"?','Permanently deleted. They must re-apply.',function(){db.ref('businesses/'+slug).remove().then(function(){showToast('Rejected: '+name);logAct('✗','Rejected: '+name);});},'Reject & Delete');}
+function suspBiz(slug,name){confirm2('⏸','Suspend "'+name+'"?','Queue stops accepting customers until restored.',function(){db.ref('businesses/'+slug).update({status:'suspended'}).then(function(){showToast('Suspended: '+name);logAct('⏸','Suspended: '+name);});},'Suspend');}
+function restoreBiz(slug,name){db.ref('businesses/'+slug).update({status:'approved'}).then(function(){showToast('Restored: '+name);logAct('▶️','Restored: '+name);});}
+function delBiz(slug,name){confirm2('🗑️','DELETE "'+name+'"?','PERMANENTLY removes business AND all queue data. Cannot undo.',function(){Promise.all([db.ref('businesses/'+slug).remove(),db.ref('bizQueues/'+slug).remove()]).then(function(){showToast('Deleted: '+name);logAct('🗑️','DELETED: '+name);});},'Delete Forever');}
+function viewBiz(slug){var base=window.location.origin+window.location.pathname.replace('superadmin.html','');window.open(base+'admin.html?biz='+slug,'_blank');}
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach(function(el,i){el.classList.toggle('active',['businesses','pending','users','log'][i]===t);});
+  document.querySelectorAll('.panel').forEach(function(el){el.classList.toggle('active',el.id==='panel-'+t);});
+}
+var cbFn=null;
+function confirm2(icon,title,desc,fn,okText){cbFn=fn;document.getElementById('cIcon').textContent=icon;document.getElementById('cTitle').textContent=title;document.getElementById('cDesc').textContent=desc;document.getElementById('cOk').textContent=okText||'Confirm';document.getElementById('confirmModal').classList.add('open');}
+function closeConfirm(){document.getElementById('confirmModal').classList.remove('open');cbFn=null;}
+document.getElementById('cOk').addEventListener('click',function(){if(cbFn){cbFn();closeConfirm();}});
+function logAct(icon,text){db.ref('adminLog').push({icon:icon,text:text,time:Date.now()});}
+function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},3000);}
+function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+</script>
+</body>
+</html>
