@@ -760,5 +760,6 @@
   function renderAnimeQ(){var c=document.getElementById('animeContainer');if(c)c.innerHTML=animQ.map(function(p,i){return mkP(p,i+1);}).join('');}
   function animCallNext(){if(!animQ.length)return;var first=animQ[0],el=document.getElementById('ap-'+first.id);if(el){el.style.animation='abounce 0.7s ease';setTimeout(function(){el.style.transform='translateX(-65px) scale(0.8)';el.style.opacity='0';setTimeout(function(){animQ.shift();var np=Object.assign({},aC[aCt%5],{id:'c'+aCt,token:'G'+String(aCt).padStart(2,'0')});aCt++;animQ.push(np);var cn=document.getElementById('counterNum');if(cn)cn.textContent=first.token;renderAnimeQ();},500);},700);}}
 </script>
+  <script src="ai-assistant.js"></script>
 </body>
 </html>
