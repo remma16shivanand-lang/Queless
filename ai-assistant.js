@@ -355,7 +355,7 @@ Always be helpful. If you don't know something specific, be honest and suggest t
       var messagesForAPI = this.history.slice(0,-1).concat([{role:'user',content:contextMsg}]);
 
       try {
-        var res = await fetch('https://api.anthropic.com/v1/messages', {
+        var res = await fetch('http://localhost:3000/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
