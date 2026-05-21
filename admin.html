@@ -340,12 +340,42 @@
   <!-- 🔐 FORGOT PASSWORD -->
 <div id="forgotModal">
 
-...
+  <div class="forgot-box">
+
+    <div class="forgot-title">
+      Reset Password
+    </div>
+
+    <div class="forgot-sub">
+      Enter your registered business email or phone number.
+      We'll send a secure recovery link or OTP.
+    </div>
+
+    <input 
+      type="text"
+      id="recoveryInput"
+      class="forgot-input"
+      placeholder="Business Email or Phone"
+    />
+
+    <button 
+      class="reset-btn"
+      onclick="sendResetLink()"
+    >
+      Send Recovery Link
+    </button>
+
+    <button 
+      class="cancel-btn"
+      onclick="closeForgotPassword()"
+    >
+      Cancel
+    </button>
+
+  </div>
 
 </div>
-
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
@@ -393,6 +423,13 @@
       document.title = 'QGo Admin — ' + biz.name;
 
       // Auto-login if session saved
+      var savedSlug =
+  localStorage.getItem('qgo_admin_slug') ||
+  sessionStorage.getItem('qgo_admin_slug');
+
+if (savedSlug === BIZ_SLUG) {
+  showDashboard();
+}
      
     }).catch(function() {
       document.getElementById('noBizMsg').style.display = 'block';
@@ -400,18 +437,7 @@
   });
 
   // ── LOGIN ──
-  function doLogin() {
-    if (!BIZ_SLUG) { showToast('No business ID in URL!'); return; }
-    var pw = document.getElementById('pwInput').value;
-    if (!pw) { document.getElementById('loginErr').style.display = 'block'; return; }
-    if (pw === BIZ_PASSWORD) {
-      sessionStorage.setItem('qgo_admin_slug', BIZ_SLUG);
-      showDashboard();
-    } else {
-      document.getElementById('loginErr').style.display = 'block';
-      setTimeout(function() { document.getElementById('loginErr').style.display = 'none'; }, 2500);
-    }
-  }
+  
 
   function showDashboard() {
     document.getElementById('loginScreen').style.display = 'none';
@@ -707,29 +733,6 @@ function doLogin() {
   <script src="ai-assistant.js"></script>
   
 
-    <input 
-      type="text"
-      id="recoveryInput"
-      class="forgot-input"
-      placeholder="Business Email or Phone"
-    />
 
-    <button 
-      class="reset-btn"
-      onclick="sendResetLink()"
-    >
-      Send Recovery Link
-    </button>
-
-    <button 
-      class="cancel-btn"
-      onclick="closeForgotPassword()"
-    >
-      Cancel
-    </button>
-
-  </div>
-
-</div>
 </body>
 </html>
