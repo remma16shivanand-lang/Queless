@@ -337,6 +337,14 @@
 
 <div id="toast"></div>
 
+  <!-- 🔐 FORGOT PASSWORD -->
+<div id="forgotModal">
+
+...
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -385,10 +393,7 @@
       document.title = 'QGo Admin — ' + biz.name;
 
       // Auto-login if session saved
-      var savedSlug = sessionStorage.getItem('qgo_admin_slug');
-      if (savedSlug === BIZ_SLUG) {
-        showDashboard();
-      }
+     
     }).catch(function() {
       document.getElementById('noBizMsg').style.display = 'block';
     });
@@ -414,10 +419,19 @@
     startListening();
   }
 
-  function doLogout() {
-    sessionStorage.removeItem('qgo_admin_slug');
-    location.reload();
-  }
+ function doLogout() {
+
+  sessionStorage.removeItem(
+    'qgo_admin_slug'
+  );
+
+  localStorage.removeItem(
+    'qgo_admin_slug'
+  );
+
+  location.reload();
+
+}
 
   // ── LISTEN TO QUEUES ──
   function startListening() {
@@ -691,19 +705,7 @@ function doLogin() {
 }
 </script>
   <script src="ai-assistant.js"></script>
-  <!-- 🔐 FORGOT PASSWORD -->
-<div id="forgotModal">
-
-  <div class="forgot-box">
-
-    <div class="forgot-title">
-      Reset Password
-    </div>
-
-    <div class="forgot-sub">
-      Enter your registered business email or phone number.
-      We'll send a secure recovery link or OTP.
-    </div>
+  
 
     <input 
       type="text"
