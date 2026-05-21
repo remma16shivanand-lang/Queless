@@ -110,6 +110,160 @@
     /* TOAST */
     #toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(20px);background:var(--card);border:1px solid var(--border);color:var(--white);padding:0.7rem 1.4rem;border-radius:999px;font-size:0.85rem;opacity:0;transition:all 0.3s;pointer-events:none;z-index:300;box-shadow:0 0 24px rgba(124,58,237,0.2);}
     #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    /* 🔐 PASSWORD TOGGLE */
+.password-wrap{
+  position:relative;
+}
+
+.show-pass-btn{
+  position:absolute;
+  right:14px;
+  top:50%;
+  transform:translateY(-50%);
+  background:none;
+  border:none;
+  cursor:pointer;
+  font-size:1rem;
+  color:var(--muted);
+}
+
+.show-pass-btn:hover{
+  color:var(--white);
+}
+
+/* OPTIONS */
+.login-options{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:-0.2rem;
+  margin-bottom:1.2rem;
+  gap:1rem;
+}
+
+.remember-wrap{
+  display:flex;
+  align-items:center;
+  gap:0.45rem;
+  font-size:0.8rem;
+  color:var(--muted);
+}
+
+.remember-wrap input{
+  accent-color:#a855f7;
+}
+
+.forgot-link{
+  background:none;
+  border:none;
+  color:var(--neon);
+  cursor:pointer;
+  font-size:0.8rem;
+  font-weight:600;
+}
+
+.forgot-link:hover{
+  color:var(--white);
+}
+
+/* FORGOT MODAL */
+#forgotModal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.85);
+  backdrop-filter:blur(8px);
+  z-index:500;
+  align-items:center;
+  justify-content:center;
+  padding:1.5rem;
+}
+
+#forgotModal.open{
+  display:flex;
+}
+
+.forgot-box{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:24px;
+  padding:2rem;
+  width:100%;
+  max-width:400px;
+  position:relative;
+  overflow:hidden;
+}
+
+.forgot-box::before{
+  content:'';
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:3px;
+  background:linear-gradient(
+    90deg,
+    var(--accent),
+    var(--accent2),
+    var(--cyan)
+  );
+}
+
+.forgot-title{
+  font-family:'Bricolage Grotesque',sans-serif;
+  font-size:1.3rem;
+  font-weight:800;
+  margin-bottom:0.5rem;
+  color:var(--white);
+}
+
+.forgot-sub{
+  font-size:0.82rem;
+  color:var(--muted);
+  line-height:1.5;
+  margin-bottom:1.2rem;
+}
+
+.forgot-input{
+  width:100%;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  color:var(--white);
+  padding:0.9rem 1rem;
+  margin-bottom:1rem;
+  outline:none;
+}
+
+.forgot-input:focus{
+  border-color:var(--accent2);
+}
+
+.reset-btn{
+  width:100%;
+  padding:0.9rem;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(
+    135deg,
+    var(--accent),
+    var(--accent2)
+  );
+  color:#fff;
+  font-weight:800;
+  cursor:pointer;
+  margin-bottom:0.7rem;
+}
+
+.cancel-btn{
+  width:100%;
+  padding:0.85rem;
+  border:1px solid var(--border);
+  background:transparent;
+  color:var(--muted);
+  border-radius:12px;
+  cursor:pointer;
+}
   </style>
 </head>
 <body>
@@ -123,7 +277,7 @@
     <div class="login-biz" id="loginBizName"></div>
     <div class="login-sub">Enter your business admin password</div>
     <div id="loginErr">Wrong password. Try again.</div>
-    <input class="login-input" type="password" id="pwInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <div class="password-wrap">    <input      class="login-input"     type="password"     id="pwInput"     placeholder="••••••••"     onkeydown="if(event.key==='Enter')doLogin()"   />    <button      class="show-pass-btn"     onclick="togglePassword()"     type="button"   >     👁️   </button>  </div>  <div class="login-options">    <label class="remember-wrap">     <input type="checkbox" id="rememberMe"/>     <span>Remember Me</span>   </label>    <button      class="forgot-link"     onclick="openForgotPassword()"   >     Forgot Password?   </button>  </div>
     <button class="login-btn" onclick="doLogin()">Login to Dashboard →</button>
     <div class="no-biz-msg" id="noBizMsg" style="display:none;">⚠️ No business found. Check your admin link.</div>
   </div>
@@ -436,7 +590,144 @@
   function escHtml(t) {
     return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
+  /* 👁️ SHOW PASSWORD */
+function togglePassword(){
+
+  var input =
+    document.getElementById('pwInput');
+
+  input.type =
+    input.type === 'password'
+    ? 'text'
+    : 'password';
+
+}
+
+/* 🔐 FORGOT PASSWORD */
+function openForgotPassword(){
+  document
+    .getElementById('forgotModal')
+    .classList.add('open');
+}
+
+function closeForgotPassword(){
+  document
+    .getElementById('forgotModal')
+    .classList.remove('open');
+}
+
+/* 📩 SEND RESET */
+function sendResetLink(){
+
+  var recovery =
+    document.getElementById(
+      'recoveryInput'
+    ).value.trim();
+
+  if(!recovery){
+    showToast('Enter email or phone');
+    return;
+  }
+
+  // 🔥 FUTURE FIREBASE AUTH
+  // firebase.auth().sendPasswordResetEmail(recovery)
+
+  showToast(
+    'Recovery link sent successfully!'
+  );
+
+  closeForgotPassword();
+
+}
+
+/* 💾 REMEMBER LOGIN */
+function doLogin() {
+
+  if (!BIZ_SLUG) {
+    showToast('No business ID in URL!');
+    return;
+  }
+
+  var pw =
+    document.getElementById('pwInput').value;
+
+  var remember =
+    document.getElementById('rememberMe').checked;
+
+  if (!pw) {
+    document.getElementById('loginErr')
+      .style.display = 'block';
+    return;
+  }
+
+  if (pw === BIZ_PASSWORD) {
+
+    if(remember){
+      localStorage.setItem(
+        'qgo_admin_slug',
+        BIZ_SLUG
+      );
+    } else {
+      sessionStorage.setItem(
+        'qgo_admin_slug',
+        BIZ_SLUG
+      );
+    }
+
+    showDashboard();
+
+  } else {
+
+    document.getElementById('loginErr')
+      .style.display = 'block';
+
+    setTimeout(function () {
+      document.getElementById('loginErr')
+        .style.display = 'none';
+    }, 2500);
+
+  }
+
+}
 </script>
   <script src="ai-assistant.js"></script>
+  <!-- 🔐 FORGOT PASSWORD -->
+<div id="forgotModal">
+
+  <div class="forgot-box">
+
+    <div class="forgot-title">
+      Reset Password
+    </div>
+
+    <div class="forgot-sub">
+      Enter your registered business email or phone number.
+      We'll send a secure recovery link or OTP.
+    </div>
+
+    <input 
+      type="text"
+      id="recoveryInput"
+      class="forgot-input"
+      placeholder="Business Email or Phone"
+    />
+
+    <button 
+      class="reset-btn"
+      onclick="sendResetLink()"
+    >
+      Send Recovery Link
+    </button>
+
+    <button 
+      class="cancel-btn"
+      onclick="closeForgotPassword()"
+    >
+      Cancel
+    </button>
+
+  </div>
+
+</div>
 </body>
 </html>
